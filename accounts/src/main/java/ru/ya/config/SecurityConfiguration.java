@@ -1,4 +1,4 @@
-package front_ui.config;
+package ru.ya.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,21 +21,8 @@ public class SecurityConfiguration {
         http
                 // Настройка авторизации запросов
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/signup", "/account").permitAll() // Доступ к главной странице - всем,
+                        .requestMatchers("/*").permitAll() // Доступ к главной странице - всем,
                         .anyRequest().authenticated()  // остальное — только для аутентифицированных
-                )
-                // Включаем форму логина (для полноты примера)
-                .formLogin(form -> form
-                        .loginPage("/login")       // Собственная страница логина
-                        .permitAll()               // Разрешаем всем заходить на логин
-                )
-                // Конфигурация logout (разлогинивания)
-                .logout(logout -> logout
-                        .logoutUrl("/logout")               // URL для логаута (по умолчанию "/logout")
-                        .logoutSuccessUrl("/login?logout")  // Куда перенаправить после выхода (после выхода вернёт на логин)
-                        .invalidateHttpSession(true)        // Аннулировать сессию (по умолчанию true)
-                        .clearAuthentication(true)          // Очистить аутентификацию (по умолчанию true)
-                        .permitAll()                        // Разрешить вызывать logout всем (даже неавторизованным)
                 );
         return http.build();
     }

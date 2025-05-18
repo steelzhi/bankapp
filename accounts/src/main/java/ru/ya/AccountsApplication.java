@@ -1,13 +1,13 @@
-package front_ui;
+package ru.ya;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class FrontUiApplication {
+public class AccountsApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(FrontUiApplication.class, args);
+		SpringApplication.run(AccountsApplication.class, args);
 	}
 
 }

@@ -1,0 +1,27 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: accounts
+
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/bankapp
+    username: s
+    password: sa
+
+    jpa:
+      generate-ddl: true
+      hibernate:
+        ddl-auto: create
+        #ddl-auto: none
+
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.PostgreSQLDialect
+          format_sql: true
+
+  sql:
+    init:
+      mode: always
