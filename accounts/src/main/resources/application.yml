@@ -22,6 +22,14 @@ spring:
           dialect: org.hibernate.dialect.PostgreSQLDialect
           format_sql: true
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Ниже - адрес сервера авторизации для получения токена
+          issuer-uri: http://localhost:8080/realms/master # Для запуска локально
+          #issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker
+
   sql:
     init:
       mode: always

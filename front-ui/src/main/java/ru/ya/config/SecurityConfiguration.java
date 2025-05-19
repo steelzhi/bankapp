@@ -1,5 +1,6 @@
 package ru.ya.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -10,13 +11,24 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.*;
+import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.server.authentication.logout.RedirectServerLogoutSuccessHandler;
+import org.springframework.security.web.server.authentication.logout.ServerLogoutSuccessHandler;
 import org.springframework.web.client.RestTemplate;
 import ru.ya.service.MyUserDetailsService;
+
+import java.net.URI;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
+    @Autowired
+    private ClientRegistrationRepository clientRegistrationRepository;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -31,20 +43,19 @@ public class SecurityConfiguration {
                         .requestMatchers("/", "/signup"/*, "/account"*/).permitAll() // Доступ к главной странице - всем,
                         .anyRequest().authenticated()  // остальное — только для аутентифицированных
                 )
-                .formLogin(Customizer.withDefaults());
+                .formLogin(Customizer.withDefaults())
 /*                // Включаем форму логина
                 .formLogin(form -> form
                         .loginPage("/login")       // Собственная страница логина
                         .permitAll()               // Разрешаем всем заходить на логин
                 )*/
                 // Конфигурация logout (разлогинивания)
-/*                .logout(logout -> logout
+                .logout(logout -> logout
                         .logoutUrl("/logout")               // URL для логаута (по умолчанию "/logout")
-                        .logoutSuccessUrl("/login?logout")  // Куда перенаправить после выхода (после выхода вернёт на логин)
-                        .invalidateHttpSession(true)        // Аннулировать сессию (по умолчанию true)
-                        .clearAuthentication(true)          // Очистить аутентификацию (по умолчанию true)
-                        .permitAll()                        // Разрешить вызывать logout всем (даже неавторизованным)
-                );*/
+                        .logoutSuccessUrl("/")  // Куда перенаправить после выхода (после выхода вернёт на страницу с выбором входа или регистрации)
+                        // Регистрируем OidcClientInitiatedLogoutSuccessHandler
+                        .logoutSuccessHandler(oidcLogoutSuccessHandler())
+                );
         return http.build();
     }
 
@@ -67,19 +78,35 @@ public class SecurityConfiguration {
         return auth;
     }
 
-/*    @Bean
-    public ServerLogoutSuccessHandler logoutSuccessHandler(String uri) {
-        RedirectServerLogoutSuccessHandler successHandler = new RedirectServerLogoutSuccessHandler();
-        successHandler.setLogoutSuccessUrl(URI.create(uri));
-        return successHandler;
-    }*/
+    private LogoutSuccessHandler oidcLogoutSuccessHandler() {
+        // Для работы необходимо указать ClientRegistrationRepository
+        // Этот репозиторий содержит информацию обо всех зарегистрированных в приложении клиентах (и их провайдерах).
+        OidcClientInitiatedLogoutSuccessHandler handler =
+                new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
 
-/*
-    @Bean
-    public ReactiveUserDetailsService r2dbcUserDetailsService(UserRepository userRepository) {
-        return new R2dbcUserDetailsService(userRepository);
+        // Можно указать адрес после успешного логаута
+        handler.setPostLogoutRedirectUri("{baseUrl}");
+
+        return handler;
     }
-*/
+
+    @Bean
+    public OAuth2AuthorizedClientManager authorizedClientManager(
+            ClientRegistrationRepository clientRegistrationRepository,
+            OAuth2AuthorizedClientService authorizedClientService
+    ) {
+        AuthorizedClientServiceOAuth2AuthorizedClientManager manager =
+                new AuthorizedClientServiceOAuth2AuthorizedClientManager(clientRegistrationRepository, authorizedClientService);
+
+        manager.setAuthorizedClientProvider(OAuth2AuthorizedClientProviderBuilder.builder()
+                .clientCredentials() // Включаем получение токена с помощью client_credentials
+                .refreshToken() // Также включаем использование refresh_token
+                .build());
+
+        return manager;
+    }
+
+
 
 /*    @Bean
     ReactiveOAuth2AuthorizedClientManager auth2AuthorizedClientManager(

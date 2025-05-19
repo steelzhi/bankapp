@@ -1,12 +1,19 @@
 package ru.ya.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.List;
+import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
@@ -17,43 +24,33 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                // Настройка авторизации запросов
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/*").permitAll() // Доступ к главной странице - всем,
-                        .anyRequest().authenticated()  // остальное — только для аутентифицированных
-                );
-        return http.build();
+    SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
+        System.out.println("scf!");
+        return security
+                .authorizeHttpRequests(requests -> requests
+                        //.requestMatchers("/*").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .oauth2ResourceServer(customizer -> customizer
+                        .jwt(jwtCustomizer -> {
+                            JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+                            jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
+                                Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
+                                System.out.println("1: " + resourceAccess);
+                                Map<String, Object> account = (Map<String, Object>) resourceAccess.get("account");
+                                System.out.println("2: " + account);
+                                List<String> roles = (List<String>) account.get("roles");
+                                System.out.println("3: " + roles);
+
+                                return roles.stream()
+                                        .map(SimpleGrantedAuthority::new)
+                                        .map(GrantedAuthority.class::cast)
+                                        .toList();
+                            });
+
+                            jwtCustomizer.jwtAuthenticationConverter(jwtAuthenticationConverter);
+                        })
+                )
+                .build();
     }
-
-/*    @Bean
-    public ServerLogoutSuccessHandler logoutSuccessHandler(String uri) {
-        RedirectServerLogoutSuccessHandler successHandler = new RedirectServerLogoutSuccessHandler();
-        successHandler.setLogoutSuccessUrl(URI.create(uri));
-        return successHandler;
-    }*/
-
-/*
-    @Bean
-    public ReactiveUserDetailsService r2dbcUserDetailsService(UserRepository userRepository) {
-        return new R2dbcUserDetailsService(userRepository);
-    }
-*/
-
-/*    @Bean
-    ReactiveOAuth2AuthorizedClientManager auth2AuthorizedClientManager(
-            ReactiveClientRegistrationRepository clientRegistrationRepository,
-            ReactiveOAuth2AuthorizedClientService authorizedClientService
-    ) {
-        AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager manager =
-                new AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager(clientRegistrationRepository, authorizedClientService);
-        manager.setAuthorizedClientProvider(ReactiveOAuth2AuthorizedClientProviderBuilder.builder()
-                .clientCredentials() // Включаем получение токена с помощью client_credentials
-                .refreshToken() // Также включаем использование refresh_token
-                .build()
-        );
-
-        return manager;
-    }*/
 }
