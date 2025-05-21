@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
+import ru.ya.enums.Roles;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class User {
     String name;
     String surname;
     LocalDate birthdate;
-    Collection<? extends GrantedAuthority> role;
+    Roles role;
     List<BankAccount> bankAccountList = new ArrayList<>();
 
     public User(String login, String password, String confirmedPassword, String name, String surname, LocalDate birthdate) {

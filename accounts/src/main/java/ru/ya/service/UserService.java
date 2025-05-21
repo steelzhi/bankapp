@@ -14,25 +14,30 @@ public class UserService {
     PasswordEncoder passwordEncoder;
 
     @Autowired
-    UserRepository userAccountRepository;
+    UserRepository userRepository;
 
     public UserDto getUser(String login) {
-        User user = userAccountRepository.findByLogin(login);
+        User user = userRepository.findByLogin(login);
         return UserMapper.mapToUserDto(user);
     }
 
     public boolean doesUserAlreadyExists(UserDto userDto) {
-        User user = userAccountRepository.findByLogin(userDto.getLogin());
+        User user = userRepository.findByLogin(userDto.getLogin());
         if (user != null) {
             return true;
         }
         return false;
     }
 
-    public void addUser(UserDto userDto) {
+    public User addUser(UserDto userDto) {
         String encodedPassword = passwordEncoder.encode(userDto.getPassword());
         userDto.setPassword(encodedPassword);
         User user = UserMapper.mapToUser(userDto);
-        userAccountRepository.save(user);
+        User savedUser = userRepository.save(user);
+        return savedUser;
+    }
+
+    public User changePassword(UserDto userDto) {
+        return addUser(userDto);
     }
 }

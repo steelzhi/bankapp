@@ -5,6 +5,15 @@ spring:
   application:
     name: accounts
 
+  cloud:
+    consul:
+      host: localhost           # Адрес Consul-агента (по умолчанию localhost)
+      port: 8500
+      config:
+        enabled: true            # Включаем Consul Config для внешней конфигурации
+        prefix: config           # Префикс в KV-хранилище Consul (по умолчанию "config")
+        defaultContext: application  # Контекст по умолчанию
+
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/bankapp

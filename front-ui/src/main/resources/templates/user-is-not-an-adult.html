@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Ошибка регистрации нового пользователя</title>
+</head>
+
+<body>
+<h1 th:text="'Пользователь с логином ' + ${login} + ' не достиг 18 лет! Аккаунт для него заведен не будет'"></h1>
+<a href="/" style="float:center;20px">
+    <b>На главную</b>
+</a>
+</body>
+
+</html>

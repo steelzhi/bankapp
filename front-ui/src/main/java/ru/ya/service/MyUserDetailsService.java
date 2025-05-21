@@ -17,8 +17,8 @@ public class MyUserDetailsService implements UserDetailsService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Autowired
-    Logger logger;
+/*    @Autowired
+    Logger logger;*/
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

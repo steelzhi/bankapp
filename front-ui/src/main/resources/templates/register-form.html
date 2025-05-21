@@ -31,7 +31,8 @@
     <tr>
         <td style="font-weight:bold;">Повторите пароль</td>
         <td>
-            <input id="confirmedPassword" name="confirmedPassword" minlength="1" maxlength="20" type="text" th:value="${confirmedPassword}" style="width:100%" oninput=checkIfPasswordConfirmed() required/>
+            <input id="confirmedPassword" name="confirmedPassword" minlength="1" maxlength="20" type="text"
+                   th:value="${confirmedPassword}" style="width:100%" oninput=checkIfPasswordConfirmed() required/>
         </td>
     </tr>
     <tr>
@@ -49,7 +50,7 @@
     <tr>
         <td style="font-weight:bold;">Дата рождения</td>
         <td>
-            <input name="birthdate" type="date" th:value="${birthdate}" style="width:100%" required/>
+            <input id="birthdate" name="birthdate" type="date" th:value="${birthdate}" style="width:100%" oninput=checkIfNotAdult() required/>
         </td>
     </tr>
     <tr>
@@ -66,6 +67,14 @@
         var confirmedPassword = document.getElementById("confirmedPassword").value;
         if (password !== confirmedPassword) {
             alert("Пароли не совпадают. Введите повторно корректный пароль. В противном случае, пользователь не будет сохранен");
+        }
+    }
+    function checkIfNotAdult() {
+        var birthdate = Date.parse(document.getElementById("birthdate").value);
+        var currentDate = Date.now();
+        var delta = parseInt((currentDate - birthdate) / (1000 * 60 * 60 * 24 * 365));
+        if (delta < 18) {
+        alert("Пользователь не достиг 18 лет. Заводить банковский аккаунт ему запрещено");
         }
     }
 </script>

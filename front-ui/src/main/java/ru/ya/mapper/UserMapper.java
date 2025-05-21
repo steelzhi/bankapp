@@ -9,7 +9,9 @@ public class UserMapper {
     }
 
     public static UserDto mapToUserDto(User user) {
-        return new UserDto(user.getLogin(),
+        return new UserDto(
+                user.getId(),
+                user.getLogin(),
                 user.getPassword(),
                 user.getName(),
                 user.getSurname(),

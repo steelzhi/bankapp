@@ -41,26 +41,7 @@ public class FrontUIController {
 
     @GetMapping("/")
     public String getMainPage() {
-        /*OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
-                .withClientRegistrationId("front-ui")
-                .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
-                .build()
-        );
-        System.out.println(client.getAccessToken().getTokenValue());
-
-        String accessToken = client.getAccessToken().getTokenValue();
-
-// Клиент для отправки запроса
-        RestClient restClient = RestClient.create("http://localhost:8090");
-
-        ResponseEntity<Void> responseEntity = restClient.get()
-                .uri("/1")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                .retrieve()
-                .toBodilessEntity();
-        System.out.println(responseEntity.getStatusCode());*/
-
-        return "entry";
+        return "main-page";
     }
 
     @GetMapping("/get-register-form")
@@ -70,9 +51,12 @@ public class FrontUIController {
 
     @PostMapping("/register-user")
     public String registerUser(Model model, @ModelAttribute User user) {
+        model.addAttribute("login", user.getLogin());
         if (!frontUIService.isUserPasswordCorrect(user)) {
-            model.addAttribute("login", user.getLogin());
             return "user-password-was-not-confirmed.html";
+        }
+        if (!frontUIService.isUserAnAdult(user)) {
+            return "user-is-not-an-adult.html";
         }
 
         UserDto userDto = UserMapper.mapToUserDto(user);
@@ -86,17 +70,12 @@ public class FrontUIController {
         String accessToken = client.getAccessToken().getTokenValue();
 
         ResponseEntity<Boolean> responseEntity = restClient.post()
-/*                .uri(uriBuilder -> uriBuilder
-                        .path("/register-user")
-                        .queryParam("userDto", userDto)
-                        .build())*/
                 .uri("/register-user")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                 .body(userDto)
                 .retrieve()
                 .toEntity(Boolean.class);
 
-        model.addAttribute("login", user.getLogin());
         if (responseEntity.getBody()) {
             return "user-registered-successfully.html";
         } else {
@@ -113,16 +92,43 @@ public class FrontUIController {
             login = userDetails.getUsername();
         }
 
-        model.addAttribute("login", login);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(login);
+        UserPrincipal userPrincipal = (UserPrincipal) userDetails;
+        UserDto userDto = userPrincipal.getUserDto();
 
-
-/*        ResponseEntity<UserDto> response = restTemplate.getForEntity("http://localhost:8090/", UserDto.class);
-        if (response != null) {
-            return "account";
-        } else {
-            return "entry";
-        }*/
+        model.addAttribute("user", userDto);
 
         return "account";
+    }
+
+    @PostMapping("/user/{login}/edit-password")
+    public String editPassword(Model model, @ModelAttribute User user) {
+        model.addAttribute("login", user.getLogin());
+        if (!frontUIService.isUserPasswordCorrect(user)) {
+            return "user-password-was-not-confirmed.html";
+        }
+
+        UserDto userDto = UserMapper.mapToUserDto(user);
+        RestClient restClient = RestClient.create("http://localhost:8090");
+        OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
+                .withClientRegistrationId("front-ui")
+                .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
+                .build()
+        );
+
+        String accessToken = client.getAccessToken().getTokenValue();
+
+        ResponseEntity<Boolean> responseEntity = restClient.post()
+                .uri("/edit-password")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
+                .body(userDto)
+                .retrieve()
+                .toEntity(Boolean.class);
+
+        if (responseEntity.getBody()) {
+            return "changed-password-successfully.html";
+        } else {
+            return "user-already-exists.html";
+        }
     }
 }

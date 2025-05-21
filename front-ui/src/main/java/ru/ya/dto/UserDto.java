@@ -14,6 +14,7 @@ import java.util.Collection;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class UserDto {
+    int id;
     String login;
     String password;
     String name;
