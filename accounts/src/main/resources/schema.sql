@@ -1,16 +1,19 @@
 DROP TABLE IF EXISTS accounts.bank_accounts, accounts.users CASCADE;
 DROP SCHEMA IF EXISTS accounts CASCADE;
-DROP TYPE IF EXISTS roles CASCADE;
+--DROP TYPE IF EXISTS roles CASCADE;
 
 CREATE SCHEMA IF NOT EXISTS accounts;
 
-CREATE TYPE roles AS ENUM ('USER', 'ADMIN');
+--CREATE TYPE roles AS ENUM ('USER', 'ADMIN');
 
 CREATE TABLE IF NOT EXISTS accounts.users (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    username VARCHAR(30) NOT NULL UNIQUE,
+    login VARCHAR(20) NOT NULL UNIQUE,
     password VARCHAR(100) NOT NULL,
-    role roles
+    name VARCHAR(20) NOT NULL,
+    surname VARCHAR(20) NOT NULL,
+    birthdate DATE,
+    role VARCHAR(20)
 );
 
 CREATE TABLE IF NOT EXISTS accounts.bank_accounts (
@@ -21,7 +24,8 @@ CREATE TABLE IF NOT EXISTS accounts.bank_accounts (
     CONSTRAINT users_bank_accounts FOREIGN KEY (user_id) REFERENCES accounts.users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-INSERT INTO accounts.users(username, password, role) VALUES ('1', '$2a$12$nITs0fz17B8LUqL0uRKJ/e42ifhMuJoYWCDblanBZPHhGk9eUClCO', 'USER'); --pass = 1
+INSERT INTO accounts.users(login, password, name, surname, birthdate, role)
+    VALUES ('1', '$2a$12$nITs0fz17B8LUqL0uRKJ/e42ifhMuJoYWCDblanBZPHhGk9eUClCO', 'a', 'b', '2000-01-01', 'USER'); --pass = 1
 INSERT INTO accounts.bank_accounts(account_number, account_value, user_id) VALUES (111, 250, 1);
 
 --INSERT INTO users(username, password, role) VALUES

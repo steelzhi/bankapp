@@ -3,9 +3,7 @@ package ru.ya.model;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.ya.enums.Roles;
 import ru.ya.dto.UserDto;
-
 
 import java.util.Collection;
 import java.util.List;
@@ -31,6 +29,6 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userDto.getUsername();
+        return userDto.getLogin();
     }
 }

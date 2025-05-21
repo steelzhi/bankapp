@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,29 +30,40 @@ public class SecurityConfiguration {
         System.out.println("scf!");
         return security
                 .authorizeHttpRequests(requests -> requests
-                        //.requestMatchers("/*").permitAll()
+                        .requestMatchers("/*", "/register-user").permitAll()
                         .anyRequest().authenticated()
                 )
-                .oauth2ResourceServer(customizer -> customizer
-                        .jwt(jwtCustomizer -> {
-                            JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-                            jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
-                                Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
-                                System.out.println("1: " + resourceAccess);
-                                Map<String, Object> account = (Map<String, Object>) resourceAccess.get("account");
-                                System.out.println("2: " + account);
-                                List<String> roles = (List<String>) account.get("roles");
-                                System.out.println("3: " + roles);
+                .oauth2ResourceServer(customizer -> {
+                    customizer
+                            .jwt(jwtCustomizer -> {
+                                System.out.println("111");
+                                JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+                                jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
+                                    System.out.println("222");
+                                    Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
+                                    System.out.println("1: " + resourceAccess);
+                                    Map<String, Object> account = (Map<String, Object>) resourceAccess.get("account");
+                                    System.out.println("2: " + account);
+                                    List<String> roles = (List<String>) account.get("roles");
+                                    System.out.println("3: " + roles);
 
-                                return roles.stream()
-                                        .map(SimpleGrantedAuthority::new)
-                                        .map(GrantedAuthority.class::cast)
-                                        .toList();
+                                    return roles.stream()
+                                            .map(SimpleGrantedAuthority::new)
+                                            .map(GrantedAuthority.class::cast)
+                                            .toList();
+                                });
+
+                                jwtCustomizer.jwtAuthenticationConverter(jwtAuthenticationConverter);
                             });
+                        }
 
-                            jwtCustomizer.jwtAuthenticationConverter(jwtAuthenticationConverter);
-                        })
+
                 )
                 .build();
+    }
+
+    @Bean
+    public JwtDecoder jwtDecoder() {
+        return JwtDecoders.fromIssuerLocation("http://localhost:8080/realms/master");
     }
 }

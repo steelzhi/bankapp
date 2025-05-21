@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,7 +41,7 @@ public class SecurityConfiguration {
                 //.csrf(csrf -> csrf.disable())
                 // Настройка авторизации запросов
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/signup"/*, "/account"*/).permitAll() // Доступ к главной странице - всем,
+                        .requestMatchers("/", "/get-register-form", "/register-user"/*, "/account"*/).permitAll() // Доступ к главной странице - всем,
                         .anyRequest().authenticated()  // остальное — только для аутентифицированных
                 )
                 .formLogin(Customizer.withDefaults())
@@ -105,22 +106,4 @@ public class SecurityConfiguration {
 
         return manager;
     }
-
-
-
-/*    @Bean
-    ReactiveOAuth2AuthorizedClientManager auth2AuthorizedClientManager(
-            ReactiveClientRegistrationRepository clientRegistrationRepository,
-            ReactiveOAuth2AuthorizedClientService authorizedClientService
-    ) {
-        AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager manager =
-                new AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager(clientRegistrationRepository, authorizedClientService);
-        manager.setAuthorizedClientProvider(ReactiveOAuth2AuthorizedClientProviderBuilder.builder()
-                .clientCredentials() // Включаем получение токена с помощью client_credentials
-                .refreshToken() // Также включаем использование refresh_token
-                .build()
-        );
-
-        return manager;
-    }*/
 }

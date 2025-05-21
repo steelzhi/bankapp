@@ -7,13 +7,17 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
 import ru.ya.enums.Roles;
 
+import java.time.LocalDate;
 import java.util.Collection;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class UserDto {
-    String username;
+    String login;
     String password;
+    String name;
+    String surname;
+    LocalDate birthdate;
     Roles role;
 }
