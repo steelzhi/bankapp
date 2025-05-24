@@ -18,10 +18,16 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             """)
     List<Integer> getIdByLogin(String login);
 
-    @Query(value = """
+/*    @Query(value = """
             UPDATE accounts.users
             SET password = :password
             WHERE login = :login
             """, nativeQuery = true)
-    User changePassword(String password, String login);
+    User changePassword(String password, String login);*/
+
+/*    @Query("""
+            DELETE FROM User
+            WHERE login = :login
+            """)
+    void deleteUserByLogin(String login);*/
 }

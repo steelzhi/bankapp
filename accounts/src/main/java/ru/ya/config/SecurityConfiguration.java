@@ -64,4 +64,9 @@ public class SecurityConfiguration {
     public JwtDecoder jwtDecoder() {
         return JwtDecoders.fromIssuerLocation("http://localhost:8080/realms/master");
     }
+
+/*    @Bean
+    public HttpSecurity httpSecurity() {
+        return new H
+    }*/
 }

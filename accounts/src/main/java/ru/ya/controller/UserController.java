@@ -69,5 +69,12 @@ public class UserController {
         return true;
     }
 
+    @PostMapping("/delete-user")
+    public void deleteUser(@RequestBody UserDto userDto) {
+        logger.atInfo().log("Deleting user with login = " + userDto.getLogin());
+        userService.deleteUser(userDto);
+        //deleteUser(userId);
+    }
+
 
 }

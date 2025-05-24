@@ -48,6 +48,13 @@ public class UserService {
         return userWithChangedData;
     }
 
+    public void deleteUser(UserDto userDto) {
+        User user = userRepository.findByLogin(userDto.getLogin());
+        userRepository.deleteById(user.getId());
+        //userRepository.deleteUserByLogin(userDto.getLogin());
+/*        userRepository.deleteById(userId);*/
+    }
+
     private UserDto getUserDtoWithEncodedPassword(UserDto userDto) {
         String encodedPassword = passwordEncoder.encode(userDto.getPassword());
         userDto.setPassword(encodedPassword);

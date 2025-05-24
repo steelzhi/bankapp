@@ -1,11 +1,12 @@
 package ru.ya.service;
 
 import org.springframework.stereotype.Service;
-import ru.ya.dto.UserDto;
+import ru.ya.model.BankAccount;
 import ru.ya.model.User;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Service
 public class FrontUIService {
@@ -29,6 +30,17 @@ public class FrontUIService {
     public boolean isUserAnAdult(User user) {
         long numberOfYears = ChronoUnit.YEARS.between(user.getBirthdate(), LocalDate.now());
         return (numberOfYears >= 18);
+    }
+
+    public boolean areAllUsersBankAccountsEmpty(User user) {
+        List<BankAccount> bankAccountList = user.getBankAccountList();
+        for (BankAccount bankAccount : bankAccountList) {
+            if (bankAccount.getAccountValue() > 0) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 

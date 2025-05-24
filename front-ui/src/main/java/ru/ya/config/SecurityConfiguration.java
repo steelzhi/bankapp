@@ -1,5 +1,6 @@
 package ru.ya.config;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,7 +39,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                //.csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.disable())
                 // Настройка авторизации запросов
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/get-register-form", "/register-user", "/actuator/health"/*, "/account"*/).permitAll() // Доступ к главной странице - всем,

@@ -38,12 +38,27 @@
 <table style="width:70%;margin-left:auto;margin-right:auto;">
     <tr>
         <td style="padding:2px;">
-            <form method="post" th:action="@{/user/{login}/edit-password(login=${user.login})}" th:object="${user}">
+            <form method="post" th:action="@{/user/{login}/delete-user(login=${user.login})}" th:object="${user}">
                 <table style="width:100%;margin-left:auto;margin-right:auto;border-radius:2%;padding:10px;background-color:whitesmoke;">
                     <tr>
                         <td style="font-weight:bold;">Логин</td>
                         <td colspan="2" th:text="${user.login}"/>
+                        <td>
+                            <form th:action="@{/user/{login}/delete-user(login=${user.login})}" method="post"
+                                  style="display:inline;">
+                                <input type="hidden" name="_method" value="delete"/>
+                                <button type="submit">Удалить пользователя</button>
+                            </form>
+                        </td>
                     </tr>
+                </table>
+            </form>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding:2px;">
+            <form method="post" th:action="@{/user/{login}/edit-password(login=${user.login})}" th:object="${user}">
+                <table style="width:100%;margin-left:auto;margin-right:auto;border-radius:2%;padding:10px;background-color:whitesmoke;">
                     <tr>
                         <td style="font-weight:bold;">Изменить пароль</td>
                         <td>

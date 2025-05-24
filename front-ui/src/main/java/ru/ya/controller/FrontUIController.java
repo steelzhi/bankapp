@@ -1,21 +1,25 @@
 package ru.ya.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 import ru.ya.dto.UserDto;
@@ -119,6 +123,21 @@ public class FrontUIController {
         } else {
             return "user-already-exists.html";
         }
+    }
+
+    @PostMapping(value = "/user/{login}/delete-user", params = "_method=delete")
+    public String deleteUser(Model model, @ModelAttribute User user) {
+        model.addAttribute("login", user.getLogin());
+        if (!frontUIService.areAllUsersBankAccountsEmpty(user)) {
+            return "user-bank-accounts-are-not-empty.html";
+        }
+
+        UserDto userDto = UserMapper.mapToUserDto(user);
+        getResponseEntityFromModuleAccounts("/delete-user", userDto);
+
+        //return "user-was-deleted.html";
+
+        return "redirect:/logout";
     }
 
     private ResponseEntity<Boolean> getResponseEntityFromModuleAccounts(String url, UserDto userDto) {
