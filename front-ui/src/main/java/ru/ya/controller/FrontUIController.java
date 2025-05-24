@@ -1,35 +1,38 @@
 package ru.ya.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
+import ru.ya.dto.BankAccountDto;
 import ru.ya.dto.UserDto;
 import ru.ya.mapper.UserMapper;
+import ru.ya.model.BankAccount;
+import ru.ya.model.NewAccountCurrency;
 import ru.ya.model.User;
 import ru.ya.model.UserPrincipal;
 import ru.ya.service.FrontUIService;
 
 @Controller
 public class FrontUIController {
+    @Value("${module-accounts}")
+    private String moduleAccountsHost;
+
     @Autowired
     private RestTemplate restTemplate;
 
@@ -41,7 +44,6 @@ public class FrontUIController {
 
     @Autowired
     UserDetailsService userDetailsService;
-
 
     @GetMapping("/")
     public String getMainPage() {
@@ -63,7 +65,7 @@ public class FrontUIController {
             return "user-is-not-an-adult.html";
         }
 
-        UserDto userDto = UserMapper.mapToUserDto(user);
+        ru.ya.dto.UserDto userDto = UserMapper.mapToUserDto(user);
         ResponseEntity<Boolean> responseEntityFromModuleAccounts = getResponseEntityFromModuleAccounts("/register-user", userDto);
 
         if (responseEntityFromModuleAccounts.getBody()) {
@@ -75,18 +77,11 @@ public class FrontUIController {
 
     @GetMapping("/account")
     public String enterToAccount(Model model) {
-        String login = null;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            login = userDetails.getUsername();
-        }
+        UserDto userDto = getUserDtoInSystem();
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(login);
-        UserPrincipal userPrincipal = (UserPrincipal) userDetails;
-        UserDto userDto = userPrincipal.getUserDto();
-
-        model.addAttribute("user", userDto);
+        ResponseEntity<UserDto> response = restTemplate.getForEntity(moduleAccountsHost + userDto.getLogin(), UserDto.class);
+        userDto = response.getBody();
+        model.addAttribute("userDto", userDto);
 
         return "account";
     }
@@ -98,7 +93,7 @@ public class FrontUIController {
             return "user-password-was-not-confirmed.html";
         }
 
-        UserDto userDto = UserMapper.mapToUserDto(user);
+       UserDto userDto = UserMapper.mapToUserDto(user);
         ResponseEntity<Boolean> responseEntityFromModuleAccounts = getResponseEntityFromModuleAccounts("/edit-password", userDto);
 
         if (responseEntityFromModuleAccounts.getBody()) {
@@ -115,7 +110,7 @@ public class FrontUIController {
             return "user-data-is-incorrect.html";
         }
 
-        UserDto userDto = UserMapper.mapToUserDto(user);
+       UserDto userDto = UserMapper.mapToUserDto(user);
         ResponseEntity<Boolean> responseEntityFromModuleAccounts = getResponseEntityFromModuleAccounts("/edit-other-data", userDto);
 
         if (responseEntityFromModuleAccounts.getBody()) {
@@ -126,13 +121,12 @@ public class FrontUIController {
     }
 
     @PostMapping(value = "/user/{login}/delete-user", params = "_method=delete")
-    public String deleteUser(Model model, @ModelAttribute User user) {
-        model.addAttribute("login", user.getLogin());
-        if (!frontUIService.areAllUsersBankAccountsEmpty(user)) {
+    public String deleteUser(Model model, @ModelAttribute UserDto userDto) {
+        model.addAttribute("login", userDto.getLogin());
+        if (!frontUIService.areAllUsersBankAccountsEmpty(userDto)) {
             return "user-bank-accounts-are-not-empty.html";
         }
 
-        UserDto userDto = UserMapper.mapToUserDto(user);
         getResponseEntityFromModuleAccounts("/delete-user", userDto);
 
         //return "user-was-deleted.html";
@@ -140,7 +134,70 @@ public class FrontUIController {
         return "redirect:/logout";
     }
 
-    private ResponseEntity<Boolean> getResponseEntityFromModuleAccounts(String url, UserDto userDto) {
+    @PostMapping("/user/add-bank-account")
+    public String addBankAccount(Model model, @ModelAttribute NewAccountCurrency newAccountCurrency) {
+        UserDto userDto = getUserDtoInSystem();
+        newAccountCurrency.setUserDto(userDto);
+        RestClient restClient = RestClient.create("http://localhost:8090");
+        OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
+                .withClientRegistrationId("front-ui")
+                .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
+                .build()
+        );
+
+        String accessToken = client.getAccessToken().getTokenValue();
+
+        ResponseEntity<Boolean> responseEntity = restClient.post()
+                .uri("/add-bank-account")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
+                .body(newAccountCurrency)
+                .retrieve()
+                .toEntity(Boolean.class);
+
+        if (responseEntity.getBody() == false) {
+            model.addAttribute("login", userDto.getLogin());
+            model.addAttribute("currency", newAccountCurrency.getCurrency());
+            return "bank-account-already-exists.html";
+        } else {
+            return "redirect:/account";
+        }
+    }
+
+    @PostMapping(value = "/user/delete-bank-account/{id}", params = "_method=delete")
+    public String deleteBankAccount(Model model, @PathVariable(name = "id") int id) {
+        UserDto userDto = getUserDtoInSystem();
+        BankAccountDto bankAccountDto = null;
+        for (BankAccountDto bad : userDto.getBankAccountDtoList()) {
+            if (bad.getId() == id) {
+                bankAccountDto = bad;
+            }
+        }
+
+        if (bankAccountDto.getAccountValue() > 0) {
+            model.addAttribute("bankAccountDto", bankAccountDto);
+            return "bank-account-is-not-empty.html";
+        }
+
+        RestClient restClient = RestClient.create("http://localhost:8090");
+        OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
+                .withClientRegistrationId("front-ui")
+                .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
+                .build()
+        );
+
+        String accessToken = client.getAccessToken().getTokenValue();
+
+        restClient.post()
+                .uri("/delete-bank-account")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
+                .body(id)
+                .retrieve()
+                .toEntity(Boolean.class);
+
+        return "redirect:/account";
+    }
+
+    private ResponseEntity<Boolean> getResponseEntityFromModuleAccounts(String url, ru.ya.dto.UserDto userDto) {
         RestClient restClient = RestClient.create("http://localhost:8090");
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
                 .withClientRegistrationId("front-ui")
@@ -158,5 +215,40 @@ public class FrontUIController {
                 .toEntity(Boolean.class);
 
         return responseEntity;
+    }
+
+    private ResponseEntity<Boolean> getResponseEntityFromModuleAccounts(String url, BankAccount bankAccount) {
+        RestClient restClient = RestClient.create("http://localhost:8090");
+        OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
+                .withClientRegistrationId("front-ui")
+                .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
+                .build()
+        );
+
+        String accessToken = client.getAccessToken().getTokenValue();
+
+        ResponseEntity<Boolean> responseEntity = restClient.post()
+                .uri(url)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
+                .body(bankAccount)
+                .retrieve()
+                .toEntity(Boolean.class);
+
+        return responseEntity;
+    }
+
+    private UserDto getUserDtoInSystem() {
+        String login = null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            login = userDetails.getUsername();
+        }
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(login);
+        UserPrincipal userPrincipal = (UserPrincipal) userDetails;
+        UserDto userDto = userPrincipal.getUserDto();
+
+        return userDto;
     }
 }

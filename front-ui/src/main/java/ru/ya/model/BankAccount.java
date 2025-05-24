@@ -4,6 +4,8 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import ru.ya.dto.UserDto;
+import ru.ya.enums.Currency;
 
 import java.math.BigInteger;
 
@@ -12,23 +14,21 @@ import java.math.BigInteger;
 @NoArgsConstructor
 public class BankAccount {
     int id;
-
-    BigInteger accountNumber;
+    UserDto userDto;
+    int accountNumber;
     int accountValue;
+    Currency currency;
 
-    User user;
-
-    public BankAccount(BigInteger accountNumber, int accountValue) {
-        this.accountNumber = accountNumber;
-        this.accountValue = accountValue;
+    public BankAccount(UserDto userDto, Currency currency) {
+        this.userDto = userDto;
+        this.currency = currency;
     }
 
-    @Override
-    public String toString() {
-        return "BankAccount{" +
-               "accountValue=" + accountValue +
-               ", accountNumber=" + accountNumber +
-               ", id=" + id +
-               '}';
+    public int getAccountNumber() {
+        return accountNumber;
+    }
+
+    public int getAccountValue() {
+        return accountValue;
     }
 }

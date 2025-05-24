@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import ru.ya.enums.Currency;
 
 import java.math.BigInteger;
 
@@ -18,24 +19,26 @@ public class BankAccount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
 
-    BigInteger accountNumber;
+    String accountNumber;
     int accountValue;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     User user;
 
-    public BankAccount(BigInteger accountNumber, int accountValue) {
+    @Enumerated(EnumType.STRING)
+    Currency currency;
+
+    public BankAccount(User user, String accountNumber, int accountValue, Currency currency) {
+        this.user = user;
         this.accountNumber = accountNumber;
         this.accountValue = accountValue;
+        this.currency = currency;
     }
 
-    @Override
-    public String toString() {
-        return "BankAccount{" +
-               "accountValue=" + accountValue +
-               ", accountNumber=" + accountNumber +
-               ", id=" + id +
-               '}';
+    public BankAccount(User user, int accountValue, Currency currency) {
+        this.user = user;
+        this.accountValue = accountValue;
+        this.currency = currency;
     }
 }

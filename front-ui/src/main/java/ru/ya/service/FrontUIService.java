@@ -1,7 +1,9 @@
 package ru.ya.service;
 
 import org.springframework.stereotype.Service;
+import ru.ya.dto.BankAccountDto;
 import ru.ya.model.BankAccount;
+import ru.ya.dto.UserDto;
 import ru.ya.model.User;
 
 import java.time.LocalDate;
@@ -32,15 +34,19 @@ public class FrontUIService {
         return (numberOfYears >= 18);
     }
 
-    public boolean areAllUsersBankAccountsEmpty(User user) {
-        List<BankAccount> bankAccountList = user.getBankAccountList();
-        for (BankAccount bankAccount : bankAccountList) {
-            if (bankAccount.getAccountValue() > 0) {
+    public boolean areAllUsersBankAccountsEmpty(UserDto userDto) {
+        List<BankAccountDto> bankAccountDtoList = userDto.getBankAccountDtoList();
+        for (BankAccountDto bankAccountDto : bankAccountDtoList) {
+            if (bankAccountDto.getAccountValue() > 0) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    public boolean isBankAccountEmpty(BankAccountDto bankAccountDto) {
+        return bankAccountDto.getAccountValue() == 0;
     }
 
 

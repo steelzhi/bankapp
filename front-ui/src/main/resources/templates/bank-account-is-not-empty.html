@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Ошибка удаления счета</title>
+</head>
+
+<body>
+<h1 th:text="'Невозможно удалить счет с номером ' + ${bankAccountDto.getAccountNumber()} + ' - баланс на нем > 0'"></h1>
+<a href="/account" style="float:center;20px">
+    <b>Назад в личный кабинет</b>
+</a>
+</body>
+
+</html>

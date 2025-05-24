@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Невозможно добавить счет в выбранной валюте</title>
+</head>
+
+<body>
+<h1 th:text="'У пользователя с логином ' + ${login} + ' уже есть счет в валюте ' + ${currency}"></h1>
+<a href="/account" style="float:center;20px">
+    <b>В аккаунт</b>
+</a>
+</body>
+
+</html>

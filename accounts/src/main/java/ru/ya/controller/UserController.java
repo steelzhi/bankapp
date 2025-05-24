@@ -5,18 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.ya.dto.UserDto;
 import ru.ya.model.User;
-import ru.ya.repository.BankAccountRepository;
-import ru.ya.repository.UserRepository;
 import ru.ya.service.UserService;
 
 @RestController
 public class UserController {
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    BankAccountRepository bankAccountRepository;
-
     @Autowired
     UserService userService;
 
@@ -26,14 +18,8 @@ public class UserController {
     @GetMapping("/{login}")
     public UserDto getUser(@PathVariable String login) {
         logger.atInfo().log("Getting user with login = " + login);
-        return userService.getUser(login);
+        return userService.getUserDto(login);
     }
-
-/*    @GetMapping("/get-register-form")
-    public String getRegisterForm() {
-        return "signup";
-    }*/
-
 
     @PostMapping("/register-user")
     public Boolean registerUserAndReturnIfRegistered(@RequestBody UserDto userDto) {
@@ -75,6 +61,4 @@ public class UserController {
         userService.deleteUser(userDto);
         //deleteUser(userId);
     }
-
-
 }

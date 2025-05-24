@@ -1,12 +1,13 @@
 package ru.ya.service;
 
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.ya.dto.UserDto;
 import ru.ya.mapper.UserMapper;
+import ru.ya.model.BankAccount;
 import ru.ya.model.User;
+import ru.ya.repository.BankAccountRepository;
 import ru.ya.repository.UserRepository;
 
 @Service
@@ -17,8 +18,13 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    public UserDto getUser(String login) {
+    @Autowired
+    BankAccountRepository bankAccountRepository;
+
+    public UserDto getUserDto(String login) {
         User user = userRepository.findByLogin(login);
+/*        List<BankAccount> bankAccountList = bankAccountRepository.findAllByUserId(user.getId());
+        user.setBankAccountList(bankAccountList);*/
         return UserMapper.mapToUserDto(user);
     }
 
@@ -51,8 +57,11 @@ public class UserService {
     public void deleteUser(UserDto userDto) {
         User user = userRepository.findByLogin(userDto.getLogin());
         userRepository.deleteById(user.getId());
-        //userRepository.deleteUserByLogin(userDto.getLogin());
-/*        userRepository.deleteById(userId);*/
+    }
+
+    public BankAccount addBankAccount(BankAccount bankAccount) {
+        BankAccount addedBankAccount = bankAccountRepository.save(bankAccount);
+        return addedBankAccount;
     }
 
     private UserDto getUserDtoWithEncodedPassword(UserDto userDto) {

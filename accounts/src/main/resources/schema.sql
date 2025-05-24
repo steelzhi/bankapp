@@ -18,15 +18,16 @@ CREATE TABLE IF NOT EXISTS accounts.users (
 
 CREATE TABLE IF NOT EXISTS accounts.bank_accounts (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    account_number BIGINT,
-    account_value INT CHECK (account_value >= 0),
     user_id INT,
+    account_number VARCHAR(20),
+    account_value INT CHECK (account_value >= 0),
+    currency VARCHAR(3),
     CONSTRAINT users_bank_accounts FOREIGN KEY (user_id) REFERENCES accounts.users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 INSERT INTO accounts.users(login, password, name, surname, birthdate, role)
     VALUES ('1', '$2a$12$nITs0fz17B8LUqL0uRKJ/e42ifhMuJoYWCDblanBZPHhGk9eUClCO', 'a', 'b', '2000-01-01', 'USER'); --pass = 1
-INSERT INTO accounts.bank_accounts(account_number, account_value, user_id) VALUES (111, 250, 1);
+INSERT INTO accounts.bank_accounts(account_number, account_value, user_id, currency) VALUES (111, 250, 1, 'RUB');
 
 --INSERT INTO users(username, password, role) VALUES
     --('user1', '$2a$12$o9FYCapKCbubG3r5mHtTA.dWWr0xsIJPku3y4NXWywaUpW.DRrIx.', 'USER'), --pass = pass1
