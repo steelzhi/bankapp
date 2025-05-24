@@ -12,7 +12,7 @@ import ru.ya.service.UserService;
 @RestController
 public class UserController {
     @Autowired
-    UserRepository userAccountRepository;
+    UserRepository userRepository;
 
     @Autowired
     BankAccountRepository bankAccountRepository;
@@ -48,10 +48,21 @@ public class UserController {
     }
 
     @PostMapping("/edit-password")
-    public Boolean editPasswordAndReturnIfEdited(@RequestBody UserDto userDto) {
+    public Boolean editPasswordAndReturnEditedUser(@RequestBody UserDto userDto) {
         logger.atInfo().log("Changing password for user with login = " + userDto.getLogin());
-        User userWithEditedPassword = userService.changePassword(userDto);
-        if (userWithEditedPassword == null) {
+        User userWithChangedPassword = userService.changePasswordAndReturnIfChanged(userDto);
+        if (userWithChangedPassword == null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @PostMapping("/edit-other-data")
+    public Boolean editOtherDataAndReturnEditedUser(@RequestBody UserDto userDto) {
+        logger.atInfo().log("Changing other data for user with login = " + userDto.getLogin());
+        User userWithChangedData = userService.changeOtherDataAndReturnIfChanged(userDto);
+        if (userWithChangedData == null) {
             return false;
         }
 

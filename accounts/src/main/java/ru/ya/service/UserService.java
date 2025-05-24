@@ -1,5 +1,6 @@
 package ru.ya.service;
 
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,14 +31,26 @@ public class UserService {
     }
 
     public User addUser(UserDto userDto) {
-        String encodedPassword = passwordEncoder.encode(userDto.getPassword());
-        userDto.setPassword(encodedPassword);
-        User user = UserMapper.mapToUser(userDto);
+        UserDto userDtoWithEncodedPassword = getUserDtoWithEncodedPassword(userDto);
+        User user = UserMapper.mapToUser(userDtoWithEncodedPassword);
         User savedUser = userRepository.save(user);
         return savedUser;
     }
 
-    public User changePassword(UserDto userDto) {
-        return addUser(userDto);
+    public User changePasswordAndReturnIfChanged(UserDto userDto) {
+        User userWithChangedPassword = addUser(userDto);
+        return userWithChangedPassword;
+    }
+
+    public User changeOtherDataAndReturnIfChanged(UserDto userDto) {
+        User user = UserMapper.mapToUser(userDto);
+        User userWithChangedData = userRepository.save(user);
+        return userWithChangedData;
+    }
+
+    private UserDto getUserDtoWithEncodedPassword(UserDto userDto) {
+        String encodedPassword = passwordEncoder.encode(userDto.getPassword());
+        userDto.setPassword(encodedPassword);
+        return userDto;
     }
 }

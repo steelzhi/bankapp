@@ -27,16 +27,14 @@ public class SecurityConfiguration {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
-        System.out.println("scf!");
         return security
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/*", "/register-user").permitAll()
+                        .requestMatchers("/*", "/register-user", "/actuator/health").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(customizer -> {
                     customizer
                             .jwt(jwtCustomizer -> {
-                                System.out.println("111");
                                 JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
                                 jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
                                     System.out.println("222");

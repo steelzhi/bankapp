@@ -45,6 +45,17 @@ public class User {
         this.bankAccountList = bankAccountList;
     }
 
+    public User(int id, String login, String password, String name, String surname, LocalDate birthdate, Roles role, List<BankAccount> bankAccountList) {
+        this.id = id;
+        this.login = login;
+        this.password = password;
+        this.name = name;
+        this.surname = surname;
+        this.birthdate = birthdate;
+        this.role = role;
+        this.bankAccountList = bankAccountList;
+    }
+
 
     /*    public User(String username, String password) {
         this.username = username;

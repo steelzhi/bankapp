@@ -60,23 +60,9 @@ public class FrontUIController {
         }
 
         UserDto userDto = UserMapper.mapToUserDto(user);
-        RestClient restClient = RestClient.create("http://localhost:8090");
-        OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
-                .withClientRegistrationId("front-ui")
-                .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
-                .build()
-        );
+        ResponseEntity<Boolean> responseEntityFromModuleAccounts = getResponseEntityFromModuleAccounts("/register-user", userDto);
 
-        String accessToken = client.getAccessToken().getTokenValue();
-
-        ResponseEntity<Boolean> responseEntity = restClient.post()
-                .uri("/register-user")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                .body(userDto)
-                .retrieve()
-                .toEntity(Boolean.class);
-
-        if (responseEntity.getBody()) {
+        if (responseEntityFromModuleAccounts.getBody()) {
             return "user-registered-successfully.html";
         } else {
             return "user-already-exists.html";
@@ -109,6 +95,33 @@ public class FrontUIController {
         }
 
         UserDto userDto = UserMapper.mapToUserDto(user);
+        ResponseEntity<Boolean> responseEntityFromModuleAccounts = getResponseEntityFromModuleAccounts("/edit-password", userDto);
+
+        if (responseEntityFromModuleAccounts.getBody()) {
+            return "password-changed-successfully.html";
+        } else {
+            return "user-already-exists.html";
+        }
+    }
+
+    @PostMapping("/user/{login}/edit-other-data")
+    public String editOtherData(Model model, @ModelAttribute User user) {
+        model.addAttribute("login", user.getLogin());
+        if (!frontUIService.isOtherUserDataCorrect(user)) {
+            return "user-data-is-incorrect.html";
+        }
+
+        UserDto userDto = UserMapper.mapToUserDto(user);
+        ResponseEntity<Boolean> responseEntityFromModuleAccounts = getResponseEntityFromModuleAccounts("/edit-other-data", userDto);
+
+        if (responseEntityFromModuleAccounts.getBody()) {
+            return "user-data-changed-successfully.html";
+        } else {
+            return "user-already-exists.html";
+        }
+    }
+
+    private ResponseEntity<Boolean> getResponseEntityFromModuleAccounts(String url, UserDto userDto) {
         RestClient restClient = RestClient.create("http://localhost:8090");
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
                 .withClientRegistrationId("front-ui")
@@ -119,16 +132,12 @@ public class FrontUIController {
         String accessToken = client.getAccessToken().getTokenValue();
 
         ResponseEntity<Boolean> responseEntity = restClient.post()
-                .uri("/edit-password")
+                .uri(url)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                 .body(userDto)
                 .retrieve()
                 .toEntity(Boolean.class);
 
-        if (responseEntity.getBody()) {
-            return "changed-password-successfully.html";
-        } else {
-            return "user-already-exists.html";
-        }
+        return responseEntity;
     }
 }
