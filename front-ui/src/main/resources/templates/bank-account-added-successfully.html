@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Пользователю добавлен новый счет</title>
+</head>
+
+<body>
+<h1 th:text="'Пользователю с логином ' + ${login} + ' добавлен счет в валюте ' + ${currency}"></h1>
+<a href="/account" style="float:center;20px">
+    <b>В аккаунт</b>
+</a>
+</body>
+
+</html>

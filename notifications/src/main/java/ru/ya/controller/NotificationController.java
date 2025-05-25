@@ -3,34 +3,55 @@ package ru.ya.controller;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.ya.model.Operation;
 
 @RestController
+@RequestMapping("/notification")
 public class NotificationController {
 
     @Autowired
     Logger logger;
 
-    @PostMapping("/notification")
-    public String addInfoAndGetNotification(Model model, @RequestBody Operation operation) {
+    @PostMapping("/success")
+    public String addInfoAboutSuccessfullOpAndGetNotification(Model model, @RequestBody Operation operation) {
         model.addAttribute("operation", operation);
-        switch (operation.getOperation()) {
+        switch (operation.getSuccessfullOperation()) {
             case USER_CREATING -> {
                 return "user-registered-successfully.html";
             }
-            case USER_DELETING -> {
-            }
             case PASSWORD_EDITING -> {
+                return "password-changed-successfully.html";
             }
             case OTHER_DATA_EDITING -> {
+                return "user-data-changed-successfully.html";
             }
             case BANK_ACCOUNT_CREATING -> {
+                return "bank-account-added-successfully.html";
             }
             case BANK_ACCOUNT_DELETING -> {
+                return "bank-account-deleted-successfully.html";
             }
         }
 
-        return "";
+        return "redirect:/";
+    }
+
+    @PostMapping("/error")
+    public String addInfoAboutErrorOpAndGetNotification(Model model, @RequestBody Operation operation) {
+        model.addAttribute("operation", operation);
+        switch (operation.getErrorOperation()) {
+            case USER_ALREADY_EXISTS -> {
+                return "user-already-exists.html";
+            }
+            case BANK_ACCOUNT_ALREADY_EXISTS -> {
+                return "bank-account-already-exists.html";
+            }
+        }
+
+        return "redirect:/";
     }
 }

@@ -1,8 +1,7 @@
 package ru.ya.enums;
 
-public enum Operation {
+public enum SuccessfullOperation {
     USER_CREATING,
-    USER_DELETING,
     PASSWORD_EDITING,
     OTHER_DATA_EDITING,
     BANK_ACCOUNT_CREATING,

@@ -35,11 +35,7 @@ public class BankAccountService {
     }
 
     public void deleteBankAccountAndReturnIfDeleted(int id) {
-/*        BankAccount bankAccount = bankAccountRepository.findAllById(id).get(0);
-        bankAccountRepository.delete(bankAccount);*/
         bankAccountRepository.deleteById(id);
-        //bankAccountRepository.deleteBankAccount(id);
-        System.out.println();
     }
 
     private BankAccount setAccountNumber(BankAccount bankAccount) {

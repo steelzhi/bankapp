@@ -26,12 +26,10 @@ import ru.ya.model.NewAccountCurrency;
 import ru.ya.model.User;
 import ru.ya.model.UserPrincipal;
 import ru.ya.service.FrontUIService;
+import ru.ya.util.ResponseFromModule;
 
 @Controller
 public class FrontUIController {
-    @Value("${spring.application.name}")
-    private String moduleName;
-
     @Value("${module-accounts}")
     private String moduleAccountsHost;
 
@@ -42,7 +40,7 @@ public class FrontUIController {
     private FrontUIService frontUIService;
 
     @Autowired
-    OAuth2AuthorizedClientManager manager;
+    ResponseFromModule responseFromModule;
 
     @Autowired
     UserDetailsService userDetailsService;
@@ -67,14 +65,8 @@ public class FrontUIController {
             return "user-is-not-an-adult.html";
         }
 
-        ru.ya.dto.UserDto userDto = UserMapper.mapToUserDto(user);
-        ResponseEntity<Boolean> responseEntityFromModuleAccounts = getResponseEntityFromModuleAccounts("/register-user", userDto);
-
-        if (responseEntityFromModuleAccounts.getBody()) {
-            return "user-registered-successfully.html";
-        } else {
-            return "user-already-exists.html";
-        }
+        UserDto userDto = UserMapper.mapToUserDto(user);
+        return responseFromModule.getResponseFromModuleAccounts("/register-user", userDto);
     }
 
     @GetMapping("/account")
@@ -95,14 +87,8 @@ public class FrontUIController {
             return "user-password-was-not-confirmed.html";
         }
 
-       UserDto userDto = UserMapper.mapToUserDto(user);
-        ResponseEntity<Boolean> responseEntityFromModuleAccounts = getResponseEntityFromModuleAccounts("/edit-password", userDto);
-
-        if (responseEntityFromModuleAccounts.getBody()) {
-            return "password-changed-successfully.html";
-        } else {
-            return "user-already-exists.html";
-        }
+        UserDto userDto = UserMapper.mapToUserDto(user);
+        return responseFromModule.getResponseFromModuleAccounts("/edit-password", userDto);
     }
 
     @PostMapping("/user/{login}/edit-other-data")
@@ -113,23 +99,18 @@ public class FrontUIController {
         }
 
         UserDto userDto = UserMapper.mapToUserDto(user);
-        ResponseEntity<Boolean> responseEntityFromModuleAccounts = getResponseEntityFromModuleAccounts("/edit-other-data", userDto);
-
-        if (responseEntityFromModuleAccounts.getBody()) {
-            return "user-data-changed-successfully.html";
-        } else {
-            return "user-already-exists.html";
-        }
+        return responseFromModule.getResponseFromModuleAccounts("/edit-other-data", userDto);
     }
 
     @PostMapping(value = "/user/{login}/delete-user", params = "_method=delete")
-    public String deleteUser(Model model, @ModelAttribute UserDto userDto) {
+    public String deleteUser(Model model) {
+        UserDto userDto = getUserDtoInSystem();
         model.addAttribute("login", userDto.getLogin());
         if (!frontUIService.areAllUsersBankAccountsEmpty(userDto)) {
             return "user-bank-accounts-are-not-empty.html";
         }
 
-        getResponseEntityFromModuleAccounts("/delete-user", userDto);
+        responseFromModule.getResponseFromModuleAccounts("/delete-user", userDto);
 
         return "redirect:/logout";
     }
@@ -138,24 +119,19 @@ public class FrontUIController {
     public String addBankAccount(Model model, @ModelAttribute NewAccountCurrency newAccountCurrency) {
         UserDto userDto = getUserDtoInSystem();
         newAccountCurrency.setUserDto(userDto);
-        ResponseEntity<Boolean> responseEntityFromModuleAccounts = getResponseEntityFromModuleAccounts("/add-bank-account", newAccountCurrency);
 
-        if (responseEntityFromModuleAccounts.getBody() == false) {
-            model.addAttribute("login", userDto.getLogin());
-            model.addAttribute("currency", newAccountCurrency.getCurrency());
-            return "bank-account-already-exists.html";
-        } else {
-            return "redirect:/account";
-        }
+        model.addAttribute("login", userDto.getLogin());
+        model.addAttribute("currency", newAccountCurrency.getCurrency());
+        return responseFromModule.getResponseFromModuleAccounts("/add-bank-account", newAccountCurrency);
     }
 
     @PostMapping(value = "/user/delete-bank-account/{id}", params = "_method=delete")
     public String deleteBankAccount(Model model, @PathVariable(name = "id") int id) {
         UserDto userDto = getUserDtoInSystem();
         BankAccountDto bankAccountDto = null;
-        for (BankAccountDto bad : userDto.getBankAccountDtoList()) {
-            if (bad.getId() == id) {
-                bankAccountDto = bad;
+        for (BankAccountDto bADto : userDto.getBankAccountDtoList()) {
+            if (bADto.getId() == id) {
+                bankAccountDto = bADto;
             }
         }
 
@@ -164,46 +140,9 @@ public class FrontUIController {
             return "bank-account-is-not-empty.html";
         }
 
-        getResponseEntityFromModuleAccounts("/delete-bank-account", id);
-
-        return "redirect:/account";
-    }
-
-    private ResponseEntity<Boolean> getResponseEntityFromModuleAccounts(String url, Object object) {
-        RestClient restClient = RestClient.create(moduleAccountsHost);
-        OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
-                .withClientRegistrationId(moduleName)
-                .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
-                .build()
-        );
-
-        String accessToken = client.getAccessToken().getTokenValue();
-
-        ResponseEntity<Boolean> responseEntity = null;
-        if (object instanceof UserDto userDto) {
-            responseEntity = restClient.post()
-                    .uri(url)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                    .body(userDto)
-                    .retrieve()
-                    .toEntity(Boolean.class);
-        } else if (object instanceof NewAccountCurrency newAccountCurrency) {
-            responseEntity = restClient.post()
-                    .uri(url)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                    .body(newAccountCurrency)
-                    .retrieve()
-                    .toEntity(Boolean.class);
-        } else if (object instanceof Integer id) {
-            responseEntity = restClient.post()
-                    .uri(url)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                    .body(id)
-                    .retrieve()
-                    .toEntity(Boolean.class);
-        }
-
-        return responseEntity;
+        model.addAttribute("login", userDto.getLogin());
+        model.addAttribute("currency", bankAccountDto.getCurrency());
+        return responseFromModule.getResponseFromModuleAccounts("/delete-bank-account", id);
     }
 
     private UserDto getUserDtoInSystem() {
