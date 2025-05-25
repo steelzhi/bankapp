@@ -3,6 +3,8 @@ package ru.ya.util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
@@ -34,6 +36,24 @@ public class ResponseFromModule {
     public String getResponseForSuccessfullOpFromModuleNotifications(String url, Operation operation) {
         return getResponseFromModule(moduleNotificationsHost, url, operation);
     }
+    public Boolean getResponseForDecreaseOpFromModuleAccounts(String url, Cash cash) {
+        RestClient restClient = RestClient.create(moduleAccountsHost);
+        OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
+                .withClientRegistrationId(moduleName)
+                .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
+                .build()
+        );
+
+        String accessToken = client.getAccessToken().getTokenValue();
+        ResponseEntity<Boolean> responseEntity = restClient.post()
+                    .uri(url)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
+                    .body(cash)
+                    .retrieve()
+                    .toEntity(Boolean.class);
+
+        return responseEntity.getBody();
+    }
 
     private String getResponseFromModule(String moduleNameForRequest, String url, Object object) {
         RestClient restClient = RestClient.create(moduleNameForRequest);
@@ -63,25 +83,4 @@ public class ResponseFromModule {
 
         return responseEntity.getBody();
     }
-
-
-/*    public String getResponseFromModuleNotifications(String url, Operation operation) {
-        RestClient restClient = RestClient.create(moduleNotificationsHost);
-        OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
-                .withClientRegistrationId(moduleName)
-                .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
-                .build()
-        );
-
-        String accessToken = client.getAccessToken().getTokenValue();
-
-        ResponseEntity<String> responseEntity = restClient.post()
-                .uri(url)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                .body(operation)
-                .retrieve()
-                .toEntity(String.class);
-
-        return responseEntity.getBody();
-    }*/
 }

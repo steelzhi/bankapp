@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Недостаточно средств на счете</title>
+</head>
+
+<body>
+<h1 th:text="'У пользователя с логином ' + ${cash.userLogin} + ' на счете с номером ' + ${cash.accountNumber} + ' недостаточно средств для снятия'"></h1>
+<a href="/account" style="float:center;20px">
+    <b>В аккаунт</b>
+</a>
+</body>
+
+</html>

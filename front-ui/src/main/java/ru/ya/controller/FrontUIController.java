@@ -156,6 +156,16 @@ public class FrontUIController {
         return responseFromModule.getResponseFromModuleCash("/increase-sum", cash);
     }
 
+    @PostMapping("/user/decrease-sum")
+    public String decreaseSumOnBankAccount(Model model, @ModelAttribute Cash cash) {
+        if (cash.getSum() == 0) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("cash", cash);
+        return responseFromModule.getResponseFromModuleCash("/decrease-sum", cash);
+    }
+
     private UserDto getUserDtoInSystem() {
         String login = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

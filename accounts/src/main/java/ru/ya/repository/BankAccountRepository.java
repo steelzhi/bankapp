@@ -13,7 +13,7 @@ import java.util.List;
 public interface BankAccountRepository extends JpaRepository<BankAccount, Integer> {
     List<BankAccount> findAllById(int id);
 
-    @Modifying
+    @Modifying // Без этой аннотации не работают методы UPDATE, DELETE
     @Transactional
     @Query("""
             UPDATE BankAccount
@@ -21,4 +21,15 @@ public interface BankAccountRepository extends JpaRepository<BankAccount, Intege
             WHERE accountNumber = :accountNumber
             """)
     void increaseSumOnBankAccount(double summand, String accountNumber);
+
+    @Modifying // Без этой аннотации не работают методы UPDATE, DELETE
+    @Transactional
+    @Query("""
+            UPDATE BankAccount
+            SET accountValue = accountValue - :deductible
+            WHERE accountNumber = :accountNumber
+            """)
+    void decreaseSumOnBankAccount(double deductible, String accountNumber);
+
+    BankAccount findByAccountNumber(String accountNumber);
 }

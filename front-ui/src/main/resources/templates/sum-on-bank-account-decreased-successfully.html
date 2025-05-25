@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Сумма на счете уменьшена</title>
+</head>
+
+<body>
+<h1 th:text="'У пользователя с логином ' + ${cash.userLogin} + ' на счету с номером ' + ${cash.accountNumber} + ' уменьша сумма на ' + ${cash.sum} + ' ед.'"></h1>
+<a href="/account" style="float:center;20px">
+    <b>В аккаунт</b>
+</a>
+</body>
+
+</html>

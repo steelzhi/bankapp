@@ -37,6 +37,9 @@ public class NotificationController {
             case SUM_INCREASING -> {
                 return "sum-on-bank-account-increased-successfully.html";
             }
+            case SUM_DECREASING -> {
+                return "sum-on-bank-account-decreased-successfully.html";
+            }
         }
 
         return "redirect:/";
@@ -51,6 +54,9 @@ public class NotificationController {
             }
             case BANK_ACCOUNT_ALREADY_EXISTS -> {
                 return "bank-account-already-exists.html";
+            }
+            case NOT_ENOUGH_MONEY -> {
+                return "sum-on-bank-account-was-not-decreased.html";
             }
         }
 

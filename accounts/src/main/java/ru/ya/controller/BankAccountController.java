@@ -2,6 +2,7 @@ package ru.ya.controller;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.ya.enums.ErrorOperation;
 import ru.ya.enums.SuccessfullOperation;
@@ -44,5 +45,10 @@ public class BankAccountController {
     @PostMapping("/increase-sum")
     public void increaseSumOnBankAccountAndReturnSuccessStatus(@RequestBody Cash cash) {
         bankAccountService.increaseSumOnBankAccount(cash);
+    }
+
+    @PostMapping("/decrease-sum")
+    public Boolean decreaseSumOnBankAccountAndReturnSuccessStatus(@RequestBody Cash cash) {
+        return bankAccountService.decreaseSumOnBankAccount(cash);
     }
 }

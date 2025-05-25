@@ -170,7 +170,8 @@
                           th:object="${cash}">
                         Снять сумму со счета:
                         <input id="cash2" name="sum" type="number" style="width:60px">
-                        <input type="hidden" name="userId" th:value="${userDto.id}">
+                        <input type="hidden" name="userLogin" th:value="${userDto.login}">
+                        <input type="hidden" name="accountNumber" th:value="${bankAccountDto.accountNumber}">
                         <button type="submit" class="submitbutton">Снять</button>
                     </form>
                 </td>

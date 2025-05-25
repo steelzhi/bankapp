@@ -1,9 +1,7 @@
 package ru.ya.service;
 
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.ya.enums.Currency;
 import ru.ya.model.BankAccount;
 import ru.ya.model.Cash;
@@ -14,8 +12,6 @@ import ru.ya.repository.UserRepository;
 
 @Service
 public class BankAccountService {
-    //private static final BigInteger TAIL = new BigInteger("100000000000000");
-
     @Autowired
     BankAccountRepository bankAccountRepository;
 
@@ -43,6 +39,17 @@ public class BankAccountService {
 
     public void increaseSumOnBankAccount(Cash cash) {
         bankAccountRepository.increaseSumOnBankAccount(cash.getSum(), cash.getAccountNumber());
+    }
+
+    public boolean decreaseSumOnBankAccount(Cash cash) {
+        BankAccount bankAccount = bankAccountRepository.findByAccountNumber(cash.getAccountNumber());
+        if (bankAccount.getAccountValue() < cash.getSum()) {
+            //throw new NotEnoughMoneyException("Недостаточно средств на счете");
+            return false;
+        }
+
+        bankAccountRepository.decreaseSumOnBankAccount(cash.getSum(), cash.getAccountNumber());
+        return true;
     }
 
     private BankAccount setAccountNumber(BankAccount bankAccount) {
