@@ -1,9 +1,12 @@
 package ru.ya.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import ru.ya.enums.Currency;
 import ru.ya.model.BankAccount;
+import ru.ya.model.Cash;
 import ru.ya.model.NewAccountCurrency;
 import ru.ya.model.User;
 import ru.ya.repository.BankAccountRepository;
@@ -36,6 +39,10 @@ public class BankAccountService {
 
     public void deleteBankAccountAndReturnIfDeleted(int id) {
         bankAccountRepository.deleteById(id);
+    }
+
+    public void increaseSumOnBankAccount(Cash cash) {
+        bankAccountRepository.increaseSumOnBankAccount(cash.getSum(), cash.getAccountNumber());
     }
 
     private BankAccount setAccountNumber(BankAccount bankAccount) {

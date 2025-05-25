@@ -22,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import ru.ya.dto.BankAccountDto;
 import ru.ya.dto.UserDto;
 import ru.ya.mapper.UserMapper;
+import ru.ya.model.Cash;
 import ru.ya.model.NewAccountCurrency;
 import ru.ya.model.User;
 import ru.ya.model.UserPrincipal;
@@ -143,6 +144,16 @@ public class FrontUIController {
         model.addAttribute("login", userDto.getLogin());
         model.addAttribute("currency", bankAccountDto.getCurrency());
         return responseFromModule.getResponseFromModuleAccounts("/delete-bank-account", id);
+    }
+
+    @PostMapping("/user/increase-sum")
+    public String increaseSumOnBankAccount(Model model, @ModelAttribute Cash cash) {
+        if (cash.getSum() == 0) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("cash", cash);
+        return responseFromModule.getResponseFromModuleCash("/increase-sum", cash);
     }
 
     private UserDto getUserDtoInSystem() {

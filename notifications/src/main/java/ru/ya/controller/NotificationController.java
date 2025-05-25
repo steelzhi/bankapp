@@ -17,8 +17,7 @@ public class NotificationController {
     Logger logger;
 
     @PostMapping("/success")
-    public String addInfoAboutSuccessfullOpAndGetNotification(Model model, @RequestBody Operation operation) {
-        model.addAttribute("operation", operation);
+    public String addInfoAboutSuccessfullOpAndGetNotification(@RequestBody Operation operation) {
         switch (operation.getSuccessfullOperation()) {
             case USER_CREATING -> {
                 return "user-registered-successfully.html";
@@ -34,6 +33,9 @@ public class NotificationController {
             }
             case BANK_ACCOUNT_DELETING -> {
                 return "bank-account-deleted-successfully.html";
+            }
+            case SUM_INCREASING -> {
+                return "sum-on-bank-account-increased-successfully.html";
             }
         }
 

@@ -9,9 +9,9 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import ru.ya.dto.UserDto;
+import ru.ya.enums.SuccessfullOperation;
 import ru.ya.model.Cash;
-import ru.ya.model.NewAccountCurrency;
+import ru.ya.model.Operation;
 
 @Component
 public class ResponseFromModule {
@@ -21,19 +21,18 @@ public class ResponseFromModule {
     @Value("${module-accounts}")
     private String moduleAccountsHost;
 
-    @Value("${module-cash}")
-    private String moduleCashHost;
+    @Value("${module-notifications}")
+    private String moduleNotificationsHost;
 
     @Autowired
     OAuth2AuthorizedClientManager manager;
 
-    public String getResponseFromModuleCash(String url, Cash cash) {
-        return getResponseFromModule(moduleCashHost, url, cash);
-
+    public String getResponseFromModuleAccounts(String url, Cash cash) {
+        return getResponseFromModule(moduleAccountsHost, url, cash);
     }
 
-    public String getResponseFromModuleAccounts(String url, Object object) {
-        return getResponseFromModule(moduleAccountsHost, url, object);
+    public String getResponseForSuccessfullOpFromModuleNotifications(String url, Operation operation) {
+        return getResponseFromModule(moduleNotificationsHost, url, operation);
     }
 
     private String getResponseFromModule(String moduleNameForRequest, String url, Object object) {
@@ -45,38 +44,44 @@ public class ResponseFromModule {
         );
 
         String accessToken = client.getAccessToken().getTokenValue();
-
         ResponseEntity<String> responseEntity = null;
-        if (object instanceof UserDto userDto) {
-            responseEntity = restClient.post()
-                    .uri(url)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                    .body(userDto)
-                    .retrieve()
-                    .toEntity(String.class);
-        } else if (object instanceof NewAccountCurrency newAccountCurrency) {
-            responseEntity = restClient.post()
-                    .uri(url)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                    .body(newAccountCurrency)
-                    .retrieve()
-                    .toEntity(String.class);
-        } else if (object instanceof Integer id) {
-            responseEntity = restClient.post()
-                    .uri(url)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                    .body(id)
-                    .retrieve()
-                    .toEntity(String.class);
-        } else if (object instanceof Cash cash) {
+        if (object instanceof Cash cash) {
             responseEntity = restClient.post()
                     .uri(url)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                     .body(cash)
                     .retrieve()
                     .toEntity(String.class);
+        } else if (object instanceof Operation operation) {
+            responseEntity = restClient.post()
+                    .uri(url)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
+                    .body(operation)
+                    .retrieve()
+                    .toEntity(String.class);
         }
 
         return responseEntity.getBody();
     }
+
+
+/*    public String getResponseFromModuleNotifications(String url, Operation operation) {
+        RestClient restClient = RestClient.create(moduleNotificationsHost);
+        OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
+                .withClientRegistrationId(moduleName)
+                .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
+                .build()
+        );
+
+        String accessToken = client.getAccessToken().getTokenValue();
+
+        ResponseEntity<String> responseEntity = restClient.post()
+                .uri(url)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
+                .body(operation)
+                .retrieve()
+                .toEntity(String.class);
+
+        return responseEntity.getBody();
+    }*/
 }

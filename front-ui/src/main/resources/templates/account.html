@@ -2,6 +2,12 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
+    <style>
+        input {
+            width: 80px;
+        }
+    </style>
+
     <title>Банковское приложение</title>
     <script language="JavaScript">
         setInterval(() => {
@@ -143,6 +149,31 @@
                         <button type="submit">Удалить счет</button>
                     </form>
                 </td>
+                <td/>
+                <td/>
+                <td/>
+                <td>
+                    <form th:action="@{/user/increase-sum}" method="POST" style="display:inline-block"
+                          th:object="${cash}">
+                        Добавить сумму на счет:
+                        <input id="cash" name="sum" type="number" style="width:60px">
+                        <input type="hidden" name="userLogin" th:value="${userDto.login}">
+                        <input type="hidden" name="accountNumber" th:value="${bankAccountDto.accountNumber}">
+                        <button type="submit" class="submitbutton">Добавить</button>
+                    </form>
+                </td>
+                <td/>
+                <td/>
+                <td/>
+                <td>
+                    <form th:action="@{/user/decrease-sum}" method="POST" style="display:inline-block"
+                          th:object="${cash}">
+                        Снять сумму со счета:
+                        <input id="cash2" name="sum" type="number" style="width:60px">
+                        <input type="hidden" name="userId" th:value="${userDto.id}">
+                        <button type="submit" class="submitbutton">Снять</button>
+                    </form>
+                </td>
                 </td>
             </tr>
             </tbody>
@@ -150,7 +181,6 @@
         <tbody/>
 </table>
 </tr>
-
 <tr>
     <td style="padding:2px;">
         <form method="post" th:action="@{/user/add-bank-account}" th:object="${newAccountCurrency}">
@@ -167,42 +197,11 @@
                         </select>
                     </td>
                     <td>
-                        <!--                <input type="hidden" name="userLogin" th:value="${user.login}">-->
                         <button type="submit" class="submitbutton">Добавить счет</button>
                     </td>
                 <tr/>
             </table>
 
-        </form>
-    </td>
-</tr>
-
-<tr>
-    <td style="padding:2px;">
-        <form method="post" th:action="${'/user/'+login+'/сash'}">
-            <table style="width:100%;margin-left:auto;margin-right:auto;border-radius:2%;padding:10px;background-color:whitesmoke;">
-                <tr th:if="${cashErrors!=null}" th:each="cashError : ${cashErrors}">
-                    <td style="color:red;" th:text="${cashError}"/>
-                </tr>
-                <tr>
-                    <td style="font-weight:bold;">Наличные</td>
-                    <td>
-                        Валюта
-                        <select name="currency">
-                            <option th:each="eachCurrency : ${currency}" th:value="${eachCurrency.name()}"
-                                    th:text="${eachCurrency.getTitle()}"/>
-                        </select>
-                    </td>
-                    <td>
-                        <input name="value" type="number" style="width:100%" required/>
-                    </td>
-                    <td>
-                    <td style="text-align:right">
-                        <button name="action" value="PUT">Положить</button>
-                        <button name="action" value="GET">Снять</button>
-                    </td>
-                </tr>
-            </table>
         </form>
     </td>
 </tr>
