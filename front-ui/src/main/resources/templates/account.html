@@ -3,8 +3,23 @@
 
 <head>
     <style>
-        input {
-            width: 80px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        tr:hover {
+            background-color: #D6EEEE
         }
     </style>
 
@@ -130,14 +145,58 @@
         </td>
     </tr>
     <tr>
-        <table>
+        <table style="border-collapse:collapse">
+            <tbody>
             <tr>
-                <b>Счета:</b>
+                <td colspan="6" style="font-weight:bold">Открытые счета</td>
             </tr>
+            <tr>
+                <th class="centered">Номер счета</th>
+                <th class="centered">Валюта</th>
+                <th class="centered">Баланс, ед.</th>
+                <th class="centered">Удалить счет</th>
+                <th class="centered">Добавить сумму на счет</th>
+                <th class="centered">Снять со счета</th>
+            </tr>
+            <tr th:each="bankAccountDto : ${userDto.getBankAccountDtoList()}">
+                <td th:text="${bankAccountDto.accountNumber}"/>
+                <td th:text="${bankAccountDto.currency}"/>
+                <td th:text="${bankAccountDto.accountValue}" style="text-align:right"/>
+                <td>
+                    <form th:action="@{/user/delete-bank-account/{id}(id=${bankAccountDto.getId()})}" method="post"
+                          style="display:inline;">
+                        <input type="hidden" name="_method" value="delete"/>
+                        <button type="submit">Удалить счет</button>
+                    </form>
+                </td>
+                <td>
+                    <form th:action="@{/user/increase-sum}" method="POST" style="display:inline-block"
+                          th:object="${cash}">
+                        <input id="cash" name="sum" type="number" style="width:60px">
+                        <input type="hidden" name="userLogin" th:value="${userDto.login}">
+                        <input type="hidden" name="accountNumber" th:value="${bankAccountDto.accountNumber}">
+                        <button type="submit" class="submitbutton">Добавить</button>
+                    </form>
+                </td>
+                <td>
+                    <form th:action="@{/user/decrease-sum}" method="POST" style="display:inline-block"
+                          th:object="${cash}">
+                        <input id="cash2" name="sum" type="number" style="width:60px">
+                        <input type="hidden" name="userLogin" th:value="${userDto.login}">
+                        <input type="hidden" name="accountNumber" th:value="${bankAccountDto.accountNumber}">
+                        <button type="submit" class="submitbutton">Снять</button>
+                    </form>
+                </td>
+                </td>
+            </tr>
+
+            </tbody>
         </table>
-    </tr>
-    <tr>
-        <table th:each="bankAccountDto : ${userDto.getBankAccountDtoList()}">
+
+
+
+
+        <!--<table th:each="bankAccountDto : ${userDto.getBankAccountDtoList()}">
             <tbody>
             <tr>
                 <td th:text="'Номер счета: ' + ${bankAccountDto.getAccountNumber()} + '. '"/>
@@ -178,7 +237,7 @@
                 </td>
             </tr>
             </tbody>
-        </table>
+        </table>-->
         <tbody/>
 </table>
 </tr>

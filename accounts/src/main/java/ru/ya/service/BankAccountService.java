@@ -54,9 +54,9 @@ public class BankAccountService {
 
     private BankAccount setAccountNumber(BankAccount bankAccount) {
         switch (bankAccount.getCurrency()) {
-            case Currency.RUB -> bankAccount.setAccountNumber("4071" + getRandomTail() + " (рубли)");
-            case Currency.USD -> bankAccount.setAccountNumber("3651" + getRandomTail() + " (доллары)");
-            case Currency.CNY -> bankAccount.setAccountNumber("7410" + getRandomTail() + " (юани)");
+            case Currency.RUB -> bankAccount.setAccountNumber("4071" + getRandomTail());
+            case Currency.USD -> bankAccount.setAccountNumber("3651" + getRandomTail());
+            case Currency.CNY -> bankAccount.setAccountNumber("7410" + getRandomTail());
         }
         return bankAccount;
     }

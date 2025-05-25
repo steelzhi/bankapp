@@ -43,10 +43,4 @@ public class FrontUIService {
 
         return true;
     }
-
-    public boolean isBankAccountEmpty(BankAccountDto bankAccountDto) {
-        return bankAccountDto.getAccountValue() == 0;
-    }
-
-
 }
