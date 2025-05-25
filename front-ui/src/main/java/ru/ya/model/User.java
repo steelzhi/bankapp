@@ -22,7 +22,6 @@ public class User {
     String surname;
     LocalDate birthdate;
     Roles role;
-    List<BankAccount> bankAccountList = new ArrayList<>();
 
     public User(String login, String password, String confirmedPassword, String name, String surname, LocalDate birthdate) {
         this.login = login;

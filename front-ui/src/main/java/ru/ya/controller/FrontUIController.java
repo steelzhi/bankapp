@@ -22,7 +22,6 @@ import org.springframework.web.client.RestTemplate;
 import ru.ya.dto.BankAccountDto;
 import ru.ya.dto.UserDto;
 import ru.ya.mapper.UserMapper;
-import ru.ya.model.BankAccount;
 import ru.ya.model.NewAccountCurrency;
 import ru.ya.model.User;
 import ru.ya.model.UserPrincipal;
@@ -110,7 +109,7 @@ public class FrontUIController {
             return "user-data-is-incorrect.html";
         }
 
-       UserDto userDto = UserMapper.mapToUserDto(user);
+        UserDto userDto = UserMapper.mapToUserDto(user);
         ResponseEntity<Boolean> responseEntityFromModuleAccounts = getResponseEntityFromModuleAccounts("/edit-other-data", userDto);
 
         if (responseEntityFromModuleAccounts.getBody()) {
@@ -129,8 +128,6 @@ public class FrontUIController {
 
         getResponseEntityFromModuleAccounts("/delete-user", userDto);
 
-        //return "user-was-deleted.html";
-
         return "redirect:/logout";
     }
 
@@ -138,23 +135,9 @@ public class FrontUIController {
     public String addBankAccount(Model model, @ModelAttribute NewAccountCurrency newAccountCurrency) {
         UserDto userDto = getUserDtoInSystem();
         newAccountCurrency.setUserDto(userDto);
-        RestClient restClient = RestClient.create("http://localhost:8090");
-        OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
-                .withClientRegistrationId("front-ui")
-                .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
-                .build()
-        );
+        ResponseEntity<Boolean> responseEntityFromModuleAccounts = getResponseEntityFromModuleAccounts("/add-bank-account", newAccountCurrency);
 
-        String accessToken = client.getAccessToken().getTokenValue();
-
-        ResponseEntity<Boolean> responseEntity = restClient.post()
-                .uri("/add-bank-account")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                .body(newAccountCurrency)
-                .retrieve()
-                .toEntity(Boolean.class);
-
-        if (responseEntity.getBody() == false) {
+        if (responseEntityFromModuleAccounts.getBody() == false) {
             model.addAttribute("login", userDto.getLogin());
             model.addAttribute("currency", newAccountCurrency.getCurrency());
             return "bank-account-already-exists.html";
@@ -178,26 +161,12 @@ public class FrontUIController {
             return "bank-account-is-not-empty.html";
         }
 
-        RestClient restClient = RestClient.create("http://localhost:8090");
-        OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
-                .withClientRegistrationId("front-ui")
-                .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
-                .build()
-        );
-
-        String accessToken = client.getAccessToken().getTokenValue();
-
-        restClient.post()
-                .uri("/delete-bank-account")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                .body(id)
-                .retrieve()
-                .toEntity(Boolean.class);
+        getResponseEntityFromModuleAccounts("/delete-bank-account", id);
 
         return "redirect:/account";
     }
 
-    private ResponseEntity<Boolean> getResponseEntityFromModuleAccounts(String url, ru.ya.dto.UserDto userDto) {
+    private ResponseEntity<Boolean> getResponseEntityFromModuleAccounts(String url, Object object) {
         RestClient restClient = RestClient.create("http://localhost:8090");
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
                 .withClientRegistrationId("front-ui")
@@ -207,32 +176,29 @@ public class FrontUIController {
 
         String accessToken = client.getAccessToken().getTokenValue();
 
-        ResponseEntity<Boolean> responseEntity = restClient.post()
-                .uri(url)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                .body(userDto)
-                .retrieve()
-                .toEntity(Boolean.class);
-
-        return responseEntity;
-    }
-
-    private ResponseEntity<Boolean> getResponseEntityFromModuleAccounts(String url, BankAccount bankAccount) {
-        RestClient restClient = RestClient.create("http://localhost:8090");
-        OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
-                .withClientRegistrationId("front-ui")
-                .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
-                .build()
-        );
-
-        String accessToken = client.getAccessToken().getTokenValue();
-
-        ResponseEntity<Boolean> responseEntity = restClient.post()
-                .uri(url)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                .body(bankAccount)
-                .retrieve()
-                .toEntity(Boolean.class);
+        ResponseEntity<Boolean> responseEntity = null;
+        if (object instanceof UserDto userDto) {
+            responseEntity = restClient.post()
+                    .uri(url)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
+                    .body(userDto)
+                    .retrieve()
+                    .toEntity(Boolean.class);
+        } else if (object instanceof NewAccountCurrency newAccountCurrency) {
+            responseEntity = restClient.post()
+                    .uri(url)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
+                    .body(newAccountCurrency)
+                    .retrieve()
+                    .toEntity(Boolean.class);
+        } else if (object instanceof Integer id) {
+            responseEntity = restClient.post()
+                    .uri(url)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
+                    .body(id)
+                    .retrieve()
+                    .toEntity(Boolean.class);
+        }
 
         return responseEntity;
     }

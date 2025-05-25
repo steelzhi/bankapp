@@ -63,8 +63,8 @@
                     <tr>
                         <td style="font-weight:bold;">Изменить пароль</td>
                         <td>
-                                Пароль: <input id="password" name="password" minlength="1" maxlength="20" type="text"
-                                               th:value="${password}" style="width:100%" required/>
+                            Пароль: <input id="password" name="password" minlength="1" maxlength="20" type="text"
+                                           th:value="${password}" style="width:100%" required/>
                             </p>
                             <p>
                                 Повторите пароль: <input id="confirmedPassword" name="confirmedPassword" minlength="1"
@@ -124,20 +124,25 @@
         </td>
     </tr>
     <tr>
+        <table>
+            <tr>
+                <b>Счета:</b>
+            </tr>
+        </table>
+    </tr>
+    <tr>
         <table th:each="bankAccountDto : ${userDto.getBankAccountDtoList()}">
             <tbody>
             <tr>
-<!--                <th>Счет:</th>-->
                 <td th:text="'Номер счета: ' + ${bankAccountDto.getAccountNumber()} + '. '"/>
                 <td th:text="'Баланс: ' + ${bankAccountDto.getAccountValue()} + ' ед.'"/>
                 <td>
-                    <form th:action="@{/user/delete-bank-account/{id}(id=${bankAccountDto.getId()})}" method="post" style="display:inline;"> <!--th:value="${bankAccountDto}"-->
-
+                    <form th:action="@{/user/delete-bank-account/{id}(id=${bankAccountDto.getId()})}" method="post"
+                          style="display:inline;">
                         <input type="hidden" name="_method" value="delete"/>
                         <button type="submit">Удалить счет</button>
                     </form>
                 </td>
-
                 </td>
             </tr>
             </tbody>

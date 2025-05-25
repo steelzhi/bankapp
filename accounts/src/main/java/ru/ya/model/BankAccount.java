@@ -22,7 +22,7 @@ public class BankAccount {
     String accountNumber;
     int accountValue;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     User user;
 

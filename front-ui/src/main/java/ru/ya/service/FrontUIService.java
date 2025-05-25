@@ -2,7 +2,6 @@ package ru.ya.service;
 
 import org.springframework.stereotype.Service;
 import ru.ya.dto.BankAccountDto;
-import ru.ya.model.BankAccount;
 import ru.ya.dto.UserDto;
 import ru.ya.model.User;
 
