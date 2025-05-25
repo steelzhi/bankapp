@@ -1,0 +1,28 @@
+server:
+  port: 8091
+
+spring:
+  application:
+    name: notifications
+
+  cloud:
+    consul:
+      host: localhost           # Адрес Consul-агента (по умолчанию localhost)
+      port: 8500
+      config:
+        enabled: true            # Включаем Consul Config для внешней конфигурации
+        prefix: config           # Префикс в KV-хранилище Consul (по умолчанию "config")
+        defaultContext: application  # Контекст по умолчанию
+        import-check:
+          enabled: false
+      discovery:
+        prefer-ip-address: true
+        ip-address: localhost
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Ниже - адрес сервера авторизации для получения токена
+          issuer-uri: http://localhost:8080/realms/master # Для запуска локально
+          #issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker

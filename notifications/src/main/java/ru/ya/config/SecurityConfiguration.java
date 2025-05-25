@@ -8,11 +8,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.web.SecurityFilterChain;
@@ -34,7 +29,7 @@ public class SecurityConfiguration {
     SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
         return security
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/*", "/register-user", "/actuator/health").permitAll()
+                        //.requestMatchers("/*", "/register-user", "/actuator/health").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(customizer -> {
@@ -42,13 +37,9 @@ public class SecurityConfiguration {
                             .jwt(jwtCustomizer -> {
                                 JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
                                 jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
-                                    System.out.println("222");
                                     Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
-                                    System.out.println("1: " + resourceAccess);
                                     Map<String, Object> account = (Map<String, Object>) resourceAccess.get("account");
-                                    System.out.println("2: " + account);
                                     List<String> roles = (List<String>) account.get("roles");
-                                    System.out.println("3: " + roles);
 
                                     return roles.stream()
                                             .map(SimpleGrantedAuthority::new)
@@ -59,8 +50,6 @@ public class SecurityConfiguration {
                                 jwtCustomizer.jwtAuthenticationConverter(jwtAuthenticationConverter);
                             });
                         }
-
-
                 )
                 .build();
     }
@@ -68,21 +57,5 @@ public class SecurityConfiguration {
     @Bean
     public JwtDecoder jwtDecoder() {
         return JwtDecoders.fromIssuerLocation("http://localhost:8080/realms/master");
-    }
-
-    @Bean
-    public OAuth2AuthorizedClientManager authorizedClientManager(
-            ClientRegistrationRepository clientRegistrationRepository,
-            OAuth2AuthorizedClientService authorizedClientService
-    ) {
-        AuthorizedClientServiceOAuth2AuthorizedClientManager manager =
-                new AuthorizedClientServiceOAuth2AuthorizedClientManager(clientRegistrationRepository, authorizedClientService);
-
-        manager.setAuthorizedClientProvider(OAuth2AuthorizedClientProviderBuilder.builder()
-                .clientCredentials() // Включаем получение токена с помощью client_credentials
-                .refreshToken() // Также включаем использование refresh_token
-                .build());
-
-        return manager;
     }
 }

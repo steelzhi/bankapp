@@ -13,9 +13,6 @@
             <span style="color:red;font-weight:bold;">*</span> Все поля обязательны для заполнения
         </td>
     </tr>
-<!--    <tr th:each="error : ${errors}">
-        <td style="color:red;" th:text="${error}" colspan="2"/>
-    </tr>-->
     <tr>
         <td style="font-weight:bold;">Логин (длина - от 3 до 20 символов)</td>
         <td>
@@ -42,7 +39,7 @@
         </td>
     </tr>
     <tr>
-        <td style="font-weight:bold;">Фамилия (длина - от 2 до 20 символов)/td>
+        <td style="font-weight:bold;">Фамилия (длина - от 2 до 20 символов)</td>
         <td>
             <input name="surname" minlength="1" maxlength="20" type="text" th:value="${surname}" style="width:100%" required/>
         </td>

@@ -29,6 +29,9 @@ import ru.ya.service.FrontUIService;
 
 @Controller
 public class FrontUIController {
+    @Value("${spring.application.name}")
+    private String moduleName;
+
     @Value("${module-accounts}")
     private String moduleAccountsHost;
 
@@ -167,9 +170,9 @@ public class FrontUIController {
     }
 
     private ResponseEntity<Boolean> getResponseEntityFromModuleAccounts(String url, Object object) {
-        RestClient restClient = RestClient.create("http://localhost:8090");
+        RestClient restClient = RestClient.create(moduleAccountsHost);
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
-                .withClientRegistrationId("front-ui")
+                .withClientRegistrationId(moduleName)
                 .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
                 .build()
         );
