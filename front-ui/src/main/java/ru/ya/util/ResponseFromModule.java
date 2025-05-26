@@ -19,13 +19,13 @@ public class ResponseFromModule {
     @Value("${spring.application.name}")
     private String moduleName;
 
-    /*    @Value("${module-accounts}")
-        private String moduleAccountsHost;*/
-    private String accountsModuleName = "http://accounts";
+    @Value("${module-accounts}")
+    private String moduleAccountsHost;
+    /*    private String accountsModuleName = "http://accounts";*/
 
-    /*    @Value("${module-cash}")
-        private String moduleCashHost;*/
-    private String cashModuleName = "cash";
+    @Value("${module-cash}")
+    private String moduleCashHost;
+    /*    private String cashModuleName = "cash";*/
 
     @Autowired
     OAuth2AuthorizedClientManager manager;
@@ -34,11 +34,11 @@ public class ResponseFromModule {
     RestClient restClient;
 
     public String getResponseFromModuleCash(String url, Cash cash) {
-        return getResponseFromModule(cashModuleName, url, cash);
+        return getResponseFromModule(moduleCashHost, url, cash);
     }
 
     public String getResponseFromModuleAccounts(String url, Object object) {
-        return getResponseFromModule(accountsModuleName, url, object);
+        return getResponseFromModule(moduleAccountsHost, url, object);
     }
 
     private String getResponseFromModule(String moduleNameForRequest, String url, Object object) {
@@ -61,21 +61,21 @@ public class ResponseFromModule {
                     .toEntity(String.class);
         } else if (object instanceof NewAccountCurrency newAccountCurrency) {
             responseEntity = restClient.post()
-                    .uri(url)
+                    .uri(moduleNameForRequest + url)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                     .body(newAccountCurrency)
                     .retrieve()
                     .toEntity(String.class);
         } else if (object instanceof Integer id) {
             responseEntity = restClient.post()
-                    .uri(url)
+                    .uri(moduleNameForRequest + url)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                     .body(id)
                     .retrieve()
                     .toEntity(String.class);
         } else if (object instanceof Cash cash) {
             responseEntity = restClient.post()
-                    .uri(url)
+                    .uri(moduleNameForRequest + url)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                     .body(cash)
                     .retrieve()

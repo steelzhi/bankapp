@@ -29,6 +29,8 @@ import ru.ya.model.UserPrincipal;
 import ru.ya.service.FrontUIService;
 import ru.ya.util.ResponseFromModule;
 
+import java.util.List;
+
 @Controller
 public class FrontUIController {
     @Value("${module-accounts}")
@@ -174,8 +176,11 @@ public class FrontUIController {
             login = userDetails.getUsername();
         }
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(login);
-        UserPrincipal userPrincipal = (UserPrincipal) userDetails;
+        // При таком приведении у UserDto теряются значения из BankAccountDtoList
+/*        UserDetails userDetails = userDetailsService.loadUserByUsername(login);
+        UserPrincipal userPrincipal = (UserPrincipal) userDetails;*/
+
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         UserDto userDto = userPrincipal.getUserDto();
 
         return userDto;

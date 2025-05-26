@@ -44,14 +44,14 @@ public class UserService {
     }
 
     public User changePasswordAndReturnIfChanged(UserDto userDto) {
-        User userWithChangedPassword = addUser(userDto);
-        return userWithChangedPassword;
+        UserDto userDtoWithEncodedPassword = getUserDtoWithEncodedPassword(userDto);
+        userRepository.changePassword(userDtoWithEncodedPassword.getPassword(), userDtoWithEncodedPassword.getId());
+        return userRepository.findById(userDtoWithEncodedPassword.getId()).get();
     }
 
     public User changeOtherDataAndReturnIfChanged(UserDto userDto) {
-        User user = UserMapper.mapToUser(userDto);
-        User userWithChangedData = userRepository.save(user);
-        return userWithChangedData;
+        userRepository.changeOtherData(userDto.getName(), userDto.getSurname(), userDto.getBirthdate(), userDto.getId());
+        return userRepository.findById(userDto.getId()).get();
     }
 
     public void deleteUser(UserDto userDto) {

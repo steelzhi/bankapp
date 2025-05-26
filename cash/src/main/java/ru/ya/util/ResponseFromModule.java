@@ -20,13 +20,13 @@ public class ResponseFromModule {
     @Value("${spring.application.name}")
     private String moduleName;
 
-    /*    @Value("${module-accounts}")
-        private String moduleAccountsHost;*/
-    private String accountsModuleName = "accounts";
+    @Value("${module-accounts}")
+    private String moduleAccountsHost;
+    /*    private String accountsModuleName = "accounts";*/
 
-    /*    @Value("${module-notifications}")
-        private String moduleNotificationsHost;*/
-    private String notificationsModuleName = "notifications";
+    @Value("${module-notifications}")
+    private String moduleNotificationsHost;
+    /*    private String notificationsModuleName = "notifications";*/
 
     @Autowired
     OAuth2AuthorizedClientManager manager;
@@ -35,14 +35,15 @@ public class ResponseFromModule {
     RestClient restClient;
 
     public String getResponseFromModuleAccounts(String url, Cash cash) {
-        return getResponseFromModule(accountsModuleName, url, cash);
+        return getResponseFromModule(moduleAccountsHost, url, cash);
     }
 
     public String getResponseForSuccessfullOpFromModuleNotifications(String url, Operation operation) {
-        return getResponseFromModule(notificationsModuleName, url, operation);
+        return getResponseFromModule(moduleNotificationsHost, url, operation);
     }
+
     public Boolean getResponseForDecreaseOpFromModuleAccounts(String url, Cash cash) {
-        RestClient restClient = RestClient.create(accountsModuleName);
+        /*        RestClient restClient = RestClient.create(moduleNameForRequest);*/
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
                 .withClientRegistrationId(moduleName)
                 .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
@@ -51,17 +52,17 @@ public class ResponseFromModule {
 
         String accessToken = client.getAccessToken().getTokenValue();
         ResponseEntity<Boolean> responseEntity = restClient.post()
-                    .uri(url)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                    .body(cash)
-                    .retrieve()
-                    .toEntity(Boolean.class);
+                .uri(moduleAccountsHost + url)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
+                .body(cash)
+                .retrieve()
+                .toEntity(Boolean.class);
 
         return responseEntity.getBody();
     }
 
     private String getResponseFromModule(String moduleNameForRequest, String url, Object object) {
-/*        RestClient restClient = RestClient.create(moduleNameForRequest);*/
+        /*        RestClient restClient = RestClient.create(moduleNameForRequest);*/
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
                 .withClientRegistrationId(moduleName)
                 .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
@@ -72,14 +73,14 @@ public class ResponseFromModule {
         ResponseEntity<String> responseEntity = null;
         if (object instanceof Cash cash) {
             responseEntity = restClient.post()
-                    .uri(url)
+                    .uri(moduleNameForRequest + url)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                     .body(cash)
                     .retrieve()
                     .toEntity(String.class);
         } else if (object instanceof Operation operation) {
             responseEntity = restClient.post()
-                    .uri(url)
+                    .uri(moduleNameForRequest + url)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                     .body(operation)
                     .retrieve()

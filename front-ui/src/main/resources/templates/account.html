@@ -79,7 +79,7 @@
     <tr>
         <td style="padding:2px;">
             <form method="post" th:action="@{/user/{login}/edit-password(login=${userDto.login})}"
-                  th:object="${userDto}">
+                  th:object="${user}">
                 <table style="width:100%;margin-left:auto;margin-right:auto;border-radius:2%;padding:10px;background-color:whitesmoke;">
                     <tr>
                         <td style="font-weight:bold;">Изменить пароль</td>
@@ -93,12 +93,12 @@
                                                          style="width:100%" oninput=checkIfPasswordConfirmed()
                                                          required/>
                             </p>
-                            <input type="hidden" th:field="*{id}">
-                            <input type="hidden" th:field="*{login}">
-                            <input type="hidden" th:field="*{name}">
-                            <input type="hidden" th:field="*{surname}">
-                            <input type="hidden" th:field="*{birthdate}">
-                            <input type="hidden" th:field="*{role}">
+                            <input type="hidden" th:field="${userDto.id}">
+                            <input type="hidden" th:field="${userDto.login}">
+                            <input type="hidden" th:field="${userDto.name}">
+                            <input type="hidden" th:field="${userDto.surname}">
+                            <input type="hidden" th:field="${userDto.birthdate}">
+                            <input type="hidden" th:field="${userDto.role}">
                         </td>
                         <td style="text-align:right">
                             <button>Изменить пароль</button>
@@ -111,7 +111,7 @@
     <tr>
         <td style="padding:2px;">
             <form method="post" th:action="@{/user/{login}/edit-other-data(login=${userDto.login})}"
-                  th:object="${userDto}">
+                  th:object="${user}">
                 <table style="width:100%;margin-left:auto;margin-right:auto;border-radius:2%;padding:10px;background-color:whitesmoke;">
                     <tr>
                         <td style="font-weight:bold;">Изменить имя, фамилию, дату рождения</td>
@@ -131,10 +131,10 @@
                                                       oninput=checkIfNotAdult() required/>
 
                             </p>
-                            <input type="hidden" th:field="*{id}">
-                            <input type="hidden" th:field="*{login}">
-                            <input type="hidden" th:field="*{password}">
-                            <input type="hidden" th:field="*{role}">
+                            <input type="hidden" th:field="${userDto.id}">
+                            <input type="hidden" th:field="${userDto.login}">
+                            <input type="hidden" th:field="${userDto.password}">
+                            <input type="hidden" th:field="${userDto.role}">
                         </td>
                         <td style="text-align:right">
                             <button>Изменить имя, фамилию, дату рождения</button>

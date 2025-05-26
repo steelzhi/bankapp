@@ -24,6 +24,7 @@ public class UserController {
     @GetMapping("/{login}")
     public UserDto getUser(@PathVariable String login) {
         logger.atInfo().log("Getting user with login = " + login);
+        UserDto userDto = userService.getUserDto(login);
         return userService.getUserDto(login);
     }
 
