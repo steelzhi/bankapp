@@ -2,6 +2,7 @@ package ru.ya.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
@@ -18,26 +19,30 @@ public class ResponseFromModule {
     @Value("${spring.application.name}")
     private String moduleName;
 
-    @Value("${module-accounts}")
-    private String moduleAccountsHost;
+    /*    @Value("${module-accounts}")
+        private String moduleAccountsHost;*/
+    private String accountsModuleName = "http://accounts";
 
-    @Value("${module-cash}")
-    private String moduleCashHost;
+    /*    @Value("${module-cash}")
+        private String moduleCashHost;*/
+    private String cashModuleName = "cash";
 
     @Autowired
     OAuth2AuthorizedClientManager manager;
 
-    public String getResponseFromModuleCash(String url, Cash cash) {
-        return getResponseFromModule(moduleCashHost, url, cash);
+    @Autowired
+    RestClient restClient;
 
+    public String getResponseFromModuleCash(String url, Cash cash) {
+        return getResponseFromModule(cashModuleName, url, cash);
     }
 
     public String getResponseFromModuleAccounts(String url, Object object) {
-        return getResponseFromModule(moduleAccountsHost, url, object);
+        return getResponseFromModule(accountsModuleName, url, object);
     }
 
     private String getResponseFromModule(String moduleNameForRequest, String url, Object object) {
-        RestClient restClient = RestClient.create(moduleNameForRequest);
+        /*        RestClient restClient = RestClient.create(moduleNameForRequest);*/
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
                 .withClientRegistrationId(moduleName)
                 .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
@@ -49,7 +54,7 @@ public class ResponseFromModule {
         ResponseEntity<String> responseEntity = null;
         if (object instanceof UserDto userDto) {
             responseEntity = restClient.post()
-                    .uri(url)
+                    .uri(moduleNameForRequest + url)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                     .body(userDto)
                     .retrieve()

@@ -20,24 +20,29 @@ public class ResponseFromModule {
     @Value("${spring.application.name}")
     private String moduleName;
 
-    @Value("${module-accounts}")
-    private String moduleAccountsHost;
+    /*    @Value("${module-accounts}")
+        private String moduleAccountsHost;*/
+    private String accountsModuleName = "accounts";
 
-    @Value("${module-notifications}")
-    private String moduleNotificationsHost;
+    /*    @Value("${module-notifications}")
+        private String moduleNotificationsHost;*/
+    private String notificationsModuleName = "notifications";
 
     @Autowired
     OAuth2AuthorizedClientManager manager;
 
+    @Autowired
+    RestClient restClient;
+
     public String getResponseFromModuleAccounts(String url, Cash cash) {
-        return getResponseFromModule(moduleAccountsHost, url, cash);
+        return getResponseFromModule(accountsModuleName, url, cash);
     }
 
     public String getResponseForSuccessfullOpFromModuleNotifications(String url, Operation operation) {
-        return getResponseFromModule(moduleNotificationsHost, url, operation);
+        return getResponseFromModule(notificationsModuleName, url, operation);
     }
     public Boolean getResponseForDecreaseOpFromModuleAccounts(String url, Cash cash) {
-        RestClient restClient = RestClient.create(moduleAccountsHost);
+        RestClient restClient = RestClient.create(accountsModuleName);
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
                 .withClientRegistrationId(moduleName)
                 .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
@@ -56,7 +61,7 @@ public class ResponseFromModule {
     }
 
     private String getResponseFromModule(String moduleNameForRequest, String url, Object object) {
-        RestClient restClient = RestClient.create(moduleNameForRequest);
+/*        RestClient restClient = RestClient.create(moduleNameForRequest);*/
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
                 .withClientRegistrationId(moduleName)
                 .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.

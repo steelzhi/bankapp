@@ -16,14 +16,18 @@ public class ResponseFromModule {
     @Value("${spring.application.name}")
     private String moduleName;
 
-    @Value("${module-notifications}")
-    private String moduleNotificationsHost;
+    /*    @Value("${module-notifications}")
+        private String moduleNotificationsHost;*/
+    private String notificationsModuleName = "notifications";
 
     @Autowired
     OAuth2AuthorizedClientManager manager;
 
+    @Autowired
+    RestClient restClient;
+
     public String getResponseFromModuleNotifications(String url, Operation operation) {
-        RestClient restClient = RestClient.create(moduleNotificationsHost);
+/*        RestClient restClient = RestClient.create(notificationsModuleName);*/
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
                 .withClientRegistrationId(moduleName)
                 .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
