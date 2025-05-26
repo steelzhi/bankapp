@@ -16,9 +16,9 @@ public class ResponseFromModule {
     @Value("${spring.application.name}")
     private String moduleName;
 
-        @Value("${module-notifications}")
-        private String moduleNotificationsHost;
-    //private String notificationsModuleName = "notifications";
+/*    @Value("${module-notifications}")
+    private String moduleNotificationsHost;*/
+    private String notificationsModuleName = "notifications";
 
     @Autowired
     OAuth2AuthorizedClientManager manager;
@@ -27,7 +27,7 @@ public class ResponseFromModule {
     RestClient restClient;
 
     public String getResponseFromModuleNotifications(String url, Operation operation) {
-/*        RestClient restClient = RestClient.create(notificationsModuleName);*/
+        /*        RestClient restClient = RestClient.create(notificationsModuleName);*/
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
                 .withClientRegistrationId(moduleName)
                 .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
@@ -37,7 +37,7 @@ public class ResponseFromModule {
         String accessToken = client.getAccessToken().getTokenValue();
 
         ResponseEntity<String> responseEntity = restClient.post()
-                .uri(moduleNotificationsHost + url)
+                .uri(notificationsModuleName + url)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                 .body(operation)
                 .retrieve()

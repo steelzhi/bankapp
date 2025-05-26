@@ -19,13 +19,13 @@ public class ResponseFromModule {
     @Value("${spring.application.name}")
     private String moduleName;
 
-    @Value("${module-accounts}")
-    private String moduleAccountsHost;
-    /*    private String accountsModuleName = "http://accounts";*/
+/*    @Value("${module-accounts}")
+    private String moduleAccountsHost;*/
+        private String accountsModuleName = "http://accounts";
 
-    @Value("${module-cash}")
-    private String moduleCashHost;
-    /*    private String cashModuleName = "cash";*/
+/*    @Value("${module-cash}")
+    private String moduleCashHost;*/
+        private String cashModuleName = "cash";
 
     @Autowired
     OAuth2AuthorizedClientManager manager;
@@ -34,11 +34,11 @@ public class ResponseFromModule {
     RestClient restClient;
 
     public String getResponseFromModuleCash(String url, Cash cash) {
-        return getResponseFromModule(moduleCashHost, url, cash);
+        return getResponseFromModule(cashModuleName, url, cash);
     }
 
     public String getResponseFromModuleAccounts(String url, Object object) {
-        return getResponseFromModule(moduleAccountsHost, url, object);
+        return getResponseFromModule(accountsModuleName, url, object);
     }
 
     private String getResponseFromModule(String moduleNameForRequest, String url, Object object) {

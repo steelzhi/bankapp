@@ -20,13 +20,13 @@ public class ResponseFromModule {
     @Value("${spring.application.name}")
     private String moduleName;
 
-    @Value("${module-accounts}")
-    private String moduleAccountsHost;
-    /*    private String accountsModuleName = "accounts";*/
+/*    @Value("${module-accounts}")
+    private String moduleAccountsHost;*/
+        private String accountsModuleName = "accounts";
 
-    @Value("${module-notifications}")
-    private String moduleNotificationsHost;
-    /*    private String notificationsModuleName = "notifications";*/
+/*    @Value("${module-notifications}")
+    private String moduleNotificationsHost;*/
+        private String notificationsModuleName = "notifications";
 
     @Autowired
     OAuth2AuthorizedClientManager manager;
@@ -35,11 +35,11 @@ public class ResponseFromModule {
     RestClient restClient;
 
     public String getResponseFromModuleAccounts(String url, Cash cash) {
-        return getResponseFromModule(moduleAccountsHost, url, cash);
+        return getResponseFromModule(accountsModuleName, url, cash);
     }
 
     public String getResponseForSuccessfullOpFromModuleNotifications(String url, Operation operation) {
-        return getResponseFromModule(moduleNotificationsHost, url, operation);
+        return getResponseFromModule(notificationsModuleName, url, operation);
     }
 
     public Boolean getResponseForDecreaseOpFromModuleAccounts(String url, Cash cash) {
@@ -52,7 +52,7 @@ public class ResponseFromModule {
 
         String accessToken = client.getAccessToken().getTokenValue();
         ResponseEntity<Boolean> responseEntity = restClient.post()
-                .uri(moduleAccountsHost + url)
+                .uri(accountsModuleName + url)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                 .body(cash)
                 .retrieve()
