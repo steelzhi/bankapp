@@ -2,22 +2,17 @@ package ru.ya.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 import ru.ya.dto.BankAccountDto;
 import ru.ya.dto.UserDto;
@@ -28,8 +23,6 @@ import ru.ya.model.User;
 import ru.ya.model.UserPrincipal;
 import ru.ya.service.FrontUIService;
 import ru.ya.util.ResponseFromModule;
-
-import java.util.List;
 
 @Controller
 public class FrontUIController {
@@ -69,7 +62,7 @@ public class FrontUIController {
         }
 
         UserDto userDto = UserMapper.mapToUserDto(user);
-        return responseFromModule.getResponseFromModuleAccounts("/register-user", userDto);
+        return responseFromModule.getStringResponseFromModuleAccounts("/register-user", userDto);
     }
 
     @GetMapping("/account")
@@ -91,7 +84,7 @@ public class FrontUIController {
         }
 
         UserDto userDto = UserMapper.mapToUserDto(user);
-        return responseFromModule.getResponseFromModuleAccounts("/edit-password", userDto);
+        return responseFromModule.getStringResponseFromModuleAccounts("/edit-password", userDto);
     }
 
     @PostMapping("/user/{login}/edit-other-data")
@@ -102,7 +95,7 @@ public class FrontUIController {
         }
 
         UserDto userDto = UserMapper.mapToUserDto(user);
-        return responseFromModule.getResponseFromModuleAccounts("/edit-other-data", userDto);
+        return responseFromModule.getStringResponseFromModuleAccounts("/edit-other-data", userDto);
     }
 
     @PostMapping(value = "/user/{login}/delete-user", params = "_method=delete")
@@ -113,7 +106,7 @@ public class FrontUIController {
             return "user-bank-accounts-are-not-empty.html";
         }
 
-        responseFromModule.getResponseFromModuleAccounts("/delete-user", userDto);
+        responseFromModule.getStringResponseFromModuleAccounts("/delete-user", userDto);
 
         return "redirect:/logout";
     }
@@ -125,7 +118,7 @@ public class FrontUIController {
 
         model.addAttribute("login", userDto.getLogin());
         model.addAttribute("currency", newAccountCurrency.getCurrency());
-        return responseFromModule.getResponseFromModuleAccounts("/add-bank-account", newAccountCurrency);
+        return responseFromModule.getStringResponseFromModuleAccounts("/add-bank-account", newAccountCurrency);
     }
 
     @PostMapping(value = "/user/delete-bank-account/{id}", params = "_method=delete")
@@ -145,36 +138,36 @@ public class FrontUIController {
 
         model.addAttribute("login", userDto.getLogin());
         model.addAttribute("currency", bankAccountDto.getCurrency());
-        return responseFromModule.getResponseFromModuleAccounts("/delete-bank-account", id);
+        return responseFromModule.getStringResponseFromModuleAccounts("/delete-bank-account", id);
     }
 
     @PostMapping("/user/increase-sum")
     public String increaseSumOnBankAccount(Model model, @ModelAttribute Cash cash) {
-        if (cash.getSum() == 0) {
-            return "redirect:/";
+        if (cash.getSum() == null || cash.getSum() <= 0) {
+            return "redirect:/account";
         }
 
         model.addAttribute("cash", cash);
-        return responseFromModule.getResponseFromModuleCash("/increase-sum", cash);
+        return responseFromModule.getStringResponseFromModuleCash("/increase-sum", cash);
     }
 
     @PostMapping("/user/decrease-sum")
     public String decreaseSumOnBankAccount(Model model, @ModelAttribute Cash cash) {
-        if (cash.getSum() == 0) {
-            return "redirect:/";
+        if (cash.getSum() == null || cash.getSum() <= 0) {
+            return "redirect:/account";
         }
 
         model.addAttribute("cash", cash);
-        return responseFromModule.getResponseFromModuleCash("/decrease-sum", cash);
+        return responseFromModule.getStringResponseFromModuleCash("/decrease-sum", cash);
     }
 
     private UserDto getUserDtoInSystem() {
-        String login = null;
+        //String login = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
+/*        if (authentication != null) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             login = userDetails.getUsername();
-        }
+        }*/
 
         // При таком приведении у UserDto теряются значения из BankAccountDtoList
 /*        UserDetails userDetails = userDetailsService.loadUserByUsername(login);

@@ -2,7 +2,6 @@ package ru.ya.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
@@ -19,13 +18,13 @@ public class ResponseFromModule {
     @Value("${spring.application.name}")
     private String moduleName;
 
-/*    @Value("${module-accounts}")
-    private String moduleAccountsHost;*/
-        private String accountsModuleName = "http://accounts";
+    @Value("${module-accounts}")
+    private String moduleAccountsHost;
+    /*        private String accountsModuleName = "http://accounts";*/
 
-/*    @Value("${module-cash}")
-    private String moduleCashHost;*/
-        private String cashModuleName = "cash";
+    @Value("${module-cash}")
+    private String moduleCashHost;
+    /*        private String cashModuleName = "cash";*/
 
     @Autowired
     OAuth2AuthorizedClientManager manager;
@@ -33,15 +32,17 @@ public class ResponseFromModule {
     @Autowired
     RestClient restClient;
 
-    public String getResponseFromModuleCash(String url, Cash cash) {
-        return getResponseFromModule(cashModuleName, url, cash);
+    public String getStringResponseFromModuleCash(String url, Cash cash) {
+        return getStringResponseFromModule(moduleCashHost, url, cash);
+        /*        return getResponseFromModule(cashModuleName, url, cash);*/
     }
 
-    public String getResponseFromModuleAccounts(String url, Object object) {
-        return getResponseFromModule(accountsModuleName, url, object);
+    public String getStringResponseFromModuleAccounts(String url, Object object) {
+        return getStringResponseFromModule(moduleAccountsHost, url, object);
+        /*        return getResponseFromModule(accountsModuleName, url, object);*/
     }
 
-    private String getResponseFromModule(String moduleNameForRequest, String url, Object object) {
+    private String getStringResponseFromModule(String moduleNameForRequest, String url, Object object) {
         /*        RestClient restClient = RestClient.create(moduleNameForRequest);*/
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
                 .withClientRegistrationId(moduleName)
@@ -51,36 +52,23 @@ public class ResponseFromModule {
 
         String accessToken = client.getAccessToken().getTokenValue();
 
-        ResponseEntity<String> responseEntity = null;
+        RestClient.RequestBodySpec rCRBS = restClient.post()
+                .uri(moduleNameForRequest + url)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken); // Подставляем токен доступа в заголовок Authorization
+
         if (object instanceof UserDto userDto) {
-            responseEntity = restClient.post()
-                    .uri(moduleNameForRequest + url)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                    .body(userDto)
-                    .retrieve()
-                    .toEntity(String.class);
+            rCRBS.body(userDto);
         } else if (object instanceof NewAccountCurrency newAccountCurrency) {
-            responseEntity = restClient.post()
-                    .uri(moduleNameForRequest + url)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                    .body(newAccountCurrency)
-                    .retrieve()
-                    .toEntity(String.class);
+            rCRBS.body(newAccountCurrency);
         } else if (object instanceof Integer id) {
-            responseEntity = restClient.post()
-                    .uri(moduleNameForRequest + url)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                    .body(id)
-                    .retrieve()
-                    .toEntity(String.class);
+            rCRBS.body(id);
         } else if (object instanceof Cash cash) {
-            responseEntity = restClient.post()
-                    .uri(moduleNameForRequest + url)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                    .body(cash)
-                    .retrieve()
-                    .toEntity(String.class);
+            rCRBS.body(cash);
         }
+
+        ResponseEntity<String> responseEntity = rCRBS
+                .retrieve()
+                .toEntity(String.class);
 
         return responseEntity.getBody();
     }

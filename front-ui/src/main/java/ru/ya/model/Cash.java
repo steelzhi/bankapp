@@ -11,5 +11,5 @@ import lombok.experimental.FieldDefaults;
 public class Cash {
     String userLogin;
     String accountNumber;
-    int sum;
+    Integer sum;
 }

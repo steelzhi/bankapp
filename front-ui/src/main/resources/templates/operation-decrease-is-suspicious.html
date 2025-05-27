@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Попытка совершения подозрительной операции</title>
+</head>
+
+<body>
+<h1 th:text="'Внимание! Подозрительная операция по попытке снятия суммы ' + ${cash.sum} + ' ед. со счета ' + ${cash.accountNumber} + ' у пользователя с логином ' + ${cash.userLogin} + '. Операция была заблокирована'"></h1>
+<a href="/account" style="float:center;20px">
+    <b>Назад в личный кабинет</b>
+</a>
+</body>
+
+</html>

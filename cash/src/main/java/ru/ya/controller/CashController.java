@@ -24,18 +24,22 @@ public class CashController {
     @PostMapping("/increase-sum")
     public String increaseSumOnBankAccount(@RequestBody Cash cash) {
         logger.atInfo().log("Increasing sum on user with login = " + cash.getUserLogin());
-        responseFromModule.getResponseFromModuleAccounts("/increase-sum", cash);
-        return responseFromModule.getResponseForSuccessfullOpFromModuleNotifications("/notification/success", new Operation(SuccessfullOperation.SUM_INCREASING));
+        responseFromModule.getStringResponseFromModuleAccounts("/increase-sum", cash);
+        return responseFromModule.getStringResponseForSuccessfullOpFromModuleNotifications("/notification/success", new Operation(SuccessfullOperation.SUM_INCREASING));
     }
 
     @PostMapping("/decrease-sum")
     public String decreaseSumOnBankAccount(@RequestBody Cash cash) {
         logger.atInfo().log("Decreasing sum on user with login = " + cash.getUserLogin());
-        boolean response = responseFromModule.getResponseForDecreaseOpFromModuleAccounts("/decrease-sum", cash);
-        if (response) {
-            return responseFromModule.getResponseForSuccessfullOpFromModuleNotifications("/notification/success", new Operation(SuccessfullOperation.SUM_DECREASING));
+        boolean isOpSuspicious = responseFromModule.getBooleanResponseForSuspiciousOpsFromModuleBlocker("/check-operation");
+        if (isOpSuspicious) {
+            return "operation-decrease-is-suspicious.html";
+        }
+        boolean wasSumDecreased = responseFromModule.getBooleanResponseForDecreaseOpFromModuleAccounts("/decrease-sum", cash);
+        if (wasSumDecreased) {
+            return responseFromModule.getStringResponseForSuccessfullOpFromModuleNotifications("/notification/success", new Operation(SuccessfullOperation.SUM_DECREASING));
         } else {
-            return responseFromModule.getResponseForSuccessfullOpFromModuleNotifications("/notification/error", new Operation(ErrorOperation.NOT_ENOUGH_MONEY));
+            return responseFromModule.getStringResponseForSuccessfullOpFromModuleNotifications("/notification/error", new Operation(ErrorOperation.NOT_ENOUGH_MONEY));
         }
     }
 

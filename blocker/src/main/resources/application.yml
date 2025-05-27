@@ -1,9 +1,9 @@
 server:
-  port: 8092
+  port: 8093
 
 spring:
   application:
-    name: cash
+    name: blocker
 
   cloud:
     consul:
@@ -33,21 +33,3 @@ spring:
           # Ниже - адрес сервера авторизации для получения токена
           issuer-uri: http://localhost:8080/realms/master # Для запуска локально
           #issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker
-      client:
-        provider:
-          keycloak:
-            # Ниже - адрес сервера авторизации для получения токена
-            issuer-uri: http://localhost:8080/realms/master # Для запуска локально
-            #issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker
-        registration:
-          cash: # Описание клиента OAuth2
-            provider: keycloak
-            authorizationGrantType: client_credentials
-            client-id: cash
-            client-secret: 6UMxwxzxhq3YRamkTEGx4MdEMxPL938n
-            scope: profile
-            clientAuthenticationMethod: client_secret_post # Способ передачи секрета
-
-module-accounts: http://localhost:8090/
-module-notifications: http://localhost:8091/
-module-blocker: http://localhost:8093/

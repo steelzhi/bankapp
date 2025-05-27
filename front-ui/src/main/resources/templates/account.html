@@ -172,7 +172,7 @@
                 <td>
                     <form th:action="@{/user/increase-sum}" method="POST" style="display:inline-block"
                           th:object="${cash}">
-                        <input id="cash" name="sum" type="number" style="width:60px">
+                        <input id="cashInc" name="sum" type="number" min="0.01" step="0.01" style="width:60px" oninput=checkSum() required/>
                         <input type="hidden" name="userLogin" th:value="${userDto.login}">
                         <input type="hidden" name="accountNumber" th:value="${bankAccountDto.accountNumber}">
                         <button type="submit" class="submitbutton">Добавить</button>
@@ -181,7 +181,7 @@
                 <td>
                     <form th:action="@{/user/decrease-sum}" method="POST" style="display:inline-block"
                           th:object="${cash}">
-                        <input id="cash2" name="sum" type="number" style="width:60px">
+                        <input id="cashDec" name="sum" type="number" min="0.01" step="0.01" style="width:60px" oninput=checkSum() required/>
                         <input type="hidden" name="userLogin" th:value="${userDto.login}">
                         <input type="hidden" name="accountNumber" th:value="${bankAccountDto.accountNumber}">
                         <button type="submit" class="submitbutton">Снять</button>
@@ -189,55 +189,8 @@
                 </td>
                 </td>
             </tr>
-
             </tbody>
         </table>
-
-
-
-
-        <!--<table th:each="bankAccountDto : ${userDto.getBankAccountDtoList()}">
-            <tbody>
-            <tr>
-                <td th:text="'Номер счета: ' + ${bankAccountDto.getAccountNumber()} + '. '"/>
-                <td th:text="'Баланс: ' + ${bankAccountDto.getAccountValue()} + ' ед.'"/>
-                <td>
-                    <form th:action="@{/user/delete-bank-account/{id}(id=${bankAccountDto.getId()})}" method="post"
-                          style="display:inline;">
-                        <input type="hidden" name="_method" value="delete"/>
-                        <button type="submit">Удалить счет</button>
-                    </form>
-                </td>
-                <td/>
-                <td/>
-                <td/>
-                <td>
-                    <form th:action="@{/user/increase-sum}" method="POST" style="display:inline-block"
-                          th:object="${cash}">
-                        Добавить сумму на счет:
-                        <input id="cash" name="sum" type="number" style="width:60px">
-                        <input type="hidden" name="userLogin" th:value="${userDto.login}">
-                        <input type="hidden" name="accountNumber" th:value="${bankAccountDto.accountNumber}">
-                        <button type="submit" class="submitbutton">Добавить</button>
-                    </form>
-                </td>
-                <td/>
-                <td/>
-                <td/>
-                <td>
-                    <form th:action="@{/user/decrease-sum}" method="POST" style="display:inline-block"
-                          th:object="${cash}">
-                        Снять сумму со счета:
-                        <input id="cash2" name="sum" type="number" style="width:60px">
-                        <input type="hidden" name="userLogin" th:value="${userDto.login}">
-                        <input type="hidden" name="accountNumber" th:value="${bankAccountDto.accountNumber}">
-                        <button type="submit" class="submitbutton">Снять</button>
-                    </form>
-                </td>
-                </td>
-            </tr>
-            </tbody>
-        </table>-->
         <tbody/>
 </table>
 </tr>
@@ -360,7 +313,13 @@
         var currentDate = Date.now();
         var delta = parseInt((currentDate - birthdate) / (1000 * 60 * 60 * 24 * 365));
         if (delta < 18) {
-        alert("Пользователь не достиг 18 лет. Заводить банковский аккаунт ему запрещено");
+            alert("Пользователь не достиг 18 лет. Заводить банковский аккаунт ему запрещено");
+        }
+    }
+    function checkSum {
+        var value = document.getElementById("cashInc").value
+        if (value === null || value === "") {
+            alert("Для совершения действия с наличными нужно ввести сумму");
         }
     }
 </script>

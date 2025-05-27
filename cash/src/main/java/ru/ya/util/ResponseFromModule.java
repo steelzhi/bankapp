@@ -3,15 +3,12 @@ package ru.ya.util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import ru.ya.enums.SuccessfullOperation;
 import ru.ya.model.Cash;
 import ru.ya.model.Operation;
 
@@ -20,13 +17,17 @@ public class ResponseFromModule {
     @Value("${spring.application.name}")
     private String moduleName;
 
-/*    @Value("${module-accounts}")
-    private String moduleAccountsHost;*/
-        private String accountsModuleName = "accounts";
+    @Value("${module-accounts}")
+    private String moduleAccountsHost;
+    /*        private String accountsModuleName = "accounts";*/
 
-/*    @Value("${module-notifications}")
-    private String moduleNotificationsHost;*/
-        private String notificationsModuleName = "notifications";
+    @Value("${module-notifications}")
+    private String moduleNotificationsHost;
+    /*        private String notificationsModuleName = "notifications";*/
+
+    @Value("${module-blocker}")
+    private String moduleBlockerHost;
+    /*        private String blockerModuleName = "blocker";*/
 
     @Autowired
     OAuth2AuthorizedClientManager manager;
@@ -34,35 +35,75 @@ public class ResponseFromModule {
     @Autowired
     RestClient restClient;
 
-    public String getResponseFromModuleAccounts(String url, Cash cash) {
-        return getResponseFromModule(accountsModuleName, url, cash);
+    public String getStringResponseFromModuleAccounts(String url, Cash cash) {
+        /*        return getResponseFromModule(accountsModuleName, url, cash);*/
+        return getStringResponseFromModule(moduleAccountsHost, url, cash);
     }
 
-    public String getResponseForSuccessfullOpFromModuleNotifications(String url, Operation operation) {
-        return getResponseFromModule(notificationsModuleName, url, operation);
+    public String getStringResponseForSuccessfullOpFromModuleNotifications(String url, Operation operation) {
+        /*        return getResponseFromModule(notificationsModuleName, url, operation);*/
+        return getStringResponseFromModule(moduleNotificationsHost, url, operation);
     }
 
-    public Boolean getResponseForDecreaseOpFromModuleAccounts(String url, Cash cash) {
-        /*        RestClient restClient = RestClient.create(moduleNameForRequest);*/
-        OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
-                .withClientRegistrationId(moduleName)
-                .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
-                .build()
-        );
+    public Boolean getBooleanResponseForDecreaseOpFromModuleAccounts(String url, Cash cash) {
+        return getBooleanResponseFromModule(moduleAccountsHost, url, cash);
 
-        String accessToken = client.getAccessToken().getTokenValue();
-        ResponseEntity<Boolean> responseEntity = restClient.post()
-                .uri(accountsModuleName + url)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
+/*        RestClient.RequestBodySpec rCRBS = getRestClientRequestBodySpecWithAccessToken(moduleAccountsHost, url);
+
+        ResponseEntity<Boolean> responseEntity = rCRBS
                 .body(cash)
+                .retrieve()
+                .toEntity(Boolean.class);
+
+        return responseEntity.getBody();*/
+    }
+
+    public Boolean getBooleanResponseForSuspiciousOpsFromModuleBlocker(String url) {
+        return getBooleanResponseFromModule(moduleBlockerHost, url, moduleName);
+
+/*        RestClient.RequestBodySpec rCRBS = getRestClientRequestBodySpecWithAccessToken(moduleBlockerHost, url);
+
+        ResponseEntity<Boolean> responseEntity = rCRBS
+                .body(moduleName)
+                .retrieve()
+                .toEntity(Boolean.class);
+
+        return responseEntity.getBody();*/
+    }
+
+    private Boolean getBooleanResponseFromModule(String moduleNameForRequest, String url, Object object) {
+        RestClient.RequestBodySpec rCRBS = getRestClientRequestBodySpecWithAccessToken(moduleNameForRequest, url);
+
+        if (object instanceof Cash cash) {
+            rCRBS.body(cash);
+        } else {
+            rCRBS.body(moduleName);
+        }
+
+        ResponseEntity<Boolean> responseEntity = rCRBS
                 .retrieve()
                 .toEntity(Boolean.class);
 
         return responseEntity.getBody();
     }
 
-    private String getResponseFromModule(String moduleNameForRequest, String url, Object object) {
-        /*        RestClient restClient = RestClient.create(moduleNameForRequest);*/
+    private String getStringResponseFromModule(String moduleNameForRequest, String url, Object object) {
+        RestClient.RequestBodySpec rCRBS = getRestClientRequestBodySpecWithAccessToken(moduleNameForRequest, url);
+
+        if (object instanceof Operation operation) {
+            rCRBS.body(operation);
+        } else if (object instanceof Cash cash) {
+            rCRBS.body(cash);
+        }
+
+        ResponseEntity<String> responseEntity = rCRBS
+                .retrieve()
+                .toEntity(String.class);
+
+        return responseEntity.getBody();
+    }
+
+    private RestClient.RequestBodySpec getRestClientRequestBodySpecWithAccessToken(String moduleNameForRequest, String url) {
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
                 .withClientRegistrationId(moduleName)
                 .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
@@ -70,23 +111,10 @@ public class ResponseFromModule {
         );
 
         String accessToken = client.getAccessToken().getTokenValue();
-        ResponseEntity<String> responseEntity = null;
-        if (object instanceof Cash cash) {
-            responseEntity = restClient.post()
-                    .uri(moduleNameForRequest + url)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                    .body(cash)
-                    .retrieve()
-                    .toEntity(String.class);
-        } else if (object instanceof Operation operation) {
-            responseEntity = restClient.post()
-                    .uri(moduleNameForRequest + url)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
-                    .body(operation)
-                    .retrieve()
-                    .toEntity(String.class);
-        }
+        RestClient.RequestBodySpec rCRBS = restClient.post()
+                .uri(moduleNameForRequest + url)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken); // Подставляем токен доступа в заголовок Authorization
 
-        return responseEntity.getBody();
+        return rCRBS;
     }
 }
