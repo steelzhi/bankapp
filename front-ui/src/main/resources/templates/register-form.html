@@ -22,13 +22,13 @@
     <tr>
         <td style="font-weight:bold;">Пароль (длина - от 5 до 20 символов)</td>
         <td>
-            <input id="password" name="password" minlength="1" maxlength="20" type="text" th:value="${password}" style="width:100%" required/>
+            <input id="password" name="password" minlength="1" maxlength="20" type="password" th:value="${password}" style="width:100%" required/>
         </td>
     </tr>
     <tr>
         <td style="font-weight:bold;">Повторите пароль</td>
         <td>
-            <input id="confirmedPassword" name="confirmedPassword" minlength="1" maxlength="20" type="text"
+            <input id="confirmedPassword" name="confirmedPassword" minlength="1" maxlength="20" type="password"
                    th:value="${confirmedPassword}" style="width:100%" oninput=checkIfPasswordConfirmed() required/>
         </td>
     </tr>

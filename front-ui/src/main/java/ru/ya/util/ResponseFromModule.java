@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import ru.ya.dto.UserDto;
 import ru.ya.model.Cash;
+import ru.ya.model.CurrencyRates;
 import ru.ya.model.NewAccountCurrency;
 
 @Component
@@ -69,6 +70,42 @@ public class ResponseFromModule {
         ResponseEntity<String> responseEntity = rCRBS
                 .retrieve()
                 .toEntity(String.class);
+
+        return responseEntity.getBody();
+    }
+
+/*    public HashMap<Currency, CurrencyRates> getHashMapResponseFromModule(String moduleNameForRequest, String url) {
+        *//*        RestClient restClient = RestClient.create(moduleNameForRequest);*//*
+        OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
+                .withClientRegistrationId(moduleName)
+                .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
+                .build()
+        );
+
+        String accessToken = client.getAccessToken().getTokenValue();
+
+        ResponseEntity<HashMap> responseEntity = restClient.get()
+                .uri(moduleNameForRequest + url)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
+                .retrieve().toEntity(HashMap.class);
+
+        return (HashMap<Currency, CurrencyRates>) responseEntity.getBody();
+    }*/
+
+    public CurrencyRates getHashMapResponseFromModule(String moduleNameForRequest, String url) {
+        /*        RestClient restClient = RestClient.create(moduleNameForRequest);*/
+        OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
+                .withClientRegistrationId(moduleName)
+                .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
+                .build()
+        );
+
+        String accessToken = client.getAccessToken().getTokenValue();
+
+        ResponseEntity<CurrencyRates> responseEntity = restClient.get()
+                .uri(moduleNameForRequest + url)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
+                .retrieve().toEntity(CurrencyRates.class);
 
         return responseEntity.getBody();
     }

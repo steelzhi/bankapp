@@ -1,9 +1,9 @@
 server:
-  port: 8081
+  port: 8094
 
 spring:
   application:
-    name: front-ui
+    name: exchange-generator
 
   cloud:
     consul:
@@ -17,7 +17,7 @@ spring:
           enabled: false
       discovery:
         ip-address: localhost
-#        instance-id: ${spring.application.name}:${random.value}
+        #        instance-id: ${spring.application.name}:${random.value}
         instance-id: ${spring.application.name}
         preferIpAddress: true   # Использовать IP адрес вместо имени хоста
         serviceName: ${spring.application.name} # Имя сервиса
@@ -28,21 +28,8 @@ spring:
 
   security:
     oauth2:
-      client:
-        provider:
-          keycloak:
-            # Ниже - адрес сервера авторизации для получения токена
-            issuer-uri: http://localhost:8080/realms/master # Для запуска локально
-            #issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker
-        registration:
-          front-ui: # Описание клиента OAuth2
-            provider: keycloak
-            authorizationGrantType: client_credentials
-            client-id: front-ui
-            client-secret: BZSkEMkx2BETc6WB6XXV5nHG2BfAcY48
-            scope: profile
-            clientAuthenticationMethod: client_secret_post # Способ передачи секрета
-
-module-accounts: http://localhost:8090/
-module-cash: http://localhost:8092/
-module-exchange-generator: http://localhost:8094/
+      resourceserver:
+        jwt:
+          # Ниже - адрес сервера авторизации для получения токена
+          issuer-uri: http://localhost:8080/realms/master # Для запуска локально
+          #issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker

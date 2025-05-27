@@ -5,22 +5,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import ru.ya.dto.BankAccountDto;
 import ru.ya.dto.UserDto;
 import ru.ya.mapper.UserMapper;
-import ru.ya.model.Cash;
-import ru.ya.model.NewAccountCurrency;
-import ru.ya.model.User;
-import ru.ya.model.UserPrincipal;
+import ru.ya.model.*;
 import ru.ya.service.FrontUIService;
 import ru.ya.util.ResponseFromModule;
 
@@ -28,6 +21,9 @@ import ru.ya.util.ResponseFromModule;
 public class FrontUIController {
     @Value("${module-accounts}")
     private String moduleAccountsHost;
+
+    @Value("${module-exchange-generator}")
+    private String moduleExchangeGenerator;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -72,6 +68,9 @@ public class FrontUIController {
         ResponseEntity<UserDto> response = restTemplate.getForEntity(moduleAccountsHost + userDto.getLogin(), UserDto.class);
         userDto = response.getBody();
         model.addAttribute("userDto", userDto);
+
+        CurrencyRates currencyRates = getCurrencyRates();
+        model.addAttribute("currencyRates", currencyRates);
 
         return "account";
     }
@@ -159,6 +158,13 @@ public class FrontUIController {
 
         model.addAttribute("cash", cash);
         return responseFromModule.getStringResponseFromModuleCash("/decrease-sum", cash);
+    }
+
+    @GetMapping("/exchange-rates")
+    @ResponseBody
+    public CurrencyRates getCurrencyRates() {
+        CurrencyRates currencyRates = responseFromModule.getHashMapResponseFromModule(moduleExchangeGenerator, "/exchange-rates");
+        return currencyRates;
     }
 
     private UserDto getUserDtoInSystem() {
