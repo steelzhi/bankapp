@@ -3,6 +3,7 @@ package ru.ya.service;
 import org.springframework.stereotype.Service;
 import ru.ya.dto.BankAccountDto;
 import ru.ya.dto.UserDto;
+import ru.ya.model.TransferData;
 import ru.ya.model.User;
 
 import java.time.LocalDate;
@@ -42,5 +43,21 @@ public class FrontUIService {
         }
 
         return true;
+    }
+
+    public boolean doesUserHaveEnoughMoneyToTransfer(UserDto userDto, TransferData transferData) {
+        for (BankAccountDto bankAccountDto : userDto.getBankAccountDtoList()) {
+            if (bankAccountDto.getAccountNumber().equals(transferData.getAccountNumberFrom())) {
+                if (bankAccountDto.getAccountValue() <= transferData.getSum()) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public boolean doBankAccountsMatch(TransferData transferData) {
+        return transferData.getAccountNumberFrom().equals(transferData.getAccountNumberTo());
     }
 }

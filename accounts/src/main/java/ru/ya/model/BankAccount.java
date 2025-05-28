@@ -20,7 +20,7 @@ public class BankAccount {
     int id;
 
     String accountNumber;
-    int accountValue;
+    double accountValue;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -29,7 +29,7 @@ public class BankAccount {
     @Enumerated(EnumType.STRING)
     Currency currency;
 
-    public BankAccount(User user, String accountNumber, int accountValue, Currency currency) {
+    public BankAccount(User user, String accountNumber, double accountValue, Currency currency) {
         this.user = user;
         this.accountNumber = accountNumber;
         this.accountValue = accountValue;

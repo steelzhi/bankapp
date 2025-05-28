@@ -2,10 +2,11 @@ package ru.ya.controller;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.ya.dto.TransferDataDto;
 import ru.ya.enums.ErrorOperation;
 import ru.ya.enums.SuccessfullOperation;
+import ru.ya.mapper.TransferDataMapper;
 import ru.ya.model.*;
 import ru.ya.service.BankAccountService;
 import ru.ya.util.ResponseFromModule;
@@ -28,7 +29,6 @@ public class BankAccountController {
         if (addedBankAccount == null) {
             //return getResponseFromModuleNotifications("/notification/error", new Operation(ErrorOperation.BANK_ACCOUNT_ALREADY_EXISTS));
             return responseFromModule.getResponseFromModuleNotifications("/notification/error", new Operation(ErrorOperation.BANK_ACCOUNT_ALREADY_EXISTS));
-
         }
 
         //return getResponseFromModuleNotifications("/notification/success", new Operation(SuccessfullOperation.BANK_ACCOUNT_CREATING));
@@ -38,6 +38,11 @@ public class BankAccountController {
     @PostMapping("/delete-bank-account")
     public String deleteBankAccount(@RequestBody int id) {
         logger.atInfo().log("Deleting bank account with id = " + id);
+        boolean isBankAccountEmpty = bankAccountService.isBankAccountEmpty(id);
+        if (!isBankAccountEmpty) {
+            return responseFromModule.getResponseFromModuleNotifications("/notification/error", new Operation(ErrorOperation.BANK_ACCOUNT_IS_NOT_EMPTY));
+        }
+
         bankAccountService.deleteBankAccountAndReturnIfDeleted(id);
         return responseFromModule.getResponseFromModuleNotifications("/notification/success", new Operation(SuccessfullOperation.BANK_ACCOUNT_DELETING));
     }
@@ -50,5 +55,11 @@ public class BankAccountController {
     @PostMapping("/decrease-sum")
     public Boolean decreaseSumOnBankAccountAndReturnSuccessStatus(@RequestBody Cash cash) {
         return bankAccountService.decreaseSumOnBankAccount(cash);
+    }
+
+    @PostMapping("/is-possible-to-transfer")
+    public TransferDataDto getTransferDataDtoIfUserHasEnoughMoneyToTransfer(@RequestBody TransferData transferData) {
+        TransferDataDto transferDataDto = bankAccountService.getTransferDataDtoIfUserHasEnoughMoneyToTransfer(transferData);
+        return transferDataDto;
     }
 }

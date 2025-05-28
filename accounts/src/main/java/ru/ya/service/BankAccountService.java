@@ -2,11 +2,12 @@ package ru.ya.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+import ru.ya.dto.TransferDataDto;
+import ru.ya.dto.UserDto;
 import ru.ya.enums.Currency;
-import ru.ya.model.BankAccount;
-import ru.ya.model.Cash;
-import ru.ya.model.NewAccountCurrency;
-import ru.ya.model.User;
+import ru.ya.mapper.TransferDataMapper;
+import ru.ya.model.*;
 import ru.ya.repository.BankAccountRepository;
 import ru.ya.repository.UserRepository;
 
@@ -37,6 +38,10 @@ public class BankAccountService {
         bankAccountRepository.deleteById(id);
     }
 
+    public boolean isBankAccountEmpty(int id) {
+        return (bankAccountRepository.findAccountValueById(id) == 0);
+    }
+
     public void increaseSumOnBankAccount(Cash cash) {
         bankAccountRepository.increaseSumOnBankAccount(cash.getSum(), cash.getAccountNumber());
     }
@@ -50,6 +55,20 @@ public class BankAccountService {
 
         bankAccountRepository.decreaseSumOnBankAccount(cash.getSum(), cash.getAccountNumber());
         return true;
+    }
+
+    public TransferDataDto getTransferDataDtoIfUserHasEnoughMoneyToTransfer(TransferData transferData) {
+        double sumOnBankAccount = bankAccountRepository.getAccountValueByIdAndAccountNumber(transferData.getUserId(), transferData.getAccountNumberFrom());
+        if (sumOnBankAccount >= transferData.getSum()) {
+            Currency currencyFrom = Currency.valueOf(bankAccountRepository.getCurrencyByAccountNumber(transferData.getAccountNumberFrom()));
+            String currencyNameFrom = currencyFrom.name();
+            Currency currencyTo = Currency.valueOf(bankAccountRepository.getCurrencyByAccountNumber(transferData.getAccountNumberTo()));
+            String currencyNameTo = currencyTo.name();
+            TransferDataDto transferDataDto = TransferDataMapper.mapToTransferDataDto(transferData, currencyNameFrom, currencyNameTo);
+            return transferDataDto;
+        }
+
+        return null;
     }
 
     private BankAccount setAccountNumber(BankAccount bankAccount) {

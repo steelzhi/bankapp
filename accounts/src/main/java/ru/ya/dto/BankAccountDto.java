@@ -18,6 +18,6 @@ public class BankAccountDto {
     int id;
     int userId;
     String accountNumber;
-    int accountValue;
+    double accountValue;
     Currency currency;
 }

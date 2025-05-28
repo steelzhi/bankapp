@@ -3,6 +3,8 @@ package ru.ya.enums;
 public enum ErrorOperation {
     USER_ALREADY_EXISTS,
     BANK_ACCOUNT_ALREADY_EXISTS,
-    NOT_ENOUGH_MONEY
+    BANK_ACCOUNT_IS_NOT_EMPTY,
+    NOT_ENOUGH_MONEY,
+    NOT_ENOUGH_MONEY_TO_TRANSFER
 
 }

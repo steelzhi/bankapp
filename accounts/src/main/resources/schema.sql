@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS accounts.bank_accounts (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id INT,
     account_number VARCHAR(20),
-    account_value INT CHECK (account_value >= 0),
+    account_value NUMERIC(10, 2) CHECK (account_value >= 0),
     currency VARCHAR(3),
     CONSTRAINT users_bank_accounts FOREIGN KEY (user_id) REFERENCES accounts.users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );

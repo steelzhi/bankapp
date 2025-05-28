@@ -46,3 +46,4 @@ spring:
 module-accounts: http://localhost:8090/
 module-cash: http://localhost:8092/
 module-exchange-generator: http://localhost:8094/
+module-transfer: http://localhost:8096/

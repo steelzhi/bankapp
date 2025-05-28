@@ -17,7 +17,7 @@ public class NotificationController {
     Logger logger;
 
     @PostMapping("/success")
-    public String addInfoAboutSuccessfullOpAndGetNotification(@RequestBody Operation operation) {
+    public String getNotificationAboutSuccessfullOp(@RequestBody Operation operation) {
         switch (operation.getSuccessfullOperation()) {
             case USER_CREATING -> {
                 return "user-registered-successfully.html";
@@ -46,8 +46,8 @@ public class NotificationController {
     }
 
     @PostMapping("/error")
-    public String addInfoAboutErrorOpAndGetNotification(Model model, @RequestBody Operation operation) {
-        model.addAttribute("operation", operation);
+    public String getNotificationAboutError(Model model, @RequestBody Operation operation) {
+        //model.addAttribute("operation", operation);
         switch (operation.getErrorOperation()) {
             case USER_ALREADY_EXISTS -> {
                 return "user-already-exists.html";
@@ -55,8 +55,14 @@ public class NotificationController {
             case BANK_ACCOUNT_ALREADY_EXISTS -> {
                 return "bank-account-already-exists.html";
             }
+            case BANK_ACCOUNT_IS_NOT_EMPTY -> {
+                return "bank-account-is-not-empty.html";
+            }
             case NOT_ENOUGH_MONEY -> {
                 return "sum-on-bank-account-was-not-decreased.html";
+            }
+            case NOT_ENOUGH_MONEY_TO_TRANSFER -> {
+                return "not-enough-money-to-transfer.html";
             }
         }
 

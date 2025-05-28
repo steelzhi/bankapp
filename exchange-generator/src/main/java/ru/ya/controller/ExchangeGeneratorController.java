@@ -17,7 +17,7 @@ public class ExchangeGeneratorController {
 
     @GetMapping("/exchange-rates")
     public CurrencyRates getCurrencyRates() {
-        logger.atInfo().log("Getting currency rates");
+            logger.atInfo().log("Getting currency rates");
         return exchangeGeneratorService.getCurrencyRates();
     }
 }

@@ -13,7 +13,7 @@ public class FrontUiApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(FrontUiApplication.class, args);
-		System.out.println("greeting message " + message);
+		//System.out.println("greeting message " + message);
 
 	}
 

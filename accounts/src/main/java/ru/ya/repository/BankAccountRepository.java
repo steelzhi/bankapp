@@ -13,6 +13,13 @@ import java.util.List;
 public interface BankAccountRepository extends JpaRepository<BankAccount, Integer> {
     List<BankAccount> findAllById(int id);
 
+    @Query("""
+            SELECT accountValue
+            FROM BankAccount
+            WHERE id = :id
+            """)
+    double findAccountValueById(int id);
+
     @Modifying // Без этой аннотации не работают методы UPDATE, DELETE
     @Transactional
     @Query("""
@@ -32,4 +39,20 @@ public interface BankAccountRepository extends JpaRepository<BankAccount, Intege
     void decreaseSumOnBankAccount(double deductible, String accountNumber);
 
     BankAccount findByAccountNumber(String accountNumber);
+
+    @Query("""
+            SELECT ba.accountValue
+            FROM BankAccount ba
+            LEFT JOIN User u ON u.id = ba.user.id
+            WHERE u.id = :id
+                AND ba.accountNumber = :accountNumber
+            """)
+    double getAccountValueByIdAndAccountNumber(int id, String accountNumber);
+
+    @Query("""
+            SELECT currency
+            FROM BankAccount
+            WHERE accountNumber = :accountNumber
+            """)
+    String getCurrencyByAccountNumber(String accountNumber);
 }

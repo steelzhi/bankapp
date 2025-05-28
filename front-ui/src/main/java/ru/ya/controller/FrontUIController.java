@@ -2,16 +2,15 @@ package ru.ya.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import ru.ya.dto.BankAccountDto;
+import ru.ya.dto.TransferDataDto;
 import ru.ya.dto.UserDto;
+import ru.ya.mapper.TransferDataMapper;
 import ru.ya.mapper.UserMapper;
 import ru.ya.model.*;
 import ru.ya.service.FrontUIService;
@@ -25,8 +24,8 @@ public class FrontUIController {
     @Value("${module-exchange-generator}")
     private String moduleExchangeGenerator;
 
-    @Autowired
-    private RestTemplate restTemplate;
+    @Value("${module-transfer}")
+    private String moduleTransfer;
 
     @Autowired
     private FrontUIService frontUIService;
@@ -63,10 +62,8 @@ public class FrontUIController {
 
     @GetMapping("/account")
     public String enterToAccount(Model model) {
-        UserDto userDto = getUserDtoInSystem();
-
-        ResponseEntity<UserDto> response = restTemplate.getForEntity(moduleAccountsHost + userDto.getLogin(), UserDto.class);
-        userDto = response.getBody();
+        String userDtoLogin = getUserDtoInSystem().getLogin();
+        UserDto userDto = responseFromModule.getUserDtoResponseFromModuleAccounts(userDtoLogin);
         model.addAttribute("userDto", userDto);
 
         CurrencyRates currencyRates = getCurrencyRates();
@@ -123,20 +120,8 @@ public class FrontUIController {
     @PostMapping(value = "/user/delete-bank-account/{id}", params = "_method=delete")
     public String deleteBankAccount(Model model, @PathVariable(name = "id") int id) {
         UserDto userDto = getUserDtoInSystem();
-        BankAccountDto bankAccountDto = null;
-        for (BankAccountDto bADto : userDto.getBankAccountDtoList()) {
-            if (bADto.getId() == id) {
-                bankAccountDto = bADto;
-            }
-        }
-
-        if (bankAccountDto.getAccountValue() > 0) {
-            model.addAttribute("bankAccountDto", bankAccountDto);
-            return "bank-account-is-not-empty.html";
-        }
-
         model.addAttribute("login", userDto.getLogin());
-        model.addAttribute("currency", bankAccountDto.getCurrency());
+
         return responseFromModule.getStringResponseFromModuleAccounts("/delete-bank-account", id);
     }
 
@@ -163,8 +148,13 @@ public class FrontUIController {
     @GetMapping("/exchange-rates")
     @ResponseBody
     public CurrencyRates getCurrencyRates() {
-        CurrencyRates currencyRates = responseFromModule.getHashMapResponseFromModule(moduleExchangeGenerator, "/exchange-rates");
+        CurrencyRates currencyRates = responseFromModule.getCurrencyRatesResponseFromModuleExchangeGenerator(moduleExchangeGenerator, "/exchange-rates");
         return currencyRates;
+    }
+
+    @PostMapping("/transfer")
+    public String transfer(@ModelAttribute TransferData transferData) {
+        return responseFromModule.getStringResponseFromModuleTransfer("/transfer", transferData);
     }
 
     private UserDto getUserDtoInSystem() {
