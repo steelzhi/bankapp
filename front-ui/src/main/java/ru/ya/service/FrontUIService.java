@@ -45,18 +45,6 @@ public class FrontUIService {
         return true;
     }
 
-    public boolean doesUserHaveEnoughMoneyToTransfer(UserDto userDto, TransferData transferData) {
-        for (BankAccountDto bankAccountDto : userDto.getBankAccountDtoList()) {
-            if (bankAccountDto.getAccountNumber().equals(transferData.getAccountNumberFrom())) {
-                if (bankAccountDto.getAccountValue() <= transferData.getSum()) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
     public boolean doBankAccountsMatch(TransferData transferData) {
         return transferData.getAccountNumberFrom().equals(transferData.getAccountNumberTo());
     }

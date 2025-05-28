@@ -3,8 +3,10 @@ package ru.ya.controller;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.ya.dto.CoupleOfValuesDto;
 import ru.ya.dto.TransferDataDto;
 import ru.ya.enums.ErrorOperation;
+import ru.ya.mapper.CoupleOfValuesMapper;
 import ru.ya.model.*;
 import ru.ya.service.TransferService;
 import ru.ya.util.ResponseFromModule;
@@ -27,17 +29,15 @@ public class TransferController {
             return responseFromModule.getStringResponseFromModuleNotifications("/notification/error", new Operation(ErrorOperation.NOT_ENOUGH_MONEY_TO_TRANSFER));
         }
 
-/*        UserDto userDto = responseFromModule.getUserDtoResponseFromModuleAccounts(userDtoLogin);
-        if (!frontUIService.doesUserHaveEnoughMoneyToTransfer(userDto, transferData)) {
-            model.addAttribute("userDto", userDto);
-            return "not-enough-money-to-transfer.html";
+        boolean isOpSuspicious = responseFromModule.getBooleanResponseForSuspiciousOpsFromModuleBlocker("/check-operation");
+        if (isOpSuspicious) {
+            return responseFromModule.getStringResponseFromModuleNotifications("/notification/error", new Operation(ErrorOperation.SUSPICIOUS_OPERATION));
         }
 
-        logger.atInfo().log("Произвожу конвертацию суммы " + transferDataDto.getSum() + " из "
+       logger.atInfo().log("Произвожу конвертацию суммы " + transferDataDto.getSum() + " из "
                             + transferDataDto.getCurrencyNameFrom() + " в " + transferDataDto.getCurrencyNameTo());
-        CoupleOfValues coupleOfValues = responseFromModule.getCoupleOfDeltasResponseFromModuleExchange("/exchange-values", transferDataDto);*/
-        return null;
+        CoupleOfValues coupleOfValues = responseFromModule.getCoupleOfValuesResponseFromModuleExchange("/exchange-values", transferDataDto);
+        CoupleOfValuesDto coupleOfValuesDto = CoupleOfValuesMapper.mapToCoupleOfValuesDto(coupleOfValues, transferDataDto);
+        return responseFromModule.getStringResponseFromModuleAccounts("/transfer", coupleOfValuesDto);
     }
-
-
 }

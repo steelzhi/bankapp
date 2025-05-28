@@ -55,4 +55,22 @@ public interface BankAccountRepository extends JpaRepository<BankAccount, Intege
             WHERE accountNumber = :accountNumber
             """)
     String getCurrencyByAccountNumber(String accountNumber);
+
+    @Modifying
+    @Transactional
+    @Query("""
+            UPDATE BankAccount
+            SET accountValue = accountValue - :valueFrom
+            WHERE accountNumber = :accountNumberFrom
+            """)
+    void transferFrom(String accountNumberFrom, double valueFrom);
+
+    @Modifying
+    @Transactional
+    @Query("""
+            UPDATE BankAccount
+            SET accountValue = accountValue + :valueTo
+            WHERE accountNumber = :accountNumberTo
+            """)
+    void transferTo(String accountNumberTo, double valueTo);
 }

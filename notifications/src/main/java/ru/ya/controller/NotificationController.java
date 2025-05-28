@@ -40,6 +40,9 @@ public class NotificationController {
             case SUM_DECREASING -> {
                 return "sum-on-bank-account-decreased-successfully.html";
             }
+            case TRANSFER_SUCCESSFULL -> {
+                return "transaction-successfull.html";
+            }
         }
 
         return "redirect:/";
@@ -63,6 +66,9 @@ public class NotificationController {
             }
             case NOT_ENOUGH_MONEY_TO_TRANSFER -> {
                 return "not-enough-money-to-transfer.html";
+            }
+            case SUSPICIOUS_OPERATION -> {
+                return "operation-transfer-is-suspicious.html";
             }
         }
 

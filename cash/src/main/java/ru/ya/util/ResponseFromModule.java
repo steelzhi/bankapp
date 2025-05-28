@@ -60,15 +60,6 @@ public class ResponseFromModule {
 
     public Boolean getBooleanResponseForSuspiciousOpsFromModuleBlocker(String url) {
         return getBooleanResponseFromModule(moduleBlockerHost, url, moduleName);
-
-/*        RestClient.RequestBodySpec rCRBS = getRestClientRequestBodySpecWithAccessToken(moduleBlockerHost, url);
-
-        ResponseEntity<Boolean> responseEntity = rCRBS
-                .body(moduleName)
-                .retrieve()
-                .toEntity(Boolean.class);
-
-        return responseEntity.getBody();*/
     }
 
     private Boolean getBooleanResponseFromModule(String moduleNameForRequest, String url, Object object) {

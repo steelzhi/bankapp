@@ -26,13 +26,14 @@ public class ExchangeService {
         double deltaTo = 0;
 
         // Вычитаем со счета сумму, которую будем списывать
-        deltaFrom -= sum;
+        deltaFrom += sum;
 
         // Если валюта счета списания не ₽, нужно перевести ее в ₽
         if (!transferDataDto.getCurrencyNameFrom().equals(Currency.RUB.name())) {
             for (CurrencyRates.CurrencyRate currencyRate : currencyRates.getCurrencyRatesList()) {
                 if (transferDataDto.getCurrencyNameFrom().equals(currencyRate.getCurrencyName())) {
-                    sum *= currencyRate.getBuyRate();
+                    sum *= currencyRate.getSellRate();
+                    break;
                 }
             }
         }
@@ -42,6 +43,7 @@ public class ExchangeService {
             for (CurrencyRates.CurrencyRate currencyRate : currencyRates.getCurrencyRatesList()) {
                 if (transferDataDto.getCurrencyNameTo().equals(currencyRate.getCurrencyName())) {
                     sum /= currencyRate.getSellRate();
+                    break;
                 }
             }
         }

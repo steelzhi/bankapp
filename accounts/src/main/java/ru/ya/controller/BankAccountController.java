@@ -3,6 +3,7 @@ package ru.ya.controller;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.ya.dto.CoupleOfValuesDto;
 import ru.ya.dto.TransferDataDto;
 import ru.ya.enums.ErrorOperation;
 import ru.ya.enums.SuccessfullOperation;
@@ -61,5 +62,11 @@ public class BankAccountController {
     public TransferDataDto getTransferDataDtoIfUserHasEnoughMoneyToTransfer(@RequestBody TransferData transferData) {
         TransferDataDto transferDataDto = bankAccountService.getTransferDataDtoIfUserHasEnoughMoneyToTransfer(transferData);
         return transferDataDto;
+    }
+
+    @PostMapping("/transfer")
+    public String transfer(@RequestBody CoupleOfValuesDto coupleOfValuesDto) {
+        bankAccountService.transfer(coupleOfValuesDto);
+        return responseFromModule.getResponseFromModuleNotifications("/notification/success", new Operation(SuccessfullOperation.TRANSFER_SUCCESSFULL));
     }
 }

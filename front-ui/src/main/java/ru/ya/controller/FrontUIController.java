@@ -153,7 +153,12 @@ public class FrontUIController {
     }
 
     @PostMapping("/transfer")
-    public String transfer(@ModelAttribute TransferData transferData) {
+    public String transfer(Model model, @ModelAttribute TransferData transferData) {
+        if (frontUIService.doBankAccountsMatch(transferData)) {
+            return "redirect:/account";
+        }
+
+        model.addAttribute(transferData.getUserId());
         return responseFromModule.getStringResponseFromModuleTransfer("/transfer", transferData);
     }
 

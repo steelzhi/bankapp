@@ -166,21 +166,19 @@
             <td>
                 <form th:action="@{/user/increase-sum}" method="POST" style="display:inline-block"
                       th:object="${cash}">
-                    <input id="cashInc" name="sum" type="number" min="0.01" step="0.01" style="width:60px"
-                           oninput=checkSum() required/>
+                    <input id="cashInc" name="sum" type="number" min="0.01" step="0.01" style="width:60px" required/>
                     <input type="hidden" name="userLogin" th:value="${userDto.login}">
                     <input type="hidden" name="accountNumber" th:value="${bankAccountDto.accountNumber}">
-                    <button type="submit" class="submitbutton">Добавить</button>
+                    <button type="submit" class="submitbutton" onclick=checkSumInc()>Добавить</button>
                 </form>
             </td>
             <td>
                 <form th:action="@{/user/decrease-sum}" method="POST" style="display:inline-block"
                       th:object="${cash}">
-                    <input id="cashDec" name="sum" type="number" min="0.01" step="0.01" style="width:60px"
-                           oninput=checkSum() required/>
+                    <input id="cashDec" name="sum" type="number" min="0.01" step="0.01" style="width:60px" required/>
                     <input type="hidden" name="userLogin" th:value="${userDto.login}">
                     <input type="hidden" name="accountNumber" th:value="${bankAccountDto.accountNumber}">
-                    <button type="submit" class="submitbutton">Снять</button>
+                    <button type="submit" class="submitbutton" onclick=checkSumDec()>Снять</button>
                 </form>
             </td>
         </tr>
@@ -325,10 +323,16 @@
             alert("Пользователь не достиг 18 лет. Заводить банковский аккаунт ему запрещено");
         }
     }
-    function checkSum() {
+    function checkSumInc() {
         var value = document.getElementById("cashInc").value;
         if (value === null || value === "") {
-            alert("Для совершения действия с наличными нужно ввести сумму");
+            alert("Для пополнения нужно ввести сумму");
+        }
+    }
+    function checkSumDec() {
+        var value = document.getElementById("cashDec").value;
+        if (value === null || value === "") {
+            alert("Для снятия нужно ввести сумму");
         }
     }
     function checkCurrency() {

@@ -2,18 +2,17 @@ package ru.ya.controller;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import ru.ya.enums.ErrorOperation;
 import ru.ya.enums.SuccessfullOperation;
 import ru.ya.model.Cash;
 import ru.ya.model.Operation;
-import ru.ya.service.CashService;
 import ru.ya.util.ResponseFromModule;
 
 @RestController
 public class CashController {
-    @Autowired
-    CashService cashService;
 
     @Autowired
     Logger logger;

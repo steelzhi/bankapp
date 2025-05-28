@@ -28,11 +28,11 @@ public class CurrencyRates {
         }
 
         public void setSellRate() {
-            sellRate = cBValue * (1 + tolerance);
+            sellRate = cBValue * (1 + tolerance) + 0.01;
         }
 
         public void setBuyRate() {
-            buyRate = cBValue * (1 - tolerance);
+            buyRate = cBValue * (1 - tolerance) - 0.01;
         }
 
         public double getSellRate() {

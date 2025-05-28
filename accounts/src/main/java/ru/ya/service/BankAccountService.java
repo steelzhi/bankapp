@@ -1,8 +1,10 @@
 package ru.ya.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import ru.ya.dto.CoupleOfValuesDto;
 import ru.ya.dto.TransferDataDto;
 import ru.ya.dto.UserDto;
 import ru.ya.enums.Currency;
@@ -70,6 +72,13 @@ public class BankAccountService {
 
         return null;
     }
+
+    @Transactional
+    public void transfer(CoupleOfValuesDto coupleOfValuesDto) {
+        bankAccountRepository.transferFrom(coupleOfValuesDto.getAccountNumberFrom(), coupleOfValuesDto.getValueFrom());
+        bankAccountRepository.transferTo(coupleOfValuesDto.getAccountNumberTo(), coupleOfValuesDto.getValueTo());
+    }
+
 
     private BankAccount setAccountNumber(BankAccount bankAccount) {
         switch (bankAccount.getCurrency()) {
