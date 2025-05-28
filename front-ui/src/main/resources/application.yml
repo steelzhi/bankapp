@@ -43,7 +43,7 @@ spring:
             scope: profile
             clientAuthenticationMethod: client_secret_post # Способ передачи секрета
 
-module-accounts: http://localhost:8090/
-module-cash: http://localhost:8092/
+module-accounts: http://accounts/
+module-cash: http://cash/
 module-exchange-generator: http://localhost:8094/
 module-transfer: http://localhost:8096/

@@ -70,6 +70,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    @LoadBalanced
     RestTemplate restTemplate() {
         return new RestTemplate();
     }
