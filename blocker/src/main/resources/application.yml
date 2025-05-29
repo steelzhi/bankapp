@@ -19,12 +19,13 @@ spring:
         ip-address: localhost
         #        instance-id: ${spring.application.name}:${random.value}
         instance-id: ${spring.application.name}
-        preferIpAddress: true   # Использовать IP адрес вместо имени хоста
+        #preferIpAddress: true
+        preferIpAddress: false   # Использовать IP адрес вместо имени хоста
         serviceName: ${spring.application.name} # Имя сервиса
         health-check-url: http://localhost:${server.port}/actuator/health
         health-check-path: /actuator/health
         heartbeat:
-          enabled: false       # Отключаем Heartbeat (необязательно)
+          enabled: true       # Отключаем Heartbeat (необязательно)
 
   security:
     oauth2:
