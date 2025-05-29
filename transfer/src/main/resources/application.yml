@@ -52,3 +52,7 @@ module-accounts: http://localhost:8090/
 module-notifications: http://localhost:8091/
 module-blocker: http://localhost:8093/
 module-exchange: http://localhost:8095/
+#module-accounts: http://accounts/
+#module-notifications: http://notifications/
+#module-blocker: http://blocker/
+#module-exchange: http://exchange/

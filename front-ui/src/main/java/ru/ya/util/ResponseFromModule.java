@@ -9,7 +9,6 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import ru.ya.dto.TransferDataDto;
 import ru.ya.dto.UserDto;
 import ru.ya.model.Cash;
 import ru.ya.model.CurrencyRates;
@@ -23,15 +22,12 @@ public class ResponseFromModule {
 
     @Value("${module-accounts}")
     private String moduleAccountsHost;
-    /*        private String accountsModuleName = "http://accounts";*/
 
     @Value("${module-cash}")
     private String moduleCashHost;
-    /*        private String cashModuleName = "cash";*/
 
     @Value("${module-transfer}")
     private String moduleTransferHost;
-    /*        private String transferModuleName = "transfer";*/
 
     @Autowired
     OAuth2AuthorizedClientManager manager;
@@ -41,17 +37,14 @@ public class ResponseFromModule {
 
     public String getStringResponseFromModuleTransfer(String url, TransferData transferData) {
         return getStringResponseFromModule(moduleTransferHost, url, transferData);
-        /*        return getResponseFromModule(transferModuleName, url, transferData);*/
     }
 
     public String getStringResponseFromModuleCash(String url, Cash cash) {
         return getStringResponseFromModule(moduleCashHost, url, cash);
-        /*        return getResponseFromModule(cashModuleName, url, cash);*/
     }
 
     public String getStringResponseFromModuleAccounts(String url, Object object) {
         return getStringResponseFromModule(moduleAccountsHost, url, object);
-        /*        return getResponseFromModule(accountsModuleName, url, object);*/
     }
 
     private String getStringResponseFromModule(String moduleNameForRequest, String url, Object object) {

@@ -49,3 +49,4 @@ spring:
             clientAuthenticationMethod: client_secret_post # Способ передачи секрета
 
 module-exchange-generator: http://localhost:8094/
+#module-exchange-generator: http://exchange-generator/

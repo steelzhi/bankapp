@@ -8,9 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import ru.ya.dto.TransferDataDto;
 import ru.ya.dto.UserDto;
-import ru.ya.mapper.TransferDataMapper;
 import ru.ya.mapper.UserMapper;
 import ru.ya.model.*;
 import ru.ya.service.FrontUIService;
@@ -18,14 +16,8 @@ import ru.ya.util.ResponseFromModule;
 
 @Controller
 public class FrontUIController {
-    @Value("${module-accounts}")
-    private String moduleAccountsHost;
-
     @Value("${module-exchange-generator}")
-    private String moduleExchangeGenerator;
-
-    @Value("${module-transfer}")
-    private String moduleTransfer;
+    private String moduleExchangeGeneratorHost;
 
     @Autowired
     private FrontUIService frontUIService;
@@ -148,7 +140,7 @@ public class FrontUIController {
     @GetMapping("/exchange-rates")
     @ResponseBody
     public CurrencyRates getCurrencyRates() {
-        CurrencyRates currencyRates = responseFromModule.getCurrencyRatesResponseFromModuleExchangeGenerator(moduleExchangeGenerator, "/exchange-rates");
+        CurrencyRates currencyRates = responseFromModule.getCurrencyRatesResponseFromModuleExchangeGenerator(moduleExchangeGeneratorHost, "/exchange-rates");
         return currencyRates;
     }
 

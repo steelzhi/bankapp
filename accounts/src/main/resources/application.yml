@@ -70,3 +70,4 @@ spring:
       mode: always
 
 module-notifications: http://localhost:8091/
+# module-notifications: http://notifications/
