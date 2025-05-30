@@ -9,9 +9,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class CoupleOfValuesDto {
+    int senderId;
     String accountNumberFrom;
     String currencyNameFrom;
     double valueFrom;
+    int receiverId;
     String accountNumberTo;
     String currencyNameTo;
     double valueTo;

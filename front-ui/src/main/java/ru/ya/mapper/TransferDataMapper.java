@@ -24,7 +24,8 @@ public class TransferDataMapper {
         }
 
         return new TransferDataDto(
-                transferData.getUserId(),
+                transferData.getSenderId(),
+                transferData.getReceiverId(),
                 transferData.getAccountNumberFrom(),
                 currencyNameFrom,
                 transferData.getAccountNumberTo(),

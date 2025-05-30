@@ -13,9 +13,11 @@ public class CoupleOfValuesMapper {
 
     public static CoupleOfValuesDto mapToCoupleOfValuesDto(CoupleOfValues coupleOfValues, TransferDataDto transferDataDto) {
         return new CoupleOfValuesDto(
+                transferDataDto.getSenderId(),
                 transferDataDto.getAccountNumberFrom(),
                 coupleOfValues.getCurrencyNameFrom(),
                 coupleOfValues.getValueFrom(),
+                transferDataDto.getReceiverId(),
                 transferDataDto.getAccountNumberTo(),
                 coupleOfValues.getCurrencyNameTo(),
                 coupleOfValues.getValueTo()

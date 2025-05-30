@@ -12,6 +12,7 @@ import ru.ya.service.TransferService;
 import ru.ya.util.ResponseFromModule;
 
 @RestController
+@RequestMapping("/transfer")
 public class TransferController {
     @Autowired
     TransferService transferService;
@@ -22,7 +23,7 @@ public class TransferController {
     @Autowired
     ResponseFromModule responseFromModule;
 
-    @PostMapping("/transfer")
+    @PostMapping
     public String getConvertedSum(@RequestBody TransferData transferData) {
         TransferDataDto transferDataDto = responseFromModule.getTransferDataDtoResponseFromModuleAccounts("/is-possible-to-transfer", transferData);
         if (transferDataDto == null) {

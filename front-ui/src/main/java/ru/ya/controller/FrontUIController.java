@@ -9,10 +9,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.ya.dto.UserDto;
+import ru.ya.dto.UserDtos;
 import ru.ya.mapper.UserMapper;
 import ru.ya.model.*;
 import ru.ya.service.FrontUIService;
 import ru.ya.util.ResponseFromModule;
+
+import java.util.List;
 
 @Controller
 public class FrontUIController {
@@ -57,6 +60,10 @@ public class FrontUIController {
         String userDtoLogin = getUserDtoInSystem().getLogin();
         UserDto userDto = responseFromModule.getUserDtoResponseFromModuleAccounts(userDtoLogin);
         model.addAttribute("userDto", userDto);
+
+        List<UserDto> userDtoList = responseFromModule.getUserDtoListResponseFromModuleAccounts(userDtoLogin);
+        UserDtos userDtos = new UserDtos(userDtoList);
+        model.addAttribute("userDtos", userDtos);
 
         CurrencyRates currencyRates = getCurrencyRates();
         model.addAttribute("currencyRates", currencyRates);
@@ -150,7 +157,7 @@ public class FrontUIController {
             return "redirect:/account";
         }
 
-        model.addAttribute(transferData.getUserId());
+        model.addAttribute(transferData.getReceiverId());
         return responseFromModule.getStringResponseFromModuleTransfer("/transfer", transferData);
     }
 

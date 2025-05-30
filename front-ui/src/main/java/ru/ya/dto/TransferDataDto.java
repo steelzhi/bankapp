@@ -11,7 +11,8 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TransferDataDto {
-    int userId;
+    int senderId;
+    int receiverId;
     String accountNumberFrom;
     String currencyNameFrom;
     String accountNumberTo;

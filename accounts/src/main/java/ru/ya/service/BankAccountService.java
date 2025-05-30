@@ -60,7 +60,7 @@ public class BankAccountService {
     }
 
     public TransferDataDto getTransferDataDtoIfUserHasEnoughMoneyToTransfer(TransferData transferData) {
-        double sumOnBankAccount = bankAccountRepository.getAccountValueByIdAndAccountNumber(transferData.getUserId(), transferData.getAccountNumberFrom());
+        double sumOnBankAccount = bankAccountRepository.getAccountValueByIdAndAccountNumber(transferData.getSenderId(), transferData.getAccountNumberFrom());
         if (sumOnBankAccount >= transferData.getSum()) {
             Currency currencyFrom = Currency.valueOf(bankAccountRepository.getCurrencyByAccountNumber(transferData.getAccountNumberFrom()));
             String currencyNameFrom = currencyFrom.name();
@@ -75,6 +75,10 @@ public class BankAccountService {
 
     @Transactional
     public void transfer(CoupleOfValuesDto coupleOfValuesDto) {
+/*        if (coupleOfValuesDto.getReceiverId() == 0) { // Если id = 0, значит, производится перевод между счетами одного клиента
+
+        }*/
+
         bankAccountRepository.transferFrom(coupleOfValuesDto.getAccountNumberFrom(), coupleOfValuesDto.getValueFrom());
         bankAccountRepository.transferTo(coupleOfValuesDto.getAccountNumberTo(), coupleOfValuesDto.getValueTo());
     }

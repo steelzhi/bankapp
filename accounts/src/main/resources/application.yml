@@ -19,8 +19,8 @@ spring:
         ip-address: localhost
         #        instance-id: ${spring.application.name}:${random.value}
         instance-id: ${spring.application.name}
-        #preferIpAddress: true
-        preferIpAddress: false   # Использовать IP адрес вместо имени хоста
+        preferIpAddress: true
+        #preferIpAddress: false   # Использовать IP адрес вместо имени хоста
         serviceName: ${spring.application.name} # Имя сервиса
         health-check-url: http://localhost:${server.port}/actuator/health
         health-check-path: /actuator/health
@@ -70,5 +70,5 @@ spring:
     init:
       mode: always
 
-# module-notifications: http://localhost:8091/
-module-notifications: http://notifications/
+module-notifications: http://localhost:8091/
+#module-notifications: http://notifications/

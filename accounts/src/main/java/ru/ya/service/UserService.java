@@ -10,6 +10,9 @@ import ru.ya.model.User;
 import ru.ya.repository.BankAccountRepository;
 import ru.ya.repository.UserRepository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class UserService {
     @Autowired
@@ -23,9 +26,17 @@ public class UserService {
 
     public UserDto getUserDto(String login) {
         User user = userRepository.findByLogin(login);
-/*        List<BankAccount> bankAccountList = bankAccountRepository.findAllByUserId(user.getId());
-        user.setBankAccountList(bankAccountList);*/
         return UserMapper.mapToUserDto(user);
+    }
+
+    public List<UserDto> getOtherUserDtos(String login) {
+        List<User> users = userRepository.findAllOtherUsersExceptUser(login);
+        List<UserDto> userDtoList = new ArrayList<>();
+        for (User user : users) {
+            userDtoList.add(UserMapper.mapToUserDto(user));
+        }
+
+        return userDtoList;
     }
 
     public boolean doesUserAlreadyExists(UserDto userDto) {

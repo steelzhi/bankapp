@@ -12,7 +12,8 @@ import ru.ya.enums.Currency;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TransferData {
-    int userId;
+    int senderId;
+    int receiverId;
     String accountNumberFrom;
     String accountNumberTo;
     double sum;

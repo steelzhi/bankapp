@@ -2,6 +2,7 @@ package ru.ya.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
@@ -14,6 +15,10 @@ import ru.ya.model.Cash;
 import ru.ya.model.CurrencyRates;
 import ru.ya.model.NewAccountCurrency;
 import ru.ya.model.TransferData;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class ResponseFromModule {
@@ -112,5 +117,24 @@ public class ResponseFromModule {
                 .retrieve().toEntity(UserDto.class);
 
         return responseEntity.getBody();
+    }
+
+    public List<UserDto> getUserDtoListResponseFromModuleAccounts(String userDtoLogin) {
+        OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
+                .withClientRegistrationId(moduleName)
+                .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
+                .build()
+        );
+
+        String accessToken = client.getAccessToken().getTokenValue();
+
+        List<UserDto> userDtoList = restClient.get()
+                .uri(moduleAccountsHost + "users-except/" + userDtoLogin)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
+                .retrieve()
+                .body(new ParameterizedTypeReference<List<UserDto>>() {
+                });
+
+        return userDtoList;
     }
 }

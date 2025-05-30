@@ -15,6 +15,13 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     User findByLogin(String login);
 
     @Query("""
+            SELECT u
+            FROM User u
+            WHERE login != :login
+            """)
+    List<User> findAllOtherUsersExceptUser(String login);
+
+    @Query("""
             SELECT id
             FROM User
             WHERE login = :login

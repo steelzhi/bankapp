@@ -19,8 +19,8 @@ spring:
         ip-address: localhost
         #        instance-id: ${spring.application.name}:${random.value}
         instance-id: ${spring.application.name}
-        #preferIpAddress: true
-        preferIpAddress: false   # Использовать IP адрес вместо имени хоста
+        preferIpAddress: true
+        #preferIpAddress: false   # Использовать IP адрес вместо имени хоста
         serviceName: ${spring.application.name} # Имя сервиса
         health-check-url: http://localhost:${server.port}/actuator/health
         health-check-path: /actuator/health
@@ -49,5 +49,5 @@ spring:
             scope: profile
             clientAuthenticationMethod: client_secret_post # Способ передачи секрета
 
-# module-exchange-generator: http://localhost:8094/
-module-exchange-generator: http://exchange-generator/
+module-exchange-generator: http://localhost:8094/
+#module-exchange-generator: http://exchange-generator/

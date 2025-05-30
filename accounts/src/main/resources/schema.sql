@@ -25,14 +25,14 @@ CREATE TABLE IF NOT EXISTS accounts.bank_accounts (
     CONSTRAINT users_bank_accounts FOREIGN KEY (user_id) REFERENCES accounts.users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-INSERT INTO accounts.users(login, password, name, surname, birthdate, role)
-    VALUES ('1', '$2a$12$nITs0fz17B8LUqL0uRKJ/e42ifhMuJoYWCDblanBZPHhGk9eUClCO', 'a', 'b', '2000-01-01', 'USER'); --pass = 1
-INSERT INTO accounts.bank_accounts(account_number, account_value, user_id, currency) VALUES (111, 250, 1, 'RUB');
+INSERT INTO accounts.users(login, password, name, surname, birthdate, role) VALUES
+     ('1', '$2a$12$nITs0fz17B8LUqL0uRKJ/e42ifhMuJoYWCDblanBZPHhGk9eUClCO', 'a', 'b', '2000-01-01', 'USER'), --pass = 1
+     ('2', '$2a$12$JigV3.EF/NjoRdRIiMSN2uFl7Sg3ye1k8WqVBf14DTtMGBfwGY.W2', 'с', 'в', '2002-03-03', 'USER'), --pass = 2
+     ('3', '$2a$12$9giRaG67CXZys9znLapxieiBFa.7eLOA/8jPSBCOoOAmKIkBV8Z/O', 'kk', 'kk', '1992-05-01', 'USER'); --pass = 3
 
---INSERT INTO users(username, password, role) VALUES
-    --('user1', '$2a$12$o9FYCapKCbubG3r5mHtTA.dWWr0xsIJPku3y4NXWywaUpW.DRrIx.', 'USER'), --pass = pass1
-    --('user2', '$2a$12$TjUVWFCg/9OOsgVKoCAba.wg.8xGrmGfowL.p8S.U.17DtaNOJfPa', 'USER'), --pass = pass2
-    --('1', '$2a$12$tjr4cxHzoJ/pdOXPPyFgGuKlnILawpnKWO/7yKKPkNxNRgUuJ7s1y', 'USER'), --pass = 1
-    --('2', '$2a$12$poSSKtrQ7yWlvX2LuTUsL.rIbxHDm6GuyVP8BhUBjGeZ35uYouloa', 'USER'), --pass = 2
-    --('admin', '$$2a$12$wC5ziXwxwZyXFERx0QEh7OmwHJUw4HbH1.c/IDEGjmoyMJCFP7dpC', 'ADMIN'); --pass = admin
-
+INSERT INTO accounts.bank_accounts(account_number, account_value, user_id, currency) VALUES
+    (4071391041, 250, 1, 'RUB'),
+    (3651441200, 333, 1, 'USD'),
+    (7410200021, 500, 2, 'CNY'),
+    (7410400125, 1300, 3, 'CNY'),
+    (3651200021, 80, 3, 'USD');
