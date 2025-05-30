@@ -1,6 +1,5 @@
 package ru.ya.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +35,7 @@ public class SecurityConfiguration {
     SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
         return security
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/*", "/register-user", "/actuator/health").permitAll()
+                        .requestMatchers("/register-user", "/actuator/health").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(customizer -> {
@@ -44,13 +43,9 @@ public class SecurityConfiguration {
                             .jwt(jwtCustomizer -> {
                                 JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
                                 jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
-                                    System.out.println("222");
                                     Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
-                                    System.out.println("1: " + resourceAccess);
                                     Map<String, Object> account = (Map<String, Object>) resourceAccess.get("account");
-                                    System.out.println("2: " + account);
                                     List<String> roles = (List<String>) account.get("roles");
-                                    System.out.println("3: " + roles);
 
                                     return roles.stream()
                                             .map(SimpleGrantedAuthority::new)
@@ -61,8 +56,6 @@ public class SecurityConfiguration {
                                 jwtCustomizer.jwtAuthenticationConverter(jwtAuthenticationConverter);
                             });
                         }
-
-
                 )
                 .build();
     }

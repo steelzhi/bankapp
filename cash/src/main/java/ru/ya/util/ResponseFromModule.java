@@ -19,15 +19,12 @@ public class ResponseFromModule {
 
     @Value("${module-accounts}")
     private String moduleAccountsHost;
-    /*        private String accountsModuleName = "accounts";*/
 
     @Value("${module-notifications}")
     private String moduleNotificationsHost;
-    /*        private String notificationsModuleName = "notifications";*/
 
     @Value("${module-blocker}")
     private String moduleBlockerHost;
-    /*        private String blockerModuleName = "blocker";*/
 
     @Autowired
     OAuth2AuthorizedClientManager manager;
@@ -36,26 +33,15 @@ public class ResponseFromModule {
     RestClient restClient;
 
     public String getStringResponseFromModuleAccounts(String url, Cash cash) {
-        /*        return getResponseFromModule(accountsModuleName, url, cash);*/
         return getStringResponseFromModule(moduleAccountsHost, url, cash);
     }
 
     public String getStringResponseForSuccessfullOpFromModuleNotifications(String url, Operation operation) {
-        /*        return getResponseFromModule(notificationsModuleName, url, operation);*/
         return getStringResponseFromModule(moduleNotificationsHost, url, operation);
     }
 
     public Boolean getBooleanResponseForDecreaseOpFromModuleAccounts(String url, Cash cash) {
         return getBooleanResponseFromModule(moduleAccountsHost, url, cash);
-
-/*        RestClient.RequestBodySpec rCRBS = getRestClientRequestBodySpecWithAccessToken(moduleAccountsHost, url);
-
-        ResponseEntity<Boolean> responseEntity = rCRBS
-                .body(cash)
-                .retrieve()
-                .toEntity(Boolean.class);
-
-        return responseEntity.getBody();*/
     }
 
     public Boolean getBooleanResponseForSuspiciousOpsFromModuleBlocker(String url) {

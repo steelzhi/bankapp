@@ -1,3 +1,4 @@
+/*
 package ru.ya.mapper;
 
 import ru.ya.dto.BankAccountDto;
@@ -23,7 +24,8 @@ public class TransferDataMapper {
         }
 
         return new TransferDataDto(
-                transferData.getUserId(),
+                transferData.getSenderId(),
+                transferData.getReceiverId(),
                 transferData.getAccountNumberFrom(),
                 currencyNameFrom,
                 transferData.getAccountNumberTo(),
@@ -32,3 +34,4 @@ public class TransferDataMapper {
                 );
     }
 }
+*/

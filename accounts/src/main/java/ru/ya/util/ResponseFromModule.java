@@ -18,7 +18,6 @@ public class ResponseFromModule {
 
     @Value("${module-notifications}")
     private String moduleNotificationsHost;
-/*    private String notificationsModuleName = "notifications";*/
 
     @Autowired
     OAuth2AuthorizedClientManager manager;
@@ -38,7 +37,6 @@ public class ResponseFromModule {
 
         ResponseEntity<String> responseEntity = restClient.post()
                 .uri(moduleNotificationsHost + url)
-/*                .uri(notificationsModuleName + url)*/
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                 .body(operation)
                 .retrieve()

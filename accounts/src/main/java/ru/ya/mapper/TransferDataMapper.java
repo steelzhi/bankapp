@@ -23,7 +23,8 @@ public class TransferDataMapper {
         }
 
         return new TransferDataDto(
-                transferData.getUserId(),
+                transferData.getSenderId(),
+                transferData.getReceiverId(),
                 transferData.getAccountNumberFrom(),
                 currencyNameFrom,
                 transferData.getAccountNumberTo(),
@@ -34,7 +35,8 @@ public class TransferDataMapper {
 
     public static TransferDataDto mapToTransferDataDto(TransferData transferData, String currencyNameFrom, String currencyNameTo) {
         return new TransferDataDto(
-                transferData.getUserId(),
+                transferData.getSenderId(),
+                transferData.getReceiverId(),
                 transferData.getAccountNumberFrom(),
                 currencyNameFrom,
                 transferData.getAccountNumberTo(),

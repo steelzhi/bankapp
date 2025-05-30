@@ -60,7 +60,7 @@ public class BankAccountService {
     }
 
     public TransferDataDto getTransferDataDtoIfUserHasEnoughMoneyToTransfer(TransferData transferData) {
-        double sumOnBankAccount = bankAccountRepository.getAccountValueByIdAndAccountNumber(transferData.getUserId(), transferData.getAccountNumberFrom());
+        double sumOnBankAccount = bankAccountRepository.getAccountValueByIdAndAccountNumber(transferData.getSenderId(), transferData.getAccountNumberFrom());
         if (sumOnBankAccount >= transferData.getSum()) {
             Currency currencyFrom = Currency.valueOf(bankAccountRepository.getCurrencyByAccountNumber(transferData.getAccountNumberFrom()));
             String currencyNameFrom = currencyFrom.name();

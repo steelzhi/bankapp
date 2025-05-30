@@ -1,35 +1,30 @@
 package ru.ya.service;
 
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 import ru.ya.dto.UserDto;
 import ru.ya.model.UserPrincipal;
+import ru.ya.util.ResponseFromModule;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
-    @Value ("${module-accounts}")
+    @Value("${module-accounts}")
     private String moduleAccountsHost;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private RestClient restClient;
 
-/*    @Autowired
-    Logger logger;*/
+    @Autowired
+    ResponseFromModule responseFromModule;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        //ResponseEntity<UserDto> response = restTemplate.getForEntity("http://accounts/" + username, UserDto.class);
-        ResponseEntity<UserDto> response = restTemplate.getForEntity(moduleAccountsHost + username, UserDto.class);
-        UserDto userDto = response.getBody();
-        UserPrincipal userPrincipal = new UserPrincipal(userDto);
-
-        return userPrincipal;
+        UserDto userDto = responseFromModule.getUserDtoResponseFromModuleAccounts(username);
+		return new UserPrincipal(userDto);
     }
 }

@@ -8,24 +8,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import ru.ya.dto.TransferDataDto;
 import ru.ya.dto.UserDto;
-import ru.ya.mapper.TransferDataMapper;
+import ru.ya.dto.UserDtos;
 import ru.ya.mapper.UserMapper;
 import ru.ya.model.*;
 import ru.ya.service.FrontUIService;
 import ru.ya.util.ResponseFromModule;
 
+import java.util.List;
+
 @Controller
 public class FrontUIController {
-    @Value("${module-accounts}")
-    private String moduleAccountsHost;
-
     @Value("${module-exchange-generator}")
-    private String moduleExchangeGenerator;
-
-    @Value("${module-transfer}")
-    private String moduleTransfer;
+    private String moduleExchangeGeneratorHost;
 
     @Autowired
     private FrontUIService frontUIService;
@@ -65,6 +60,10 @@ public class FrontUIController {
         String userDtoLogin = getUserDtoInSystem().getLogin();
         UserDto userDto = responseFromModule.getUserDtoResponseFromModuleAccounts(userDtoLogin);
         model.addAttribute("userDto", userDto);
+
+        List<UserDto> userDtoList = responseFromModule.getUserDtoListResponseFromModuleAccounts(userDtoLogin);
+        UserDtos userDtos = new UserDtos(userDtoList);
+        model.addAttribute("userDtos", userDtos);
 
         CurrencyRates currencyRates = getCurrencyRates();
         model.addAttribute("currencyRates", currencyRates);
@@ -148,8 +147,7 @@ public class FrontUIController {
     @GetMapping("/exchange-rates")
     @ResponseBody
     public CurrencyRates getCurrencyRates() {
-        CurrencyRates currencyRates = responseFromModule.getCurrencyRatesResponseFromModuleExchangeGenerator(moduleExchangeGenerator, "/exchange-rates");
-        return currencyRates;
+		return responseFromModule.getCurrencyRatesResponseFromModuleExchangeGenerator(moduleExchangeGeneratorHost, "/exchange-rates");
     }
 
     @PostMapping("/transfer")
@@ -158,7 +156,7 @@ public class FrontUIController {
             return "redirect:/account";
         }
 
-        model.addAttribute(transferData.getUserId());
+        model.addAttribute(transferData.getReceiverId());
         return responseFromModule.getStringResponseFromModuleTransfer("/transfer", transferData);
     }
 
@@ -175,8 +173,6 @@ public class FrontUIController {
         UserPrincipal userPrincipal = (UserPrincipal) userDetails;*/
 
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        UserDto userDto = userPrincipal.getUserDto();
-
-        return userDto;
+		return userPrincipal.getUserDto();
     }
 }

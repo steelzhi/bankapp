@@ -25,15 +25,12 @@ public class ResponseFromModule {
 
     @Value("${module-accounts}")
     private String moduleAccountsHost;
-    /*        private String accountsModuleName = "http://accounts";*/
 
     @Value("${module-notifications}")
     private String moduleNotificationsHost;
-    /*    private String notificationsModuleName = "notifications";*/
 
     @Value("${module-blocker}")
     private String moduleBlockerHost;
-    /*        private String blockerModuleName = "blocker";*/
 
     @Autowired
     OAuth2AuthorizedClientManager manager;

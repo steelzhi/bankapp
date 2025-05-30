@@ -9,7 +9,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class CoupleOfValues {
-
     String currencyNameFrom;
     double valueFrom;
     String currencyNameTo;

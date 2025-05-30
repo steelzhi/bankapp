@@ -17,7 +17,7 @@ public class ResponseFromModule {
     private String moduleName;
 
     @Value("${module-exchange-generator}")
-    private String moduleExchangeGenerator;
+    private String moduleExchangeGeneratorHost;
 
     @Autowired
     OAuth2AuthorizedClientManager manager;
@@ -26,7 +26,6 @@ public class ResponseFromModule {
     RestClient restClient;
 
     public CurrencyRates getCurrencyRatesResponseFromModuleExchangeGenerator(String moduleNameForRequest, String url) {
-        /*        RestClient restClient = RestClient.create(moduleNameForRequest);*/
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
                 .withClientRegistrationId(moduleName)
                 .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.

@@ -3,7 +3,6 @@ package ru.ya.mapper;
 import ru.ya.dto.BankAccountDto;
 import ru.ya.dto.TransferDataDto;
 import ru.ya.dto.UserDto;
-import ru.ya.enums.Roles;
 import ru.ya.model.TransferData;
 
 public class TransferDataMapper {
@@ -24,7 +23,8 @@ public class TransferDataMapper {
         }
 
         return new TransferDataDto(
-                transferData.getUserId(),
+                transferData.getSenderId(),
+                transferData.getReceiverId(),
                 transferData.getAccountNumberFrom(),
                 currencyNameFrom,
                 transferData.getAccountNumberTo(),

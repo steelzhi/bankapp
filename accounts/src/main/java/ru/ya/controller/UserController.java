@@ -10,6 +10,8 @@ import ru.ya.model.Operation;
 import ru.ya.service.UserService;
 import ru.ya.util.ResponseFromModule;
 
+import java.util.List;
+
 @RestController
 public class UserController {
     @Autowired
@@ -24,8 +26,13 @@ public class UserController {
     @GetMapping("/{login}")
     public UserDto getUser(@PathVariable String login) {
         logger.atInfo().log("Getting user with login = " + login);
-        UserDto userDto = userService.getUserDto(login);
         return userService.getUserDto(login);
+    }
+
+    @GetMapping("/users-except/{login}")
+    public List<UserDto> getOtherUsers(@PathVariable String login) {
+        logger.atInfo().log("Getting all users except user with login = " + login);
+        return userService.getOtherUserDtos(login);
     }
 
     @PostMapping("/register-user")
