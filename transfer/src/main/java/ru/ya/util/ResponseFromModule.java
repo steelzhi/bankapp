@@ -86,6 +86,15 @@ public class ResponseFromModule {
         return getBooleanResponseFromModule(moduleBlockerHost, url);
     }
 
+    public Boolean getBooleanResponseFromModuleAccounts(String url, TransferData transferData) {
+        ResponseEntity<Boolean> responseEntity = getRestClientRequestBodySpecWithAccessToken(moduleAccountsHost, url)
+                .body(transferData)
+                .retrieve()
+                .toEntity(Boolean.class);
+
+        return responseEntity.getBody();
+    }
+
     private Boolean getBooleanResponseFromModule(String moduleNameForRequest, String url) {
         ResponseEntity<Boolean> responseEntity = getRestClientRequestBodySpecWithAccessToken(moduleNameForRequest, url)
                 .body(moduleName)

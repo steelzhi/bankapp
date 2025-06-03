@@ -153,7 +153,7 @@ public class FrontUIController {
 
     @PostMapping("/transfer")
     public String transfer(Model model, @ModelAttribute TransferData transferData) {
-        if (frontUIService.doBankAccountsMatch(transferData)) {
+        if (frontUIService.doUsersBankAccountsMatch(transferData)) {
             return "redirect:/account";
         }
 

@@ -17,8 +17,12 @@ public class TransferDataMapper {
             if (bankAccountDto.getAccountNumber().equals(transferData.getAccountNumberFrom())) {
                 currencyNameFrom = bankAccountDto.getCurrency().name();
             }
-            if (bankAccountDto.getAccountNumber().equals(transferData.getAccountNumberTo())) {
-                currencyNameTo = bankAccountDto.getCurrency().name();
+            if (transferData.getCurrencyNameTo() == null) {
+                if (bankAccountDto.getAccountNumber().equals(transferData.getAccountNumberTo())) {
+                    currencyNameTo = bankAccountDto.getCurrency().name();
+                }
+            } else {
+                currencyNameTo = transferData.getCurrencyNameTo();
             }
         }
 

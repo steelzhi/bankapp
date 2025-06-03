@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import ru.ya.enums.Currency;
 import ru.ya.model.BankAccount;
 
 import java.util.List;
@@ -19,6 +20,14 @@ public interface BankAccountRepository extends JpaRepository<BankAccount, Intege
             WHERE id = :id
             """)
     double findAccountValueById(int id);
+
+    @Query("""
+            SELECT accountNumber
+            FROM BankAccount
+            WHERE user.id = :id
+                AND currency = :currency
+            """)
+    String findBankAccountByIdAndCurrencyName(int id, Currency currency);
 
     @Modifying // Без этой аннотации не работают методы UPDATE, DELETE
     @Transactional
@@ -72,5 +81,15 @@ public interface BankAccountRepository extends JpaRepository<BankAccount, Intege
             SET accountValue = accountValue + :valueTo
             WHERE accountNumber = :accountNumberTo
             """)
-    void transferTo(String accountNumberTo, double valueTo);
+    void transferToByAccountNumber(String accountNumberTo, double valueTo);
+
+    @Modifying
+    @Transactional
+    @Query("""
+            UPDATE BankAccount
+            SET accountValue = accountValue + :valueTo
+            WHERE user.id = :receiverId
+                AND currency = :currency
+            """)
+    void transferToByCurrencyValue(int receiverId, Currency currency, double valueTo);
 }

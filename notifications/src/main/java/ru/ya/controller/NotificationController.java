@@ -70,6 +70,9 @@ public class NotificationController {
             case SUSPICIOUS_OPERATION -> {
                 return "operation-transfer-is-suspicious.html";
             }
+            case CLIENT_DOES_NOT_HAVE_BANK_ACCOUNT -> {
+                return "receiver-does-not-have-bank-account.html";
+            }
         }
 
         return "redirect:/";

@@ -1,7 +1,6 @@
 package ru.ya.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -60,10 +59,4 @@ public class SecurityConfiguration {
     public JwtDecoder jwtDecoder() {
         return JwtDecoders.fromIssuerLocation("http://localhost:8080/realms/master");
     }
-
-/*    @Bean
-    @LoadBalanced
-    RestClient restClient() {
-        return RestClient.create();
-    }*/
 }

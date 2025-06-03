@@ -45,7 +45,7 @@ public class FrontUIService {
         return true;
     }
 
-    public boolean doBankAccountsMatch(TransferData transferData) {
-        return transferData.getAccountNumberFrom().equals(transferData.getAccountNumberTo());
+    public boolean doUsersBankAccountsMatch(TransferData transferData) {
+        return (transferData.getAccountNumberFrom().equals(transferData.getAccountNumberTo()));
     }
 }

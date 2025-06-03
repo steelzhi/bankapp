@@ -50,6 +50,6 @@ public class ExchangeService {
         // Зачисляем на счет сумму
         deltaTo += sum;
 
-        return new CoupleOfValues(transferDataDto.getCurrencyNameFrom(), deltaFrom, transferDataDto.getCurrencyNameFrom(), deltaTo);
+        return new CoupleOfValues(transferDataDto.getCurrencyNameFrom(), deltaFrom, transferDataDto.getCurrencyNameTo(), deltaTo);
     }
 }

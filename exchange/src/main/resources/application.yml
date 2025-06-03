@@ -45,7 +45,7 @@ spring:
             provider: keycloak
             authorizationGrantType: client_credentials
             client-id: ${spring.application.name}
-            client-secret: 2VgTnsgA6i8dGoZPrJi8pk5ePDQK2oAp
+            client-secret: WIzc4IZUM0oDrflwiPqfwc8gfMtGhKos
             scope: profile
             clientAuthenticationMethod: client_secret_post # Способ передачи секрета
 

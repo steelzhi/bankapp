@@ -40,7 +40,7 @@ spring:
             provider: keycloak
             authorizationGrantType: client_credentials
             client-id: front-ui
-            client-secret: BZSkEMkx2BETc6WB6XXV5nHG2BfAcY48
+            client-secret: Kg2W7lXZVSSqSPsQVCSg4yP0IpmHe0lD
             scope: profile
             clientAuthenticationMethod: client_secret_post # Способ передачи секрета
 

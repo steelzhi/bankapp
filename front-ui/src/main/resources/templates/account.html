@@ -204,8 +204,8 @@
         </tr>
         <tr>
             <th class="centered" colspan="2">Кому</th>
-            <th class="centered">Со счета (валюта)</th>
-            <th class="centered">На счет (валюта)</th>
+            <th class="centered">Со счета в валюте</th>
+            <th class="centered">На счет в валюте</th>
             <th class="centered">Сумма</th>
             <th class="centered">Перевести</th>
         </tr>
@@ -217,7 +217,8 @@
                     <select name="accountNumberFrom" id="accountNumberFrom" required>
                         <option th:each="bankAccountDto : ${userDto.getBankAccountDtoList()}"
                                 th:value="${bankAccountDto.accountNumber}"
-                                th:text="${bankAccountDto.accountNumber} + ' (' + ${T(ru.ya.enums.Currency).getCurrencyName(bankAccountDto.currency)} + ')'">
+                                th:text="${T(ru.ya.enums.Currency).getCurrencyName(bankAccountDto.currency)}">
+                           <!-- th:text="${bankAccountDto.accountNumber} + ' (' + ${T(ru.ya.enums.Currency).getCurrencyName(bankAccountDto.currency)} + ')'">-->
                         </option>
                     </select>
                 </td>
@@ -225,7 +226,8 @@
                     <select name="accountNumberTo" id="accountNumberTo" required>
                         <option th:each="bankAccountDto : ${userDto.getBankAccountDtoList()}"
                                 th:value="${bankAccountDto.accountNumber}"
-                                th:text="${bankAccountDto.accountNumber} + ' (' + ${T(ru.ya.enums.Currency).getCurrencyName(bankAccountDto.currency)} + ')'">
+                                th:text="${T(ru.ya.enums.Currency).getCurrencyName(bankAccountDto.currency)}">
+                            <!-- th:text="${bankAccountDto.accountNumber} + ' (' + ${T(ru.ya.enums.Currency).getCurrencyName(bankAccountDto.currency)} + ')'">-->
                         </option>
                     </select>
                 </td>
@@ -247,31 +249,30 @@
                     <option th:each="userDtoReceiver : ${userDtos.getUserDtoList()}" th:value="${userDtoReceiver.getId()}"
                             th:text="${userDtoReceiver.getLogin()}">
                     </option>
-
-<!--                    <select name="accountNumberFrom" id="accountNumberFrom2" required>
-                        <option th:each="bankAccountDto : ${userDtoReceiver.getBankAccountDtoList()}"
-                                th:value="${bankAccountDto.accountNumber}"
-                                th:text="${bankAccountDto.accountNumber} + ' (' + ${T(ru.ya.enums.Currency).getCurrencyName(bankAccountDto.currency)} + ')'">
-                        </option>
-                    </select>-->
                     </select>
                 </td>
                 <td>
                     <select name="accountNumberFrom" id="accountNumberFrom2" required>
                         <option th:each="bankAccountDto : ${userDto.getBankAccountDtoList()}"
                                 th:value="${bankAccountDto.accountNumber}"
-                                th:text="${bankAccountDto.accountNumber} + ' (' + ${T(ru.ya.enums.Currency).getCurrencyName(bankAccountDto.currency)} + ')'">
+                                th:text="${T(ru.ya.enums.Currency).getCurrencyName(bankAccountDto.currency)}">
+                            <!-- th:text="${bankAccountDto.accountNumber} + ' (' + ${T(ru.ya.enums.Currency).getCurrencyName(bankAccountDto.currency)} + ')'">-->
                         </option>
                     </select>
                 </td>
                 <td>
-
+                    <select name="currencyNameTo" id="currencyNameTo" required>
+                        <option th:each="currency : ${T(ru.ya.enums.Currency).values()}"
+                                th:value="${currency}"
+                                th:text="${T(ru.ya.enums.Currency).getCurrencyName(currency)}">
+                            </option>
+                    </select>
                 </td>
                 <td>
                     <input name="sum" type="number" min="0.01" step="0.01" style="width:100%" required/>
                 </td>
                 <td style="text-align:right">
-                    <button onclick=checkCurrency()>Перевести</button>
+                    <button>Перевести</button>
                 </td>
             </form>
         </tr>

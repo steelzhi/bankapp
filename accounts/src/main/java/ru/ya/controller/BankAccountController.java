@@ -64,6 +64,11 @@ public class BankAccountController {
         return transferDataDto;
     }
 
+    @PostMapping("/does-receiver-have-bank-account")
+    public Boolean doesReceiverHaveBankAccount(@RequestBody TransferData transferData) {
+        return bankAccountService.doesReceiverHaveBankAccount(transferData);
+    }
+
     @PostMapping("/transfer")
     public String transfer(@RequestBody CoupleOfValuesDto coupleOfValuesDto) {
         bankAccountService.transfer(coupleOfValuesDto);

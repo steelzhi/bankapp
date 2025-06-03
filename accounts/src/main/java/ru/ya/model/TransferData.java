@@ -15,5 +15,6 @@ public class TransferData {
     int receiverId;
     String accountNumberFrom;
     String accountNumberTo;
+    String currencyNameTo;
     double sum;
 }

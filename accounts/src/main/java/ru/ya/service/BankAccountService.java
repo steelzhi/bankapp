@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.ya.dto.CoupleOfValuesDto;
 import ru.ya.dto.TransferDataDto;
-import ru.ya.dto.UserDto;
 import ru.ya.enums.Currency;
 import ru.ya.mapper.TransferDataMapper;
 import ru.ya.model.*;
@@ -64,8 +63,12 @@ public class BankAccountService {
         if (sumOnBankAccount >= transferData.getSum()) {
             Currency currencyFrom = Currency.valueOf(bankAccountRepository.getCurrencyByAccountNumber(transferData.getAccountNumberFrom()));
             String currencyNameFrom = currencyFrom.name();
-            Currency currencyTo = Currency.valueOf(bankAccountRepository.getCurrencyByAccountNumber(transferData.getAccountNumberTo()));
-            String currencyNameTo = currencyTo.name();
+            String currencyNameTo = transferData.getCurrencyNameTo();
+            if (transferData.getAccountNumberTo() != null) {
+                Currency currencyTo = Currency.valueOf(bankAccountRepository.getCurrencyByAccountNumber(transferData.getAccountNumberTo()));
+                currencyNameTo = currencyTo.name();
+            }
+
             TransferDataDto transferDataDto = TransferDataMapper.mapToTransferDataDto(transferData, currencyNameFrom, currencyNameTo);
             return transferDataDto;
         }
@@ -73,14 +76,23 @@ public class BankAccountService {
         return null;
     }
 
+    public boolean doesReceiverHaveBankAccount(@RequestBody TransferData transferData) {
+        String accountNumberTo = bankAccountRepository.findBankAccountByIdAndCurrencyName(transferData.getReceiverId(), Currency.valueOf(transferData.getCurrencyNameTo()));
+        return accountNumberTo != null;
+    }
+
     @Transactional
     public void transfer(CoupleOfValuesDto coupleOfValuesDto) {
 /*        if (coupleOfValuesDto.getReceiverId() == 0) { // Если id = 0, значит, производится перевод между счетами одного клиента
 
         }*/
-
         bankAccountRepository.transferFrom(coupleOfValuesDto.getAccountNumberFrom(), coupleOfValuesDto.getValueFrom());
-        bankAccountRepository.transferTo(coupleOfValuesDto.getAccountNumberTo(), coupleOfValuesDto.getValueTo());
+
+        if (coupleOfValuesDto.getReceiverId() == 0) { // Если клиент переводит между своими счетами
+            bankAccountRepository.transferToByAccountNumber(coupleOfValuesDto.getAccountNumberTo(), coupleOfValuesDto.getValueTo());
+        } else {
+            bankAccountRepository.transferToByCurrencyValue(coupleOfValuesDto.getReceiverId(), Currency.valueOf(coupleOfValuesDto.getCurrencyNameTo()), coupleOfValuesDto.getValueTo());
+        }
     }
 
 
