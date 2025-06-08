@@ -1,7 +1,11 @@
 package ru.ya.controller;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.ya.dto.UserDto;
 import ru.ya.enums.ErrorOperation;
@@ -35,7 +39,7 @@ public class UserController {
         return userService.getOtherUserDtos(login);
     }
 
-    @PostMapping("/register-user")
+    @PostMapping(value = "/register-user", consumes={MediaType.APPLICATION_JSON_VALUE}) // параметр "consumes" нужен для тестов - иначе в тестах не распознается формат application/json
     public String registerUser(@RequestBody UserDto userDto) {
         if (userService.doesUserAlreadyExists(userDto)) {
             return responseFromModule.getResponseFromModuleNotifications("/notification/error", new Operation(ErrorOperation.USER_ALREADY_EXISTS, userDto.getLogin()));

@@ -70,12 +70,7 @@ public class UserService {
         userRepository.deleteById(user.getId());
     }
 
-    public BankAccount addBankAccount(BankAccount bankAccount) {
-        BankAccount addedBankAccount = bankAccountRepository.save(bankAccount);
-        return addedBankAccount;
-    }
-
-    private UserDto getUserDtoWithEncodedPassword(UserDto userDto) {
+    public UserDto getUserDtoWithEncodedPassword(UserDto userDto) {
         String encodedPassword = passwordEncoder.encode(userDto.getPassword());
         userDto.setPassword(encodedPassword);
         return userDto;

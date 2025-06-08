@@ -72,8 +72,8 @@ public class FrontUIController {
     }
 
     @PostMapping("/user/{login}/edit-password")
-    public String editPassword(Model model, @ModelAttribute User user) {
-        model.addAttribute("login", user.getLogin());
+    public String editPassword(Model model, @ModelAttribute User user, @PathVariable String login) {
+        model.addAttribute("login", login);
         if (!frontUIService.isUserPasswordCorrect(user)) {
             return "user-password-was-not-confirmed.html";
         }
@@ -83,8 +83,8 @@ public class FrontUIController {
     }
 
     @PostMapping("/user/{login}/edit-other-data")
-    public String editOtherData(Model model, @ModelAttribute User user) {
-        model.addAttribute("login", user.getLogin());
+    public String editOtherData(Model model, @ModelAttribute User user, @PathVariable String login) {
+        model.addAttribute("login", login);
         if (!frontUIService.isOtherUserDataCorrect(user)) {
             return "user-data-is-incorrect.html";
         }
@@ -94,9 +94,9 @@ public class FrontUIController {
     }
 
     @PostMapping(value = "/user/{login}/delete-user", params = "_method=delete")
-    public String deleteUser(Model model) {
+    public String deleteUser(Model model, @PathVariable String login) {
         UserDto userDto = getUserDtoInSystem();
-        model.addAttribute("login", userDto.getLogin());
+        model.addAttribute("login", login);
         if (!frontUIService.areAllUsersBankAccountsEmpty(userDto)) {
             return "user-bank-accounts-are-not-empty.html";
         }

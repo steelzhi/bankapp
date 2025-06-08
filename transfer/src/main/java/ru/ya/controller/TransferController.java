@@ -30,9 +30,11 @@ public class TransferController {
             return responseFromModule.getStringResponseFromModuleNotifications("/notification/error", new Operation(ErrorOperation.NOT_ENOUGH_MONEY_TO_TRANSFER));
         }
 
-        boolean doesReceiverHaveBankAccount = responseFromModule.getBooleanResponseFromModuleAccounts("/does-receiver-have-bank-account", transferData);
-        if (!doesReceiverHaveBankAccount) {
-            return responseFromModule.getStringResponseFromModuleNotifications("/notification/error", new Operation(ErrorOperation.CLIENT_DOES_NOT_HAVE_BANK_ACCOUNT));
+        if (transferData.getReceiverId() != 0) {
+            boolean doesReceiverHaveBankAccount = responseFromModule.getBooleanResponseFromModuleAccounts("/does-receiver-have-bank-account", transferData);
+            if (!doesReceiverHaveBankAccount) {
+                return responseFromModule.getStringResponseFromModuleNotifications("/notification/error", new Operation(ErrorOperation.CLIENT_DOES_NOT_HAVE_BANK_ACCOUNT));
+            }
         }
 
         boolean isOpSuspicious = responseFromModule.getBooleanResponseForSuspiciousOpsFromModuleBlocker("/check-operation");

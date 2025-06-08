@@ -35,7 +35,7 @@ public class BankAccountService {
         return addedBankAccount;
     }
 
-    public void deleteBankAccountAndReturnIfDeleted(int id) {
+    public void deleteBankAccount(int id) {
         bankAccountRepository.deleteById(id);
     }
 
@@ -95,8 +95,7 @@ public class BankAccountService {
         }
     }
 
-
-    private BankAccount setAccountNumber(BankAccount bankAccount) {
+    public BankAccount setAccountNumber(BankAccount bankAccount) {
         switch (bankAccount.getCurrency()) {
             case Currency.RUB -> bankAccount.setAccountNumber("4071" + getRandomTail());
             case Currency.USD -> bankAccount.setAccountNumber("3651" + getRandomTail());

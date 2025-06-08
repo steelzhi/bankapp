@@ -29,7 +29,7 @@ public class FrontUIService {
                 && isUserAnAdult(user));
     }
 
-    public boolean isUserAnAdult(User user) {
+        public boolean isUserAnAdult(User user) {
         long numberOfYears = ChronoUnit.YEARS.between(user.getBirthdate(), LocalDate.now());
         return (numberOfYears >= 18);
     }

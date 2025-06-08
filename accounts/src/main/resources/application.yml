@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: accounts
+  config:
+    import: 'optional:consul:'
 
   cloud:
     consul:
@@ -11,16 +13,18 @@ spring:
       port: 8500
       config:
         enabled: true            # Включаем Consul Config для внешней конфигурации
+        format: YAML
         prefix: config           # Префикс в KV-хранилище Consul (по умолчанию "config")
         defaultContext: application  # Контекст по умолчанию
         import-check:
           enabled: false
+        profileSeparator: '::'
       discovery:
         ip-address: localhost
         #        instance-id: ${spring.application.name}:${random.value}
         instance-id: ${spring.application.name}
-        preferIpAddress: true
-        #preferIpAddress: false   # Использовать IP адрес вместо имени хоста
+        #preferIpAddress: true
+        preferIpAddress: false   # Использовать IP адрес вместо имени хоста
         serviceName: ${spring.application.name} # Имя сервиса
         health-check-url: http://localhost:${server.port}/actuator/health
         health-check-path: /actuator/health
@@ -62,7 +66,7 @@ spring:
             provider: keycloak
             authorizationGrantType: client_credentials
             client-id: accounts
-            client-secret: WUMwCz8UZ77sdZRCO6ZeWD7MG5f5WYim
+            client-secret: cqvRnkAwGQMMsl27GqHCy4Ke3YwBKSOE
             scope: profile
             clientAuthenticationMethod: client_secret_post # Способ передачи секрета
 

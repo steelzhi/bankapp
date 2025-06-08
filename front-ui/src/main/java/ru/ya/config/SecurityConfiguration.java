@@ -1,12 +1,9 @@
 package ru.ya.config;
 
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-/*import org.springframework.cloud.client.loadbalancer.LoadBalanced;*/
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,18 +11,16 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.*;
+import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import org.springframework.security.web.server.authentication.logout.RedirectServerLogoutSuccessHandler;
-import org.springframework.security.web.server.authentication.logout.ServerLogoutSuccessHandler;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
 import ru.ya.service.MyUserDetailsService;
-
-import java.net.URI;
 
 @Configuration
 @EnableWebSecurity
@@ -44,7 +39,7 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 // Настройка авторизации запросов
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/get-register-form", "/register-user", "/actuator/health"/*, "/account"*/).permitAll() // Доступ к главной странице - всем,
+                        .requestMatchers("/", "/get-register-form", "/register-user", "/actuator/health").permitAll() // Доступ к главной странице - всем,
                         .anyRequest().authenticated()  // остальное — только для аутентифицированных
                 )
                 .formLogin(Customizer.withDefaults())

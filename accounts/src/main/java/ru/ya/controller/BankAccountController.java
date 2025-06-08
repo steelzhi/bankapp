@@ -7,7 +7,6 @@ import ru.ya.dto.CoupleOfValuesDto;
 import ru.ya.dto.TransferDataDto;
 import ru.ya.enums.ErrorOperation;
 import ru.ya.enums.SuccessfullOperation;
-import ru.ya.mapper.TransferDataMapper;
 import ru.ya.model.*;
 import ru.ya.service.BankAccountService;
 import ru.ya.util.ResponseFromModule;
@@ -28,7 +27,6 @@ public class BankAccountController {
         logger.atInfo().log("Adding new bank account for user with login = " + newAccountCurrency.getUserDto().getLogin());
         BankAccount addedBankAccount = bankAccountService.addBankAccount(newAccountCurrency);
         if (addedBankAccount == null) {
-            //return getResponseFromModuleNotifications("/notification/error", new Operation(ErrorOperation.BANK_ACCOUNT_ALREADY_EXISTS));
             return responseFromModule.getResponseFromModuleNotifications("/notification/error", new Operation(ErrorOperation.BANK_ACCOUNT_ALREADY_EXISTS));
         }
 
@@ -44,7 +42,7 @@ public class BankAccountController {
             return responseFromModule.getResponseFromModuleNotifications("/notification/error", new Operation(ErrorOperation.BANK_ACCOUNT_IS_NOT_EMPTY));
         }
 
-        bankAccountService.deleteBankAccountAndReturnIfDeleted(id);
+        bankAccountService.deleteBankAccount(id);
         return responseFromModule.getResponseFromModuleNotifications("/notification/success", new Operation(SuccessfullOperation.BANK_ACCOUNT_DELETING));
     }
 
