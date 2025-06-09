@@ -12,23 +12,17 @@ spring:
       host: localhost           # Адрес Consul-агента (по умолчанию localhost)
       port: 8500
       config:
-        enabled: true            # Включаем Consul Config для внешней конфигурации
+        enabled: true
         format: YAML
-        prefix: config           # Префикс в KV-хранилище Consul (по умолчанию "config")
-        defaultContext: application  # Контекст по умолчанию
-        import-check:
-          enabled: false
-        profileSeparator: '::'
+        prefix: config
+        defaultContext: application
       discovery:
-        ip-address: localhost
-#        instance-id: ${spring.application.name}:${random.value}
         instance-id: ${spring.application.name}
-        #preferIpAddress: true
         preferIpAddress: false   # Использовать IP адрес вместо имени хоста
-        health-check-url: http://localhost:${server.port}/actuator/health
         health-check-path: /actuator/health
+        healthCheckInterval: 15s
         heartbeat:
-          enabled: true       # Отключаем Heartbeat (необязательно)
+          enabled: true
 
   security:
     oauth2:
@@ -47,10 +41,14 @@ spring:
             scope: profile
             clientAuthenticationMethod: client_secret_post # Способ передачи секрета
 
-module-accounts: http://localhost:8090/
-module-cash: http://localhost:8092/
-module-exchange-generator: http://localhost:8094/
-module-transfer: http://localhost:8096/
+#Настройки ниже - для запуска без Consul
+#module-accounts: http://localhost:8090/
+#module-cash: http://localhost:8092/
+#module-exchange-generator: http://localhost:8094/
+#module-transfer: http://localhost:8096/
+
+#Настройки ниже - для запуска в Consul, но без использования consul.config
+#(при использовании consul.config для настроек ниже нужно создать папку config/application/consul и скопировать весь раскомментированный блок ниже туда
 #module-accounts: http://accounts/
 #module-cash: http://cash/
 #module-exchange-generator: http://exchange-generator/

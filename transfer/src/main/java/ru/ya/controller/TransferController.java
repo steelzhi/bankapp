@@ -2,21 +2,22 @@ package ru.ya.controller;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.ya.dto.CoupleOfValuesDto;
 import ru.ya.dto.TransferDataDto;
 import ru.ya.enums.ErrorOperation;
 import ru.ya.mapper.CoupleOfValuesMapper;
-import ru.ya.model.*;
-import ru.ya.service.TransferService;
+import ru.ya.model.CoupleOfValues;
+import ru.ya.model.Operation;
+import ru.ya.model.TransferData;
 import ru.ya.util.ResponseFromModule;
 
 @RestController
 @RequestMapping("/transfer")
 public class TransferController {
-    @Autowired
-    TransferService transferService;
-
     @Autowired
     Logger logger;
 

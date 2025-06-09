@@ -5,7 +5,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.ya.dto.UserDto;
 import ru.ya.mapper.UserMapper;
-import ru.ya.model.BankAccount;
 import ru.ya.model.User;
 import ru.ya.repository.BankAccountRepository;
 import ru.ya.repository.UserRepository;

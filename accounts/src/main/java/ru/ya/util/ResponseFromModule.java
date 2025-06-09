@@ -25,6 +25,9 @@ public class ResponseFromModule {
     @Autowired
     RestClient restClient;
 
+    @Autowired
+    private RestClient.Builder restClientBuilder;
+
     public String getResponseFromModuleNotifications(String url, Operation operation) {
         /*        RestClient restClient = RestClient.create(notificationsModuleName);*/
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
@@ -35,7 +38,7 @@ public class ResponseFromModule {
 
         String accessToken = client.getAccessToken().getTokenValue();
 
-        ResponseEntity<String> responseEntity = restClient.post()
+        ResponseEntity<String> responseEntity = restClientBuilder.build().post()
                 .uri(moduleNotificationsHost + url)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                 .body(operation)

@@ -1,8 +1,5 @@
 package ru.ya.controller;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -39,7 +36,8 @@ public class UserController {
         return userService.getOtherUserDtos(login);
     }
 
-    @PostMapping(value = "/register-user", consumes={MediaType.APPLICATION_JSON_VALUE}) // параметр "consumes" нужен для тестов - иначе в тестах не распознается формат application/json
+    @PostMapping(value = "/register-user", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    // параметр "consumes" нужен для тестов - иначе в тестах не распознается формат application/json
     public String registerUser(@RequestBody UserDto userDto) {
         if (userService.doesUserAlreadyExists(userDto)) {
             return responseFromModule.getResponseFromModuleNotifications("/notification/error", new Operation(ErrorOperation.USER_ALREADY_EXISTS, userDto.getLogin()));
@@ -55,7 +53,6 @@ public class UserController {
         logger.atInfo().log("Changing password for user with login = " + userDto.getLogin());
         userService.changePasswordAndReturnIfChanged(userDto);
         return responseFromModule.getResponseFromModuleNotifications("/notification/success", new Operation(SuccessfullOperation.PASSWORD_EDITING, userDto.getLogin()));
-
     }
 
     @PostMapping("/edit-other-data")

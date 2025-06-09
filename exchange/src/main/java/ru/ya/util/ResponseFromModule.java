@@ -25,6 +25,9 @@ public class ResponseFromModule {
     @Autowired
     RestClient restClient;
 
+    @Autowired
+    private RestClient.Builder restClientBuilder;
+
     public CurrencyRates getCurrencyRatesResponseFromModuleExchangeGenerator(String moduleNameForRequest, String url) {
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
                 .withClientRegistrationId(moduleName)
@@ -34,7 +37,7 @@ public class ResponseFromModule {
 
         String accessToken = client.getAccessToken().getTokenValue();
 
-        ResponseEntity<CurrencyRates> responseEntity = restClient.get()
+        ResponseEntity<CurrencyRates> responseEntity = restClientBuilder.build().get()
                 .uri(moduleNameForRequest + url)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                 .retrieve().toEntity(CurrencyRates.class);

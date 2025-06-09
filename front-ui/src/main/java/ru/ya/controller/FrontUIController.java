@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ru.ya.FrontUiApplication;
 import ru.ya.dto.UserDto;
 import ru.ya.dto.UserDtos;
 import ru.ya.mapper.UserMapper;

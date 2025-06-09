@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class BlockerService {
-    private static final String CASH_MODULE = "cash";
-    private static final String TRANSFER_MODULE = "transfer";
+    public static final String CASH_MODULE = "cash";
+    public static final String TRANSFER_MODULE = "transfer";
     private static final double SUSPICIOUS_PROBABILITY_FOR_CASH = 0.3;
     private static final double SUSPICIOUS_PROBABILITY_FOR_TRANSFER = 0.25;
 

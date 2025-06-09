@@ -32,6 +32,9 @@ public class ResponseFromModule {
     @Autowired
     RestClient restClient;
 
+    @Autowired
+    private RestClient.Builder restClientBuilder;
+
     public String getStringResponseFromModuleAccounts(String url, Cash cash) {
         return getStringResponseFromModule(moduleAccountsHost, url, cash);
     }
@@ -88,7 +91,7 @@ public class ResponseFromModule {
         );
 
         String accessToken = client.getAccessToken().getTokenValue();
-        RestClient.RequestBodySpec rCRBS = restClient.post()
+        RestClient.RequestBodySpec rCRBS = restClientBuilder.build().post()
                 .uri(moduleNameForRequest + url)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken); // Подставляем токен доступа в заголовок Authorization
 

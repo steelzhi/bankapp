@@ -40,6 +40,9 @@ public class ResponseFromModule {
     @Autowired
     RestClient restClient;
 
+    @Autowired
+    private RestClient.Builder restClientBuilder;
+
     public String getStringResponseFromModuleTransfer(String url, TransferData transferData) {
         return getStringResponseFromModule(moduleTransferHost, url, transferData);
     }
@@ -61,7 +64,7 @@ public class ResponseFromModule {
 
         String accessToken = client.getAccessToken().getTokenValue();
 
-        RestClient.RequestBodySpec rCRBS = restClient.post()
+        RestClient.RequestBodySpec rCRBS = restClientBuilder.build().post()
                 .uri(moduleNameForRequest + url)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken); // Подставляем токен доступа в заголовок Authorization
 
@@ -93,7 +96,7 @@ public class ResponseFromModule {
 
         String accessToken = client.getAccessToken().getTokenValue();
 
-        ResponseEntity<CurrencyRates> responseEntity = restClient.get()
+        ResponseEntity<CurrencyRates> responseEntity = restClientBuilder.build().get()
                 .uri(moduleNameForRequest + url)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                 .retrieve().toEntity(CurrencyRates.class);
@@ -111,7 +114,7 @@ public class ResponseFromModule {
 
         String accessToken = client.getAccessToken().getTokenValue();
 
-        ResponseEntity<UserDto> responseEntity = restClient.get()
+        ResponseEntity<UserDto> responseEntity = restClientBuilder.build().get()
                 .uri(moduleAccountsHost + userDtoLogin)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                 .retrieve().toEntity(UserDto.class);
@@ -128,7 +131,7 @@ public class ResponseFromModule {
 
         String accessToken = client.getAccessToken().getTokenValue();
 
-        List<UserDto> userDtoList = restClient.get()
+        List<UserDto> userDtoList = restClientBuilder.build().get()
                 .uri(moduleAccountsHost + "users-except/" + userDtoLogin)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                 .retrieve()

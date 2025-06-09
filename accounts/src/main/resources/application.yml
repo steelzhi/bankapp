@@ -12,24 +12,17 @@ spring:
       host: localhost           # Адрес Consul-агента (по умолчанию localhost)
       port: 8500
       config:
-        enabled: true            # Включаем Consul Config для внешней конфигурации
+        enabled: true
         format: YAML
-        prefix: config           # Префикс в KV-хранилище Consul (по умолчанию "config")
-        defaultContext: application  # Контекст по умолчанию
-        import-check:
-          enabled: false
-        profileSeparator: '::'
+        prefix: config
+        defaultContext: application
       discovery:
-        ip-address: localhost
-        #        instance-id: ${spring.application.name}:${random.value}
         instance-id: ${spring.application.name}
-        #preferIpAddress: true
         preferIpAddress: false   # Использовать IP адрес вместо имени хоста
-        serviceName: ${spring.application.name} # Имя сервиса
-        health-check-url: http://localhost:${server.port}/actuator/health
         health-check-path: /actuator/health
+        healthCheckInterval: 15s
         heartbeat:
-          enabled: true       # Отключаем Heartbeat (необязательно)
+          enabled: true
 
   datasource:
     driverClassName: org.postgresql.Driver
@@ -74,5 +67,9 @@ spring:
     init:
       mode: always
 
-module-notifications: http://localhost:8091/
+#Настройки ниже - для запуска без Consul
+#module-notifications: http://localhost:8091/
+
+#Настройки ниже - для запуска в Consul, но без использования consul.config
+#(при использовании consul.config для настроек ниже нужно создать папку config/application/consul и скопировать весь раскомментированный блок ниже туда
 #module-notifications: http://notifications/

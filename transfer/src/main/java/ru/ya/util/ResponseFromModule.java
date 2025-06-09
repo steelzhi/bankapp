@@ -38,6 +38,9 @@ public class ResponseFromModule {
     @Autowired
     RestClient restClient;
 
+    @Autowired
+    private RestClient.Builder restClientBuilder;
+
     public CoupleOfValues getCoupleOfValuesResponseFromModuleExchange(String url, TransferDataDto transferDataDto) {
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
                 .withClientRegistrationId(moduleName)
@@ -47,7 +50,7 @@ public class ResponseFromModule {
 
         String accessToken = client.getAccessToken().getTokenValue();
 
-        ResponseEntity<CoupleOfValues> responseEntity = restClient.post()
+        ResponseEntity<CoupleOfValues> responseEntity = restClientBuilder.build().post()
                 .uri(moduleExchangeHost + url)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                 .body(transferDataDto)
@@ -65,7 +68,7 @@ public class ResponseFromModule {
 
         String accessToken = client.getAccessToken().getTokenValue();
 
-        ResponseEntity<TransferDataDto> responseEntity = restClient.post()
+        ResponseEntity<TransferDataDto> responseEntity = restClientBuilder.build().post()
                 .uri(moduleAccountsHost + url)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                 .body(transferData)
@@ -128,7 +131,7 @@ public class ResponseFromModule {
         );
 
         String accessToken = client.getAccessToken().getTokenValue();
-        RestClient.RequestBodySpec rCRBS = restClient.post()
+        RestClient.RequestBodySpec rCRBS = restClientBuilder.build().post()
                 .uri(moduleNameForRequest + url)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken); // Подставляем токен доступа в заголовок Authorization
 

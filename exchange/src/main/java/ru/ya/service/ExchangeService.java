@@ -14,13 +14,13 @@ import ru.ya.util.ResponseFromModule;
 public class ExchangeService {
 
     @Value("${module-exchange-generator}")
-    private String moduleExchangeGenerator;
+    public String moduleExchangeGenerator;
 
     @Autowired
     ResponseFromModule responseFromModule;
 
-    public CoupleOfValues getConvertedSum(@RequestBody TransferDataDto transferDataDto) {
-        CurrencyRates currencyRates = responseFromModule.getCurrencyRatesResponseFromModuleExchangeGenerator(moduleExchangeGenerator, "/exchange-rates");
+    public CoupleOfValues getConvertedSum(TransferDataDto transferDataDto) {
+            CurrencyRates currencyRates = responseFromModule.getCurrencyRatesResponseFromModuleExchangeGenerator(moduleExchangeGenerator, "/exchange-rates");
         double sum = transferDataDto.getSum();
         double deltaFrom = 0;
         double deltaTo = 0;

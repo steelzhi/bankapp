@@ -4,28 +4,25 @@ server:
 spring:
   application:
     name: cash
+  config:
+    import: 'optional:consul:'
 
   cloud:
     consul:
       host: localhost           # Адрес Consul-агента (по умолчанию localhost)
       port: 8500
       config:
-        enabled: true            # Включаем Consul Config для внешней конфигурации
-        prefix: config           # Префикс в KV-хранилище Consul (по умолчанию "config")
-        defaultContext: application  # Контекст по умолчанию
-        import-check:
-          enabled: false
+        enabled: true
+        format: YAML
+        prefix: config
+        defaultContext: application
       discovery:
-        ip-address: localhost
-        #        instance-id: ${spring.application.name}:${random.value}
         instance-id: ${spring.application.name}
-        preferIpAddress: true
-        #preferIpAddress: false   # Использовать IP адрес вместо имени хоста
-        serviceName: ${spring.application.name} # Имя сервиса
-        health-check-url: http://localhost:${server.port}/actuator/health
+        preferIpAddress: false   # Использовать IP адрес вместо имени хоста
         health-check-path: /actuator/health
+        healthCheckInterval: 15s
         heartbeat:
-          enabled: true       # Отключаем Heartbeat (необязательно)
+          enabled: true
 
   security:
     oauth2:
@@ -49,9 +46,13 @@ spring:
             scope: profile
             clientAuthenticationMethod: client_secret_post # Способ передачи секрета
 
-module-accounts: http://localhost:8090/
-module-notifications: http://localhost:8091/
-module-blocker: http://localhost:8093/
+#Настройки ниже - для запуска без Consul
+#module-accounts: http://localhost:8090/
+#module-notifications: http://localhost:8091/
+#module-blocker: http://localhost:8093/
+
+#Настройки ниже - для запуска в Consul, но без использования consul.config
+#(при использовании consul.config для настроек ниже нужно создать папку config/application/consul и скопировать весь раскомментированный блок ниже туда
 #module-accounts: http://accounts/
 #module-notifications: http://notifications/
 #module-blocker: http://blocker/

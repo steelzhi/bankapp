@@ -12,13 +12,10 @@ spring:
       host: localhost           # Адрес Consul-агента (по умолчанию localhost)
       port: 8500
       config:
-        enabled: true            # Включаем Consul Config для внешней конфигурации
+        enabled: true
         format: YAML
-        prefix: config           # Префикс в KV-хранилище Consul (по умолчанию "config")
-        defaultContext: application  # Контекст по умолчанию
-        import-check:
-          enabled: false
-        profileSeparator: '::'
+        prefix: config
+        defaultContext: application
       discovery:
         ip-address: localhost
         #        instance-id: ${spring.application.name}:${random.value}
