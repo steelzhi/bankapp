@@ -67,6 +67,20 @@ spring:
     init:
       mode: always
 
+resilience4j:
+  circuitbreaker:
+    instances:
+      accounts:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 30s
+  retry:
+    instances:
+      responseFromModule:
+        maxRetryAttempts: 3
+        waitDuration: 2s
+
 #Настройки ниже - для запуска без Consul
 #module-notifications: http://localhost:8091/
 

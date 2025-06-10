@@ -2,6 +2,8 @@ package ru.ya.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
@@ -23,13 +25,12 @@ public class ResponseFromModule {
     OAuth2AuthorizedClientManager manager;
 
     @Autowired
-    RestClient restClient;
-
-    @Autowired
     private RestClient.Builder restClientBuilder;
 
+    @Autowired
+    private CircuitBreakerFactory circuitBreakerFactory;
+
     public String getResponseFromModuleNotifications(String url, Operation operation) {
-        /*        RestClient restClient = RestClient.create(notificationsModuleName);*/
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
                 .withClientRegistrationId(moduleName)
                 .principal("system") // У client_credentials нет имени пользователя, поэтому будем использовать system.
@@ -38,13 +39,20 @@ public class ResponseFromModule {
 
         String accessToken = client.getAccessToken().getTokenValue();
 
-        ResponseEntity<String> responseEntity = restClientBuilder.build().post()
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitBreaker");
+        String ans = circuitBreaker.run(() -> restClientBuilder.build().post()
                 .uri(moduleNotificationsHost + url)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // Подставляем токен доступа в заголовок Authorization
                 .body(operation)
                 .retrieve()
-                .toEntity(String.class);
+                .toEntity(String.class)
+                .getBody(), throwable -> getFallback(throwable));
 
-        return responseEntity.getBody();
+        return ans;
+    }
+
+    private String getFallback(Throwable throwable) {
+        System.out.println("Fallback executed for product ID: " + ", error: " + throwable.getMessage());
+        return new String("service-is-unavailable");
     }
 }

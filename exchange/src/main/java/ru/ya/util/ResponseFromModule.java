@@ -2,6 +2,7 @@ package ru.ya.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
@@ -21,9 +22,6 @@ public class ResponseFromModule {
 
     @Autowired
     OAuth2AuthorizedClientManager manager;
-
-    @Autowired
-    RestClient restClient;
 
     @Autowired
     private RestClient.Builder restClientBuilder;

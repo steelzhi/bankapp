@@ -1,7 +1,10 @@
 package ru.ya.util;
 
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +19,6 @@ import ru.ya.model.CurrencyRates;
 import ru.ya.model.NewAccountCurrency;
 import ru.ya.model.TransferData;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -38,10 +39,10 @@ public class ResponseFromModule {
     OAuth2AuthorizedClientManager manager;
 
     @Autowired
-    RestClient restClient;
+    private RestClient.Builder restClientBuilder;
 
     @Autowired
-    private RestClient.Builder restClientBuilder;
+    private CircuitBreakerFactory circuitBreakerFactory;
 
     public String getStringResponseFromModuleTransfer(String url, TransferData transferData) {
         return getStringResponseFromModule(moduleTransferHost, url, transferData);
@@ -55,6 +56,7 @@ public class ResponseFromModule {
         return getStringResponseFromModule(moduleAccountsHost, url, object);
     }
 
+    @Retry(name = "responseFromModule")
     private String getStringResponseFromModule(String moduleNameForRequest, String url, Object object) {
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
                 .withClientRegistrationId(moduleName)
@@ -80,11 +82,13 @@ public class ResponseFromModule {
             rCRBS.body(transferData);
         }
 
-        ResponseEntity<String> responseEntity = rCRBS
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitBreaker");
+        String ans = circuitBreaker.run(() -> rCRBS
                 .retrieve()
-                .toEntity(String.class);
+                .toEntity(String.class)
+                .getBody(), throwable -> getFallback(throwable));
 
-        return responseEntity.getBody();
+        return ans;
     }
 
     public CurrencyRates getCurrencyRatesResponseFromModuleExchangeGenerator(String moduleNameForRequest, String url) {
@@ -139,5 +143,10 @@ public class ResponseFromModule {
                 });
 
         return userDtoList;
+    }
+
+    private String getFallback(Throwable throwable) {
+        System.out.println("Fallback executed for product ID: " + ", error: " + throwable.getMessage());
+        return new String("service-is-unavailable");
     }
 }
