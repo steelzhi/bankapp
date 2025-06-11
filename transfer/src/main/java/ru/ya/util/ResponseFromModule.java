@@ -1,5 +1,6 @@
 package ru.ya.util;
 
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
@@ -109,6 +110,7 @@ public class ResponseFromModule {
         return responseEntity.getBody();
     }
 
+    @Retry(name = "responseFromModule", fallbackMethod = "getFallback")
     private String getStringResponseFromModule(String moduleNameForRequest, String url, Object object) {
         RestClient.RequestBodySpec rCRBS = getRestClientRequestBodySpecWithAccessToken(moduleNameForRequest, url);
 
@@ -118,11 +120,15 @@ public class ResponseFromModule {
             rCRBS.body(coupleOfValuesDto);
         }
 
-        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitBreaker");
+/*        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitBreaker");
         String ans = circuitBreaker.run(() -> rCRBS
                 .retrieve()
                 .toEntity(String.class)
-                .getBody(), throwable -> getFallback(throwable));
+                .getBody(), throwable -> getFallback(throwable));*/
+        String ans = rCRBS
+                .retrieve()
+                .toEntity(String.class)
+                .getBody();
 
         return ans;
     }
@@ -143,7 +149,7 @@ public class ResponseFromModule {
     }
 
     private String getFallback(Throwable throwable) {
-        System.out.println("Fallback executed for product ID: " + ", error: " + throwable.getMessage());
+        System.out.println("Fallback executed. Error: " + throwable.getMessage());
         return new String("service-is-unavailable");
     }
 }

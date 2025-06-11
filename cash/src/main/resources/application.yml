@@ -57,8 +57,8 @@ resilience4j:
   retry:
     instances:
       responseFromModule:
-        maxRetryAttempts: 3
-        waitDuration: 2s
+        maxRetryAttempts: 2
+        waitDuration: 1s
 
 #Настройки ниже - для запуска без Consul
 #module-accounts: http://localhost:8090/

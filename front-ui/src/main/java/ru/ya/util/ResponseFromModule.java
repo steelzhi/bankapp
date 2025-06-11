@@ -56,7 +56,7 @@ public class ResponseFromModule {
         return getStringResponseFromModule(moduleAccountsHost, url, object);
     }
 
-    @Retry(name = "responseFromModule")
+    @Retry(name = "responseFromModule", fallbackMethod = "getFallback")
     private String getStringResponseFromModule(String moduleNameForRequest, String url, Object object) {
         OAuth2AuthorizedClient client = manager.authorize(OAuth2AuthorizeRequest
                 .withClientRegistrationId(moduleName)
@@ -82,11 +82,17 @@ public class ResponseFromModule {
             rCRBS.body(transferData);
         }
 
-        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitBreaker");
+/*        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitBreaker");
         String ans = circuitBreaker.run(() -> rCRBS
                 .retrieve()
                 .toEntity(String.class)
                 .getBody(), throwable -> getFallback(throwable));
+
+        return ans;*/
+        String ans = rCRBS
+                .retrieve()
+                .toEntity(String.class)
+                .getBody();
 
         return ans;
     }
@@ -146,7 +152,7 @@ public class ResponseFromModule {
     }
 
     private String getFallback(Throwable throwable) {
-        System.out.println("Fallback executed for product ID: " + ", error: " + throwable.getMessage());
+        System.out.println("Fallback executed. Error: " + throwable.getMessage());
         return new String("service-is-unavailable");
     }
 }

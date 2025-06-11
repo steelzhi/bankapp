@@ -1,5 +1,5 @@
 server:
-  port: 8090
+  port: 8070
 
 spring:
   application:
@@ -78,8 +78,8 @@ resilience4j:
   retry:
     instances:
       responseFromModule:
-        maxRetryAttempts: 3
-        waitDuration: 2s
+        maxRetryAttempts: 5
+        waitDuration: 5s
 
 #Настройки ниже - для запуска без Consul
 #module-notifications: http://localhost:8091/

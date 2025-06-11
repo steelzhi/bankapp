@@ -52,11 +52,11 @@ resilience4j:
   retry:
     instances:
       responseFromModule:
-        maxRetryAttempts: 3
-        waitDuration: 2s
+        maxRetryAttempts: 4
+        waitDuration: 4s
 
 #Настройки ниже - для запуска без Consul
-#module-accounts: http://localhost:8090/
+#module-accounts: http://localhost:8070/
 #module-cash: http://localhost:8092/
 #module-exchange-generator: http://localhost:8094/
 #module-transfer: http://localhost:8096/
