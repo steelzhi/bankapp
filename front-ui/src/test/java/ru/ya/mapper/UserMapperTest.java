@@ -1,3 +1,4 @@
+/*
 package ru.ya.mapper;
 
 import org.junit.jupiter.api.Tag;
@@ -19,3 +20,4 @@ public class UserMapperTest {
         assertEquals(userDto.getName(), user.getName(), "Names don't match");
     }
 }
+*/

@@ -62,7 +62,8 @@ public class SecurityConfiguration {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        return JwtDecoders.fromIssuerLocation("http://localhost:8080/realms/master");
+        //return JwtDecoders.fromIssuerLocation("http://localhost:8080/realms/master");
+        return JwtDecoders.fromIssuerLocation("http://keycloak:8080/realms/master");
     }
 
     @Bean

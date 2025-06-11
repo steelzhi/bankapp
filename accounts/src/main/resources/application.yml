@@ -26,7 +26,8 @@ spring:
 
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/bankapp
+    url: jdbc:postgresql://db:5432/bankapp # Для запуска в Docker
+    #url: jdbc:postgresql://localhost:5432/bankapp # Для запуска локально
     username: s
     password: sa
 
@@ -46,14 +47,14 @@ spring:
       resourceserver:
         jwt:
           # Ниже - адрес сервера авторизации для получения токена
-          issuer-uri: http://localhost:8080/realms/master # Для запуска локально
-          #issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker
+          #issuer-uri: http://localhost:8080/realms/master # Для запуска локально
+          issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker
       client:
         provider:
           keycloak:
             # Ниже - адрес сервера авторизации для получения токена
-            issuer-uri: http://localhost:8080/realms/master # Для запуска локально
-            #issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker
+            #issuer-uri: http://localhost:8080/realms/master # Для запуска локально
+            issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker
         registration:
           accounts: # Описание клиента OAuth2
             provider: keycloak

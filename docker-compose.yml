@@ -1,0 +1,102 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    ports:
+      - "8080:8080"
+    environment:
+      - KC_PORT=8080
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+      - KC_HEALTH_ENABLED=true
+    command:
+      - start-dev
+    healthcheck:
+      test: cat /proc/net/tcp | grep '00000000:0000' || exit 1
+      start_period: 1s
+      interval: 1s
+      retries: 10
+      timeout: 1s
+
+  consul:
+    image: hashicorp/consul
+    container_name: consul
+    ports:
+      - "8500:8500"
+    #command:
+     # - agent -server -ui -node=server-1 -bootstrap-expect=1 -client=0.0.0.0
+
+  front-ui:
+    build: front-ui/
+    ports:
+      - "8081:8081"
+    depends_on:
+      accounts:
+        condition: service_started
+      notifications:
+        condition: service_started
+      exchange-generator:
+        condition: service_started
+      keycloak:
+        condition: service_healthy
+    environment:
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/master
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FRONT_UI_CLIENT_ID=front-ui
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FRONT_UI_CLIENT_SECRET=BZSkEMkx2BETc6WB6XXV5nHG2BfAcY48
+      - SPRING_CLOUD_CONSUL_HOST=consul
+      - SPRING_CLOUD_CONSUL_PORT=8500
+
+  accounts:
+     build: accounts/
+     ports:
+       - "8070:8070"
+     depends_on:
+       db:
+         condition: service_started
+       notifications:
+         condition: service_started
+       keycloak:
+         condition: service_healthy
+     environment:
+       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/bankapp
+       - SPRING_DATASOURCE_USERNAME=s
+       - SPRING_DATASOURCE_PASSWORD=sa
+       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/master
+       - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/master
+       - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FRONT_UI_CLIENT_ID=accounts
+       - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FRONT_UI_CLIENT_SECRET=cqvRnkAwGQMMsl27GqHCy4Ke3YwBKSOE
+       - SPRING_CLOUD_CONSUL_HOST=consul
+       - SPRING_CLOUD_CONSUL_PORT=8500
+
+  exchange-generator:
+    build: exchange-generator/
+    ports:
+      - "8094:8094"
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    environment:
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/master
+      - SPRING_CLOUD_CONSUL_HOST=consul
+      - SPRING_CLOUD_CONSUL_PORT=8500
+
+  notifications:
+    build: notifications/
+    ports:
+      - "8091:8091"
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    environment:
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/master
+      - SPRING_CLOUD_CONSUL_HOST=consul
+      - SPRING_CLOUD_CONSUL_PORT=8500
+
+  db:
+    image: postgres:13.7-alpine
+    ports:
+      - "6541:5432"
+    environment:
+      - POSTGRES_USER=s
+      - POSTGRES_PASSWORD=sa
+      - POSTGRES_DB=bankapp

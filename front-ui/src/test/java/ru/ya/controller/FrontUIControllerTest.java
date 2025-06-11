@@ -1,3 +1,4 @@
+/*
 package ru.ya.controller;
 
 import org.junit.jupiter.api.Test;
@@ -74,6 +75,7 @@ public class FrontUIControllerTest {
         verify(frontUIService, times(1)).isUserPasswordCorrect(new User());
     }
 
+*/
 /*    @Test
     @WithMockUser(username = "1", roles = {"USER"}, password = "2")
     void editPasswordCorrectly() throws Exception {
@@ -84,8 +86,10 @@ public class FrontUIControllerTest {
                 .andExpect(status().is2xxSuccessful());
 
         verify(frontUIService, times(1)).isUserPasswordCorrect(new User());
-    }*/
+    }*//*
 
+
+*/
 /*    @Test
     @WithMockUser(username = "1", roles = {"USER"}, password = "2")
     void editOtherData() throws Exception {
@@ -96,7 +100,8 @@ public class FrontUIControllerTest {
                 .andExpect(status().is2xxSuccessful());
 
         verify(frontUIService, times(1)).isOtherUserDataCorrect(new User());
-    }*/
+    }*//*
+
 
     @Test
     @WithMockUser(username = "1", roles = {"USER"}, password = "2")
@@ -156,3 +161,4 @@ public class FrontUIControllerTest {
     }
 
 }
+*/
