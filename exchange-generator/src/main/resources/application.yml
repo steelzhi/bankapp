@@ -17,7 +17,7 @@ spring:
         prefix: config
         defaultContext: application
       discovery:
-        ip-address: localhost
+        # ip-address: localhost
         #        instance-id: ${spring.application.name}:${random.value}
         instance-id: ${spring.application.name}
         preferIpAddress: true
@@ -33,5 +33,5 @@ spring:
       resourceserver:
         jwt:
           # Ниже - адрес сервера авторизации для получения токена
-          #issuer-uri: http://localhost:8080/realms/master # Для запуска локально
-          issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker
+          issuer-uri: http://localhost:8080/realms/master # Для запуска локально
+          #issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker

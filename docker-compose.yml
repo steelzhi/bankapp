@@ -23,8 +23,90 @@ services:
     container_name: consul
     ports:
       - "8500:8500"
-    #command:
-     # - agent -server -ui -node=server-1 -bootstrap-expect=1 -client=0.0.0.0
+
+  accounts:
+     build: accounts/
+     ports:
+       - "8070:8070"
+     depends_on:
+       db:
+         condition: service_started
+       notifications:
+         condition: service_started
+       keycloak:
+         condition: service_healthy
+     environment:
+       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/bankapp
+       - SPRING_DATASOURCE_USERNAME=s
+       - SPRING_DATASOURCE_PASSWORD=sa
+       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/master
+       - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/master
+       - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_ACCOUNTS_CLIENT_ID=accounts
+       - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_ACCOUNTS_CLIENT_SECRET=cqvRnkAwGQMMsl27GqHCy4Ke3YwBKSOE
+       - SPRING_CLOUD_CONSUL_HOST=consul
+       - SPRING_CLOUD_CONSUL_PORT=8500
+
+  blocker:
+    build: blocker/
+    ports:
+     - "8093:8093"
+    depends_on:
+      keycloak:
+       condition: service_healthy
+    environment:
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/master
+      - SPRING_CLOUD_CONSUL_HOST=consul
+      - SPRING_CLOUD_CONSUL_PORT=8500
+
+  cash:
+    build: cash/
+    ports:
+      - "8092:8092"
+    depends_on:
+      notifications:
+        condition: service_started
+      accounts:
+        condition: service_started
+      blocker:
+        condition: service_started
+      keycloak:
+        condition: service_healthy
+    environment:
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/master
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/master
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_CASH_CLIENT_ID=cash
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_CASH_CLIENT_SECRET=6UMxwxzxhq3YRamkTEGx4MdEMxPL938n
+      - SPRING_CLOUD_CONSUL_HOST=consul
+      - SPRING_CLOUD_CONSUL_PORT=8500
+
+  exchange:
+    build: exchange/
+    ports:
+      - "8095:8095"
+    depends_on:
+      exchange-generator:
+        condition: service_started
+      keycloak:
+        condition: service_healthy
+    environment:
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/master
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/master
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_EXCHANGE_CLIENT_ID=exchange
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_EXCHANGE_CLIENT_SECRET=2VgTnsgA6i8dGoZPrJi8pk5ePDQK2oAp
+      - SPRING_CLOUD_CONSUL_HOST=consul
+      - SPRING_CLOUD_CONSUL_PORT=8500
+
+  exchange-generator:
+    build: exchange-generator/
+    ports:
+      - "8094:8094"
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    environment:
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/master
+      - SPRING_CLOUD_CONSUL_HOST=consul
+      - SPRING_CLOUD_CONSUL_PORT=8500
 
   front-ui:
     build: front-ui/
@@ -46,40 +128,6 @@ services:
       - SPRING_CLOUD_CONSUL_HOST=consul
       - SPRING_CLOUD_CONSUL_PORT=8500
 
-  accounts:
-     build: accounts/
-     ports:
-       - "8070:8070"
-     depends_on:
-       db:
-         condition: service_started
-       notifications:
-         condition: service_started
-       keycloak:
-         condition: service_healthy
-     environment:
-       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/bankapp
-       - SPRING_DATASOURCE_USERNAME=s
-       - SPRING_DATASOURCE_PASSWORD=sa
-       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/master
-       - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/master
-       - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FRONT_UI_CLIENT_ID=accounts
-       - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FRONT_UI_CLIENT_SECRET=cqvRnkAwGQMMsl27GqHCy4Ke3YwBKSOE
-       - SPRING_CLOUD_CONSUL_HOST=consul
-       - SPRING_CLOUD_CONSUL_PORT=8500
-
-  exchange-generator:
-    build: exchange-generator/
-    ports:
-      - "8094:8094"
-    depends_on:
-      keycloak:
-        condition: service_healthy
-    environment:
-      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/master
-      - SPRING_CLOUD_CONSUL_HOST=consul
-      - SPRING_CLOUD_CONSUL_PORT=8500
-
   notifications:
     build: notifications/
     ports:
@@ -89,6 +137,29 @@ services:
         condition: service_healthy
     environment:
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/master
+      - SPRING_CLOUD_CONSUL_HOST=consul
+      - SPRING_CLOUD_CONSUL_PORT=8500
+
+  transfer:
+    build: transfer/
+    ports:
+      - "8096:8096"
+    depends_on:
+      notifications:
+        condition: service_started
+      accounts:
+        condition: service_started
+      exchange:
+        condition: service_started
+      blocker:
+        condition: service_started
+      keycloak:
+        condition: service_healthy
+    environment:
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/master
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/master
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_TRANSFER_CLIENT_ID=transfer
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_TRANSFER_CLIENT_SECRET=J0sumPuRH63sy9pgcLpPFfXnbhcmp2Xz
       - SPRING_CLOUD_CONSUL_HOST=consul
       - SPRING_CLOUD_CONSUL_PORT=8500
 

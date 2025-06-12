@@ -1,4 +1,3 @@
-/*
 package ya.controller;
 
 import org.junit.jupiter.api.Test;
@@ -6,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -18,6 +18,7 @@ import ru.ya.service.UserService;
 import ru.ya.util.ResponseFromModule;
 import ya.config.AccountsConfigurationTest;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import static org.mockito.Mockito.*;
@@ -78,15 +79,13 @@ public class UserControllerTest {
         when(responseFromModule.getResponseFromModuleNotifications("/notification/error", new Operation(ErrorOperation.USER_ALREADY_EXISTS, userDto.getLogin())))
                 .thenReturn("main-page");
 
-        mockMvc.perform(post("/register-user"))
-*/
-/*                        .content(requestBody)
+        mockMvc.perform(post("/register-user")
+                        .content(requestBody)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))*//*
+                        .accept(MediaType.APPLICATION_JSON))
 
                 .andExpect(status().is4xxClientError());
     }
 
 }
-*/
