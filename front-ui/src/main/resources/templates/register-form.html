@@ -16,32 +16,32 @@
     <tr>
         <td style="font-weight:bold;">Логин (длина - от 3 до 20 символов)</td>
         <td>
-            <input name="login" minlength="1" maxlength="20" type="text" th:value="${login}" style="width:100%" required/>
+            <input name="login" minlength="3" maxlength="20" type="text" th:value="${login}" style="width:100%" required/>
         </td>
     </tr>
     <tr>
         <td style="font-weight:bold;">Пароль (длина - от 5 до 20 символов)</td>
         <td>
-            <input id="password" name="password" minlength="1" maxlength="20" type="password" th:value="${password}" style="width:100%" required/>
+            <input id="password" name="password" minlength="5" maxlength="20" type="password" th:value="${password}" style="width:100%" required/>
         </td>
     </tr>
     <tr>
         <td style="font-weight:bold;">Повторите пароль</td>
         <td>
-            <input id="confirmedPassword" name="confirmedPassword" minlength="1" maxlength="20" type="password"
+            <input id="confirmedPassword" name="confirmedPassword" minlength="5" maxlength="20" type="password"
                    th:value="${confirmedPassword}" style="width:100%" oninput=checkIfPasswordConfirmed() required/>
         </td>
     </tr>
     <tr>
         <td style="font-weight:bold;">Имя (длина - от 2 до 20 символов)</td>
         <td>
-            <input name="name" minlength="1" maxlength="20" type="text" th:value="${name}" style="width:100%" required/>
+            <input name="name" minlength="2" maxlength="20" type="text" th:value="${name}" style="width:100%" required/>
         </td>
     </tr>
     <tr>
         <td style="font-weight:bold;">Фамилия (длина - от 2 до 20 символов)</td>
         <td>
-            <input name="surname" minlength="1" maxlength="20" type="text" th:value="${surname}" style="width:100%" required/>
+            <input name="surname" minlength="2" maxlength="20" type="text" th:value="${surname}" style="width:100%" required/>
         </td>
     </tr>
     <tr>

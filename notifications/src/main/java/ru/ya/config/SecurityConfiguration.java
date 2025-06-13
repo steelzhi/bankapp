@@ -1,6 +1,7 @@
 package ru.ya.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,6 +22,9 @@ import java.util.Map;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
+    @Value("${keycloak-location}")
+    private String keycloakLocation;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -57,7 +61,8 @@ public class SecurityConfiguration {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        return JwtDecoders.fromIssuerLocation("http://localhost:8080/realms/master");
+        return JwtDecoders.fromIssuerLocation(keycloakLocation);
+        //return JwtDecoders.fromIssuerLocation("http://localhost:8080/realms/master");
         //return JwtDecoders.fromIssuerLocation("http://keycloak:8080/realms/master");
     }
 }

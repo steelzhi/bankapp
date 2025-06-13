@@ -29,13 +29,15 @@ spring:
       resourceserver:
         jwt:
           # Ниже - адрес сервера авторизации для получения токена
-          issuer-uri: http://localhost:8080/realms/master # Для запуска локально
+          issuer-uri: ${issuer-uri}
+          #issuer-uri: http://localhost:8080/realms/master # Для запуска локально
           #issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker
       client:
         provider:
           keycloak:
             # Ниже - адрес сервера авторизации для получения токена
-            issuer-uri: http://localhost:8080/realms/master # Для запуска локально
+            issuer-uri: ${issuer-uri}
+            #issuer-uri: http://localhost:8080/realms/master # Для запуска локально
             #issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker
         registration:
           transfer: # Описание клиента OAuth2
