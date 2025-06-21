@@ -1,0 +1,118 @@
+# Global values (if any)
+global:
+  domain: myapp.local # Example domain for ingress
+
+# Configuration for the accounts-service subchart
+# NOTE: For local development (Minikube/Kind/Docker Desktop), build the image locally
+# (e.g., `docker build -t accounts-service:latest in accounts-service dir)
+# and ensure your K8s cluster can access local images (e.g., `minikube docker-env` or `kind load docker-image ...`).
+accounts-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: accounts-service # Removed registry prefix
+    tag: "latest"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8091
+  ingress:
+    enabled: true
+    className: "nginx" # Specify your ingress controller class
+    hosts:
+      - host: accounts.myapp.local # Use global domain or specific
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+  # Database connection details passed to accounts-service configmap
+  config:
+    # --- CORRECTED DB URL --- Using '<ReleaseName>-<Alias>' service name convention
+    database_url: "jdbc:postgresql://{{ .Release.Name }}-accounts-db:5432/accountsdb"
+    # Secret reference for password is more secure
+    database_username: "accounts_user"
+    # database_password_secret: "{{ .Release.Name }}-accounts-db-postgresql" # Reference to secret created by DB chart
+    # database_password_secret_key: "postgresql-password" # Key within the secret
+
+# Configuration for the exchange-generator-service subchart
+# NOTE: Build image locally: `docker build -t exchange-generator-service:latest in exchange-generator-service dir
+exchange-generator-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: exchange-generator-service # Removed registry prefix
+    tag: "latest"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8094 # Different port for exchange-generator service
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: exchange-generator.myapp.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+
+# Configuration for the front-ui-service subchart
+# NOTE: Build image locally: `docker build -t front-ui-service:latest in front-ui-service dir
+front-ui-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: front-ui-service # Removed registry prefix
+    tag: "latest"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8081 # Different port for front-ui service
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: front-ui.myapp.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+
+# Configuration for the notifications-service subchart
+# NOTE: Build image locally: `docker build -t notifications-service:latest in notifications-service dir
+notifications-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: notifications-service # Removed registry prefix
+    tag: "latest"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8091 # Different port for notifications service
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: notifications.myapp.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+
+# Configuration for the accounts-db (PostgreSQL dependency)
+# Values here are prefixed according to the Bitnami PostgreSQL chart's structure
+# Check the Bitnami chart's values.yaml for all available options
+accounts-db:
+  enabled: true
+  # Override values from the official postgresql chart
+  auth:
+    database: accountsdb
+    username: accounts_user
+    # Use existingSecret or provide password (less secure for production)
+    # existingSecret: "{{ .Release.Name }}-accounts-db-postgresql" # Name of the secret to use/create
+    password: "changeM3accounts!" # Example: Not recommended for production
+  primary:
+    persistence:
+      enabled: true
+      size: 1Gi # Small size for example

@@ -1,0 +1,34 @@
+apiVersion: v2
+name: my-microservices-app
+description: Umbrella chart for 4 microservices
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  # Subchart for Accounts Service
+  - name: accounts-service
+    version: "0.1.0"
+    repository: "file://./charts/accounts-service" # Local path reference
+
+  # Subchart for Exchange generator Service
+  - name: exchange-generator-service
+    version: "0.1.0"
+    repository: "file://./charts/exchange-generator-service"  # Local path reference
+
+  # Subchart for Front UI Service
+  - name: front-ui-service
+    version: "0.1.0"
+    repository: "file://./charts/front-ui-service"  # Local path reference
+
+  # Subchart for Notifications Service
+  - name: notifications-service
+    version: "0.1.0"
+    repository: "file://./charts/notifications-service"  # Local path reference
+
+ # Dependency for Customer DB (PostgreSQL)
+  - name: postgresql
+    version: "14.2.3" # Using a specific known stable version from Bitnami history
+    repository: "https://charts.bitnami.com/bitnami"
+    alias: accounts-db # Alias to distinguish this instance
+    condition: accounts-db.enabled # Allow disabling if needed
