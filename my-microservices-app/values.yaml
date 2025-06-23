@@ -30,7 +30,7 @@ accounts-service:
     # --- CORRECTED DB URL --- Using '<ReleaseName>-<Alias>' service name convention
     database_url: "jdbc:postgresql://{{ .Release.Name }}-accounts-db:5432/accountsdb"
     # Secret reference for password is more secure
-    database_username: "accounts_user"
+    database_username: "s"
     # database_password_secret: "{{ .Release.Name }}-accounts-db-postgresql" # Reference to secret created by DB chart
     # database_password_secret_key: "postgresql-password" # Key within the secret
 
@@ -108,11 +108,21 @@ accounts-db:
   # Override values from the official postgresql chart
   auth:
     database: accountsdb
-    username: accounts_user
+    username: s
     # Use existingSecret or provide password (less secure for production)
     # existingSecret: "{{ .Release.Name }}-accounts-db-postgresql" # Name of the secret to use/create
-    password: "changeM3accounts!" # Example: Not recommended for production
+    password: "sa" # Example: Not recommended for production
   primary:
     persistence:
       enabled: true
       size: 1Gi # Small size for example
+
+keycloak:
+  ingress:
+    enabled: true
+    className: "keycloak"
+    hosts:
+      - host: keycloak.myapp.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific

@@ -4,25 +4,25 @@ server:
 spring:
   application:
     name: front-ui
-  config:
-    import: 'optional:consul:'
+  #config:
+  #  import: 'optional:consul:'
 
-  cloud:
-    consul:
-      host: localhost           # Адрес Consul-агента (по умолчанию localhost)
-      port: 8500
-      config:
-        enabled: true
-        format: YAML
-        prefix: config
-        defaultContext: application
-      discovery:
-        instance-id: ${spring.application.name}
-        preferIpAddress: false   # Использовать IP адрес вместо имени хоста
-        health-check-path: /actuator/health
-        healthCheckInterval: 15s
-        heartbeat:
-          enabled: true
+  #cloud:
+  #  consul:
+  #    host: localhost           # Адрес Consul-агента (по умолчанию localhost)
+  #    port: 8500
+  #    config:
+   #     enabled: true
+   #     format: YAML
+   #     prefix: config
+   #     defaultContext: application
+   #   discovery:
+   #     instance-id: ${spring.application.name}
+    #    preferIpAddress: false   # Использовать IP адрес вместо имени хоста
+   #     health-check-path: /actuator/health
+   #     healthCheckInterval: 15s
+    #    heartbeat:
+    #      enabled: true
 
   security:
     oauth2:
@@ -30,8 +30,8 @@ spring:
         provider:
           keycloak:
             # Ниже - адрес сервера авторизации для получения токена
-            issuer-uri: ${issuer-uri}
-            #issuer-uri: http://localhost:8080/realms/master # Для запуска локально
+            #issuer-uri: ${issuer-uri}
+            issuer-uri: http://localhost:8080/realms/master # Для запуска локально
             #issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker
         registration:
           front-ui: # Описание клиента OAuth2
@@ -42,25 +42,30 @@ spring:
             scope: profile
             clientAuthenticationMethod: client_secret_post # Способ передачи секрета
 
-resilience4j:
-  circuitbreaker:
-    instances:
-      accounts:
-        slidingWindowSize: 10
-        minimumNumberOfCalls: 5
-        failureRateThreshold: 50
-        waitDurationInOpenState: 30s
-  retry:
-    instances:
-      responseFromModule:
-        maxRetryAttempts: 4
-        waitDuration: 4s
+#resilience4j:
+  #circuitbreaker:
+   # instances:
+     # accounts:
+       # slidingWindowSize: 10
+        #minimumNumberOfCalls: 5
+        #failureRateThreshold: 50
+        #waitDurationInOpenState: 30s
+  #retry:
+    #instances:
+      #responseFromModule:
+        #maxRetryAttempts: 4
+        #waitDuration: 4s
 
 #Настройки ниже - для запуска без Consul
 #module-accounts: http://localhost:8070/
 #module-cash: http://localhost:8092/
 #module-exchange-generator: http://localhost:8094/
 #module-transfer: http://localhost:8096/
+
+module-accounts: http://accounts/
+module-cash: http://localhost:8092/
+module-exchange-generator: http://exchange-generator.myapp.local/
+module-transfer: http://localhost:8096/
 
 #Настройки ниже - для запуска в Consul, но без использования consul.config
 #(при использовании consul.config для настроек ниже нужно создать папку config/application/consul и скопировать весь раскомментированный блок ниже туда

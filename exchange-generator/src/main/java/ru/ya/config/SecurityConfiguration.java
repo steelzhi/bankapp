@@ -20,7 +20,8 @@ import java.util.Map;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
-    @Value("${keycloak-location}")
+    //@Value("${keycloak-location}")
+    @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     private String keycloakLocation;
 
     @Bean

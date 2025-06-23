@@ -31,10 +31,6 @@ brew install minikube
 docker build -t customer-service:latest ./customer-service
 docker build -t order-service:latest ./order-service
 ```
-Или можно запустить файл build_images.sh
-```bash
-./build_images.sh
-````
 
 5) Стартуем minikube (macOS)
 ```bash

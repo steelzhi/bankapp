@@ -4,32 +4,36 @@ server:
 spring:
   application:
     name: accounts
-  config:
-    import: 'optional:consul:'
+  #config:
+    #import: 'optional:consul:'
 
-  cloud:
-    consul:
-      host: localhost           # Адрес Consul-агента (по умолчанию localhost)
-      port: 8500
-      config:
-        enabled: true
-        format: YAML
-        prefix: config
-        defaultContext: application
-      discovery:
-        instance-id: ${spring.application.name}
-        preferIpAddress: false   # Использовать IP адрес вместо имени хоста
-        health-check-path: /actuator/health
-        healthCheckInterval: 15s
-        heartbeat:
-          enabled: true
+  #cloud:
+    #consul:
+    #  host: localhost           # Адрес Consul-агента (по умолчанию localhost)
+    #  port: 8500
+    #  config:
+    #    enabled: true
+    #    format: YAML
+    #    prefix: config
+     #   defaultContext: application
+     # discovery:
+     #   instance-id: ${spring.application.name}
+     #   preferIpAddress: false   # Использовать IP адрес вместо имени хоста
+      #  health-check-path: /actuator/health
+      #  healthCheckInterval: 15s
+      #  heartbeat:
+      #    enabled: true
 
   datasource:
     driverClassName: org.postgresql.Driver
     #url: jdbc:postgresql://db:5432/bankapp # Для запуска в Docker
-    url: jdbc:postgresql://localhost:5432/bankapp # Для запуска локально
-    username: s
-    password: sa
+    #url: jdbc:postgresql://localhost:5432/bankapp # Для запуска локально
+    #username: s
+    #password: sa
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL}
+
 
     jpa:
       generate-ddl: true
@@ -47,15 +51,15 @@ spring:
       resourceserver:
         jwt:
           # Ниже - адрес сервера авторизации для получения токена
-          issuer-uri: ${issuer-uri}
-          #issuer-uri: http://localhost:8080/realms/master # Для запуска локально
+          #issuer-uri: ${issuer-uri}
+          issuer-uri: http://localhost:8080/realms/master # Для запуска локально
           #issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker
       client:
         provider:
           keycloak:
             # Ниже - адрес сервера авторизации для получения токена
-            issuer-uri: ${issuer-uri}
-            #issuer-uri: http://localhost:8080/realms/master # Для запуска локально
+            #issuer-uri: ${issuer-uri}
+            issuer-uri: http://localhost:8080/realms/master # Для запуска локально
             #issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker
         registration:
           accounts: # Описание клиента OAuth2
@@ -86,6 +90,7 @@ resilience4j:
 
 #Настройки ниже - для запуска без Consul
 #module-notifications: http://localhost:8091/
+module-notifications: http://notifications.myapp.local/
 
 #Настройки ниже - для запуска в Consul, но без использования consul.config
 #(при использовании consul.config для настроек ниже нужно создать папку config/application/consul и скопировать весь раскомментированный блок ниже туда
