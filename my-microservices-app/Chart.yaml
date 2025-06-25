@@ -1,6 +1,6 @@
 apiVersion: v2
 name: my-microservices-app
-description: Umbrella chart for 6 microservices
+description: Umbrella chart for 10 microservices
 type: application
 version: 0.1.0
 appVersion: "1.0.0"
@@ -10,6 +10,21 @@ dependencies:
   - name: accounts-service
     version: "0.1.0"
     repository: "file://./charts/accounts-service" # Local path reference
+
+  # Subchart for Blocker Service
+  - name: blocker-service
+    version: "0.1.0"
+    repository: "file://./charts/blocker-service" # Local path reference
+
+  # Subchart for Cash Service
+  - name: cash-service
+    version: "0.1.0"
+    repository: "file://./charts/cash-service" # Local path reference
+
+  # Subchart for Exchange Service
+  - name: exchange-service
+    version: "0.1.0"
+    repository: "file://./charts/exchange-service"  # Local path reference
 
   # Subchart for Exchange generator Service
   - name: exchange-generator-service
@@ -25,6 +40,11 @@ dependencies:
   - name: notifications-service
     version: "0.1.0"
     repository: "file://./charts/notifications-service"  # Local path reference
+
+  # Subchart for Transfer Service
+  - name: transfer-service
+    version: "0.1.0"
+    repository: "file://./charts/transfer-service"  # Local path reference
 
  # Dependency for Accounts DB (PostgreSQL)
   - name: postgresql

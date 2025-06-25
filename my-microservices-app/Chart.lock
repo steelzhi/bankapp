@@ -2,6 +2,15 @@ dependencies:
 - name: accounts-service
   repository: file://./charts/accounts-service
   version: 0.1.0
+- name: blocker-service
+  repository: file://./charts/blocker-service
+  version: 0.1.0
+- name: cash-service
+  repository: file://./charts/cash-service
+  version: 0.1.0
+- name: exchange-service
+  repository: file://./charts/exchange-service
+  version: 0.1.0
 - name: exchange-generator-service
   repository: file://./charts/exchange-generator-service
   version: 0.1.0
@@ -10,6 +19,9 @@ dependencies:
   version: 0.1.0
 - name: notifications-service
   repository: file://./charts/notifications-service
+  version: 0.1.0
+- name: transfer-service
+  repository: file://./charts/transfer-service
   version: 0.1.0
 - name: keycloak
   repository: https://charts.bitnami.com/bitnami

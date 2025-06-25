@@ -69,7 +69,14 @@ resilience4j:
 #module-exchange: http://localhost:8095/
 
 #Настройки ниже - для запуска в Consul, но без использования consul.config
-#(при использовании consul.config для настроек ниже нужно создать папку config/application/consul и скопировать весь раскомментированный блок ниже туда#module-accounts: http://accounts/
-#notifications: http://notifications/
+#(при использовании consul.config для настроек ниже нужно создать папку config/application/consul и скопировать весь раскомментированный блок ниже туда
+#module-accounts: http://accounts/
+#module-notifications: http://notifications/
 #module-blocker: http://blocker/
 #module-exchange: http://exchange/
+
+#Настройки ниже - для K8s
+module-accounts: http://accounts.myapp.local/
+module-notifications: http://notifications.myapp.local/
+module-blocker: http://blocker.myapp.local/
+module-exchange: http://exchange.myapp.local/

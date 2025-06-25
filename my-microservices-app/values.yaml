@@ -16,7 +16,7 @@ accounts-service:
     # -----------------------------
   service:
     type: ClusterIP
-    port: 8091
+    port: 8070
   ingress:
     enabled: true
     className: "nginx" # Specify your ingress controller class
@@ -33,6 +33,72 @@ accounts-service:
     database_username: "s"
     # database_password_secret: "{{ .Release.Name }}-accounts-db-postgresql" # Reference to secret created by DB chart
     # database_password_secret_key: "postgresql-password" # Key within the secret
+
+# Configuration for the blocker-service subchart
+# NOTE: Build image locally: `docker build -t blocker-service:latest in blocker-service dir
+blocker-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: blocker-service # Removed registry prefix
+    tag: "latest"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8093 # Different port for blocker service
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: blocker.myapp.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+
+# Configuration for the cash-service subchart
+# NOTE: Build image locally: `docker build -t cash-service:latest in cash-service dir
+cash-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: cash-service # Removed registry prefix
+    tag: "latest"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8092 # Different port for cash service
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: cash.myapp.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+
+# Configuration for the exchange-service subchart
+# NOTE: Build image locally: `docker build -t exchange-service:latest in exchange-service dir
+exchange-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: exchange-service # Removed registry prefix
+    tag: "latest"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8095 # Different port for exchange service
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: exchange.myapp.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
 
 # Configuration for the exchange-generator-service subchart
 # NOTE: Build image locally: `docker build -t exchange-generator-service:latest in exchange-generator-service dir
@@ -96,6 +162,28 @@ notifications-service:
     className: "nginx"
     hosts:
       - host: notifications.myapp.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+
+# Configuration for the transfer-service subchart
+# NOTE: Build image locally: `docker build -t transfer-service:latest in transfer-service dir
+transfer-service:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: transfer-service # Removed registry prefix
+    tag: "latest"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8096 # Different port for transfer service
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: transfer.myapp.local
         paths:
           - path: /
             pathType: ImplementationSpecific

@@ -62,14 +62,15 @@ spring:
 #module-exchange-generator: http://localhost:8094/
 #module-transfer: http://localhost:8096/
 
-module-accounts: http://accounts/
-module-cash: http://localhost:8092/
-module-exchange-generator: http://exchange-generator.myapp.local/
-module-transfer: http://localhost:8096/
-
 #Настройки ниже - для запуска в Consul, но без использования consul.config
 #(при использовании consul.config для настроек ниже нужно создать папку config/application/consul и скопировать весь раскомментированный блок ниже туда
 #module-accounts: http://accounts/
 #module-cash: http://cash/
 #module-exchange-generator: http://exchange-generator/
 #module-transfer: http://transfer/
+
+#Настройки ниже - для K8s
+module-accounts: http://accounts.myapp.local/
+module-cash: http://cash.myapp.local/
+module-exchange-generator: http://exchange-generator.myapp.local/
+module-transfer: http://transfer.myapp.local/

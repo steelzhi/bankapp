@@ -68,3 +68,6 @@ resilience4j:
 #Настройки ниже - для запуска в Consul, но без использования consul.config
 #(при использовании consul.config для настроек ниже нужно создать папку config/application/consul и скопировать весь раскомментированный блок ниже туда
 #module-exchange-generator: http://exchange-generator/
+
+#Настройки ниже - для K8s
+module-exchange-generator: http://exchange-generator.myapp.local/

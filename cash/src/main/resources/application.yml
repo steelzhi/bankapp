@@ -72,3 +72,8 @@ resilience4j:
 #module-accounts: http://accounts/
 #module-notifications: http://notifications/
 #module-blocker: http://blocker/
+
+#Настройки ниже - для K8s
+module-accounts: http://accounts.myapp.local/
+module-notifications: http://notifications.myapp.local/
+module-blocker: http://blocker.myapp.local/
