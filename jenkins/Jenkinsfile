@@ -20,6 +20,27 @@ pipeline {
                         }
                     }
                 }
+                stage('Blocker Service') {
+                    steps {
+                        dir('blocker-service') {
+                            sh 'gradle clean test'
+                        }
+                    }
+                }
+                stage('Cash Service') {
+                    steps {
+                        dir('cash-service') {
+                            sh 'gradle clean test'
+                        }
+                    }
+                }
+                stage('Exchange Service') {
+                    steps {
+                        dir('exchange-service') {
+                            sh 'gradle clean test'
+                        }
+                    }
+                }
                 stage('Exchange generator Service') {
                     steps {
                         dir('exchange-generator-service') {
@@ -41,6 +62,13 @@ pipeline {
                         }
                     }
                 }
+                stage('Transfer Service') {
+                    steps {
+                        dir('transfer-service') {
+                            sh 'gradle clean test'
+                        }
+                    }
+                }
             }
         }
 
@@ -48,9 +76,13 @@ pipeline {
             steps {
                 sh """
                 docker build -t ${DOCKER_REGISTRY}/accounts-service:${IMAGE_TAG} accounts-service
+                docker build -t ${DOCKER_REGISTRY}/blocker-service:${IMAGE_TAG} blocker-service
+                docker build -t ${DOCKER_REGISTRY}/cash-service:${IMAGE_TAG} cash-service
+                docker build -t ${DOCKER_REGISTRY}/exchange-service:${IMAGE_TAG} exchange-service
                 docker build -t ${DOCKER_REGISTRY}/exchange-generator-service:${IMAGE_TAG} exchange-generator-service
                 docker build -t ${DOCKER_REGISTRY}/front-ui-service:${IMAGE_TAG} front-ui-service
                 docker build -t ${DOCKER_REGISTRY}/notifications-service:${IMAGE_TAG} notifications-service
+                docker build -t ${DOCKER_REGISTRY}/transfer-service:${IMAGE_TAG} transfer-service
                 """
             }
         }
@@ -61,9 +93,14 @@ pipeline {
                     sh """
                     echo \$GHCR_TOKEN | docker login ghcr.io -u ${GITHUB_USERNAME} --password-stdin
                     docker push ${DOCKER_REGISTRY}/accounts-service:${IMAGE_TAG}
+                    docker push ${DOCKER_REGISTRY}/blocker-service:${IMAGE_TAG}
+                    docker push ${DOCKER_REGISTRY}/cash-service:${IMAGE_TAG}
+                    docker push ${DOCKER_REGISTRY}/exchange-service:${IMAGE_TAG}
                     docker push ${DOCKER_REGISTRY}/exchange-generator-service:${IMAGE_TAG}
                     docker push ${DOCKER_REGISTRY}/front-ui-service:${IMAGE_TAG}
                     docker push ${DOCKER_REGISTRY}/notifications-service:${IMAGE_TAG}
+                    docker push ${DOCKER_REGISTRY}/transfer-service:${IMAGE_TAG}
+
                     """
                 }
             }
@@ -106,6 +143,33 @@ pipeline {
                   --set ingress.hosts[0].paths[0].path="/" \\
                   --set ingress.hosts[0].paths[0].pathType="ImplementationSpecific"
 
+                helm upgrade --install blocker-service my-microservices-app/charts/blocker-service \\
+                  --namespace test --create-namespace \\
+                  --set image.repository=${DOCKER_REGISTRY}/blocker-service \\
+                  --set image.tag=${IMAGE_TAG} \\
+                  --set ingress.enabled=true \\
+                  --set ingress.hosts[0].host=blocker.test.local \\
+                  --set ingress.hosts[0].paths[0].path="/" \\
+                  --set ingress.hosts[0].paths[0].pathType="ImplementationSpecific"
+
+                helm upgrade --install cash-service my-microservices-app/charts/cash-service \\
+                  --namespace test --create-namespace \\
+                  --set image.repository=${DOCKER_REGISTRY}/cash-service \\
+                  --set image.tag=${IMAGE_TAG} \\
+                  --set ingress.enabled=true \\
+                  --set ingress.hosts[0].host=cash.test.local \\
+                  --set ingress.hosts[0].paths[0].path="/" \\
+                  --set ingress.hosts[0].paths[0].pathType="ImplementationSpecific"
+
+                helm upgrade --install exchange-service my-microservices-app/charts/exchange-service \\
+                  --namespace test --create-namespace \\
+                  --set image.repository=${DOCKER_REGISTRY}/exchange-service \\
+                  --set image.tag=${IMAGE_TAG} \\
+                  --set ingress.enabled=true \\
+                  --set ingress.hosts[0].host=exchange.test.local \\
+                  --set ingress.hosts[0].paths[0].path="/" \\
+                  --set ingress.hosts[0].paths[0].pathType="ImplementationSpecific"
+
                 helm upgrade --install exchange-generator-service my-microservices-app/charts/exchange-generator-service \\
                   --namespace test --create-namespace \\
                   --set image.repository=${DOCKER_REGISTRY}/exchange-generator-service \\
@@ -130,6 +194,15 @@ pipeline {
                   --set image.tag=${IMAGE_TAG} \\
                   --set ingress.enabled=true \\
                   --set ingress.hosts[0].host=notifications.test.local \\
+                  --set ingress.hosts[0].paths[0].path="/" \\
+                  --set ingress.hosts[0].paths[0].pathType="ImplementationSpecific"
+
+                helm upgrade --install transfer-service my-microservices-app/charts/transfer-service \\
+                  --namespace test --create-namespace \\
+                  --set image.repository=${DOCKER_REGISTRY}/transfer-service \\
+                  --set image.tag=${IMAGE_TAG} \\
+                  --set ingress.enabled=true \\
+                  --set ingress.hosts[0].host=transfer.test.local \\
                   --set ingress.hosts[0].paths[0].path="/" \\
                   --set ingress.hosts[0].paths[0].pathType="ImplementationSpecific"
                 """
@@ -176,6 +249,33 @@ pipeline {
                   --set ingress.hosts[0].paths[0].path="/" \\
                   --set ingress.hosts[0].paths[0].pathType="ImplementationSpecific"
 
+                helm upgrade --install blocker-service my-microservices-app/charts/blocker-service \\
+                  --namespace prod --create-namespace \\
+                  --set image.repository=${DOCKER_REGISTRY}/blocker-service \\
+                  --set image.tag=${IMAGE_TAG} \\
+                  --set ingress.enabled=true \\
+                  --set ingress.hosts[0].host=blocker.prod.local \\
+                  --set ingress.hosts[0].paths[0].path="/" \\
+                  --set ingress.hosts[0].paths[0].pathType="ImplementationSpecific"
+
+                helm upgrade --install cash-service my-microservices-app/charts/cash-service \\
+                  --namespace prod --create-namespace \\
+                  --set image.repository=${DOCKER_REGISTRY}/cash-service \\
+                  --set image.tag=${IMAGE_TAG} \\
+                  --set ingress.enabled=true \\
+                  --set ingress.hosts[0].host=cash.prod.local \\
+                  --set ingress.hosts[0].paths[0].path="/" \\
+                  --set ingress.hosts[0].paths[0].pathType="ImplementationSpecific"
+
+                helm upgrade --install exchange-service my-microservices-app/charts/exchange-service \\
+                  --namespace prod --create-namespace \\
+                  --set image.repository=${DOCKER_REGISTRY}/exchange-service \\
+                  --set image.tag=${IMAGE_TAG} \\
+                  --set ingress.enabled=true \\
+                  --set ingress.hosts[0].host=exchange.prod.local \\
+                  --set ingress.hosts[0].paths[0].path="/" \\
+                  --set ingress.hosts[0].paths[0].pathType="ImplementationSpecific"
+
                 helm upgrade --install exchange-generator-service my-microservices-app/charts/exchange-generator-service \\
                   --namespace prod --create-namespace \\
                   --set image.repository=${DOCKER_REGISTRY}/exchange-generator-service \\
@@ -200,6 +300,15 @@ pipeline {
                   --set image.tag=${IMAGE_TAG} \\
                   --set ingress.enabled=true \\
                   --set ingress.hosts[0].host=notifications.prod.local \\
+                  --set ingress.hosts[0].paths[0].path="/" \\
+                  --set ingress.hosts[0].paths[0].pathType="ImplementationSpecific"
+
+                helm upgrade --install transfer-service my-microservices-app/charts/transfer-service \\
+                  --namespace prod --create-namespace \\
+                  --set image.repository=${DOCKER_REGISTRY}/transfer-service \\
+                  --set image.tag=${IMAGE_TAG} \\
+                  --set ingress.enabled=true \\
+                  --set ingress.hosts[0].host=transfer.prod.local \\
                   --set ingress.hosts[0].paths[0].path="/" \\
                   --set ingress.hosts[0].paths[0].pathType="ImplementationSpecific"
                 """
