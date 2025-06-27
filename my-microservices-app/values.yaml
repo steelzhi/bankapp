@@ -206,11 +206,46 @@ accounts-db:
       size: 1Gi # Small size for example
 
 keycloak:
+  enabled: true
+  auth:
+    adminUser: admin
+    adminPassword: admin
   ingress:
     enabled: true
-    className: "keycloak"
+    className: "nginx"
     hosts:
       - host: keycloak.myapp.local
         paths:
           - path: /
             pathType: ImplementationSpecific
+  service:
+    type: ClusterIP
+    port: 8080
+  postgresql:
+    enabled: true
+    auth:
+      postgresPassword: keycloak
+      password: keycloak
+      username: keycloak
+      database: keycloak
+  extraEnvVars:
+    - name: KEYCLOAK_LOGLEVEL
+      value: DEBUG
+  extraStartupArgs: "--import-realm"
+  extraVolumeMounts:
+    - name: realm-config
+      mountPath: /realm
+      readOnly: true
+  extraVolumes:
+    - name: realm-config
+      configMap:
+        name: keycloak-realm
+  initContainers:
+    - name: copy-realm
+      image: busybox
+      command: ['sh', '-c', 'cp /realm/keycloak-realm.json /bitnami/keycloak/data/import/']
+      volumeMounts:
+        - name: realm-config
+          mountPath: /realm
+        - name: keycloak-data
+          mountPath: /bitnami/keycloak/data
