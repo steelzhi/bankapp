@@ -1,158 +1,173 @@
-1) Запуск на macOS
-```bash
-brew install qemu
-```
- 
-2) Настройка socket_vmnet
-```bash
-brew install socket_vmnet
-```
-При установке socket_vmnet могут быть предупреждения, 
-надо выполнить команды, которые в них предлагаются
-Выполняем команду для старта сервиса
-```bash
-sudo brew services start socket_vmnet
-```
+1. Упаковка в K8s 
 
-Или можно выполнить команду запуска не в режиме демона
-```bash
-sudo /usr/local/opt/socket_vmnet/bin/socket_vmnet --vmnet-gateway\=192.168.105.1 /usr/local/var/run/socket_vmnet
-```
-
-3) Установка Minikube
-- для macos
-```bash
-brew install minikube
-``` 
-- для остальных можно посмотреть https://kubernetes.io/ru/docs/tasks/tools/install-minikube/
-
-4) Билд образов
-```bash
+1.1. Сборка образов
 docker build -t customer-service:latest ./customer-service
 docker build -t order-service:latest ./order-service
-```
 
-5) Стартуем minikube (macOS)
-```bash
-minikube start --driver qemu --network socket_vmnet --memory='6000M'
-```
+1.2. Запуск Minikube (в Windows)
+minikube start --vm-driver=hyperv 
 
-6) Загрузка локальных образов в Minikube
-```bash
+1.3. Загрузка локальных образов в Minikube
 minikube image load customer-service:latest
 minikube image load order-service:latest
-```
 
-6) Проверка ingress
-```bash
+1.4. Проверка Ingress
 kubectl get svc -n ingress-nginx
-```
-
-7) Установка Ingress если на предыдущем шаге получили пустоту
-```bash
+Если возвращается пустое значение, нужно установить Ingress:
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/cloud/deploy.yaml
-```
 
-7) Включение ingress в minikube
-```bash
+1.5. Включение Ingress в Minikube
 minikube addons enable ingress
-```
 
-8) Установка helm (если не установлен)
-```bash 
-brew install helm
-```
- 
-9) Обновление зависимостей для helm чартов (будет установлен PostgreSQL)
-```bash
+1.6. Обновление зависимостей для helm-чартов (будет установлен PostgreSQL)
 cd my-microservices-app/
 helm dependency update .
-```
 
-10) Установка Helm-релиза (из папки с чартом)
-```bash
+1.7. Установка Helm-релиза (из папки с чартом)
 cd my-microservices-app/
 helm install myapp ./
-```
 
-10) Проверка установки
-```bash
+1.8 Проверка установки
 kubectl get pods
-``` 
 (дождаться пока все поды будут в состоянии Running)
-```bash
+
 kubectl get svc
 kubectl get ingress
-```
 
 Также можно посмотреть логи внутри пода
-```bash
 kubectl logs -f имя_пода
-```
 
-11) Увеличение replicaCount
-В файле _values.yaml_ можно увеличить replicaCount у какого-то из сервисов
-```bash
-cd my-microservices-app/
-helm upgrade myapp ./ -f values.yaml
-```
-
-Можно также увидеть ревизии выпуска Helm: 
-`helm list` - показать текущий релиз в том числе и номер ревизии
-`helm diff upgrade` - посмотреть, что изменилось (при наличии плагина 
-diff) или просмотрев `helm history myapp`
-
-12) Узнать Ip кластера
-```bash
+1.9. Узнать IP кластера
 kubectl get nodes -o wide
-```
 
-13) Надо прописать в /etc/hosts (macos, linux)
-```bash
-sudo nano /etc/hosts
-```
-
-или для Windows идем в C:\Windows\System32\drivers\etc,
-предварительно возможно надо будет включить отображение скрытых файлов,
+1.10 Для Windows - папка C:\Windows\System32\drivers\etc,
+предварительно нужно будет включить отображение скрытых файлов,
 далее находим файл _hosts_, щелкаем правой кнопкой мыши и выбираем "Запуск от имени администратора"
-
 В файл _hosts_ надо добавить ip, который получили из поля _INTERNAL-IP_ на шаге 12
-далее пробел и имя хоста, которое можно найти в файле _values.yaml_ -> 
+далее пробел и имя хоста, которое можно найти в файле _values.yaml_ ->
 ищем сервисы customer-service и order-service и в них ищем _hosts_ и далее поле _host_
+
+(В Linux: надо прописать в /etc/hosts 
+sudo nano /etc/hosts )
 
 Далее сохраняем файл _hosts_ 
 
-14) Проверка доменов
+1.11. Проверка доменов
+http://accounts.myapp.local/actuator/health
+http://blocker.myapp.local/actuator/health
+http://cash.myapp.local/actuator/health
+http://exchange.myapp.local/actuator/health
+http://exchange-generator.myapp.local/actuator/health
+http://front-ui.myapp.local/actuator/health
+http://notifications.myapp.local/actuator/health
+http://transfer.myapp.local/actuator/health
 
-http://order.myapp.local/orders
 
-http://order.myapp.local/actuator/health
+2. Настройка CI/CD через Jenkins
 
-http://customer.myapp.local/customers
+2.1. Установить Ingress Controller в кластер
+(Ingress Controller — это компонент, который позволяет обращаться к сервисам Kubernetes через удобные HTTP-домены (например, `http://accounts.test.local`))
 
-http://customer.myapp.local/actuator/health
+Будет использован `ingress-nginx`. Его установка в кластер:
 
 
-### Настройка CI/CD через Jenkins
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
 
-1) см. файл [README.md](README.md)
+helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx   --namespace ingress-nginx --create-namespace
 
-2) Убедитесь, что в .env указаны ваши значения из github
-Для полей GHCR_TOKEN и GITHUB_TOKEN нужно сгенерить токен в github
-Заходите в свой github, далее Settings -> Developer Settings -> Personal access tokens -> Tokens (classic)
-Далее либо генерируете новый токен, либо используете существующий 
+
+2.2. Создать файл `.env` в корне проекта:
+
+# Путь до локального kubeconfig-файла
+KUBECONFIG_PATH=/Users/username/.kube/jenkins_kubeconfig.yaml
+
+# Параметры для GHCR (вставить)
+GITHUB_USERNAME=your-username
+GITHUB_TOKEN=ghp_...
+GHCR_TOKEN=ghp_...
+
+# Docker registry (в данном случае GHCR; вставить)
+DOCKER_REGISTRY=ghcr.io/your-username
+GITHUB_REPOSITORY=your-username/YandexHelmApp
+
+# Пароль к базе данных PostgreSQL (добавить)
+DB_PASSWORD=your-db-password
+
+ Убедиться, что мой GitHub Token имеет права `write:packages`, `read:packages` и `repo`.
+
+---
+
+2.3. Запустить Jenkins
+
+cd jenkins
+docker compose up -d --build
+
+- Откройте Jenkins: [http://localhost:8080](http://localhost:8080)
+- Перейти в задачу `YandexHelmApp` → `Build Now`
+- Jenkins выполнит:
+    - сборку и тесты
+    - сборку Docker-образов
+    - публикацию образов в GHCR
+    - деплой в Kubernetes в два namespace: `test` и `prod`
+
+2.4. Проверка успешного деплоя.
+2.4.1. Добавить записи в `/etc/hosts` (ниже - команда для Linux)
+
+sudo nano /etc/hosts
+
+2.4.2. Добавить:
+127.0.0.1 accounts.test.local
+127.0.0.1 blocker.test.local
+127.0.0.1 cash.test.local
+127.0.0.1 exchange.test.local
+127.0.0.1 exchange-generator.test.local
+127.0.0.1 front-ui.test.local
+127.0.0.1 notifications.test.local
+127.0.0.1 transfer.test.local
+127.0.0.1 accounts.prod.local
+127.0.0.1 blocker.prod.local
+127.0.0.1 cash.prod.local
+127.0.0.1 exchange.prod.local
+127.0.0.1 exchange-generator.prod.local
+127.0.0.1 front-ui.prod.local
+127.0.0.1 notifications.prod.local
+127.0.0.1 transfer.prod.local
+
+2.4.3. Отправить запросы на `/actuator/health`
+
+http://accounts.myapp.local/actuator/health
+http://blocker.myapp.local/actuator/health
+http://cash.myapp.local/actuator/health
+http://exchange.myapp.local/actuator/health
+http://exchange-generator.myapp.local/actuator/health
+http://front-ui.myapp.local/actuator/health
+http://notifications.myapp.local/actuator/health
+http://transfer.myapp.local/actuator/health
+
+**Ожидаемый ответ:**
+
+```json
+{"status":"UP","groups":["liveness","readiness"]}
+```
+
+2.5. Завершение работы и очистка
+2.5.1. Для полной остановки Jenkins, удаления namespace'ы `test` и `prod`, а также всех установленных ресурсов, нужно использовать скрипт `nuke-all.sh` (для Linux).
+Он находится в папке `jenkins`:
+
+```bash
+cd jenkins
+./nuke-all.sh
+```
+
+2.5.2. Убедиться, что в .env указаны мои значения из github
+Для полей GHCR_TOKEN и GITHUB_TOKEN нужно сгенерить токен в github: зайти в свой github, 
+далее Settings -> Developer Settings -> Personal access tokens -> Tokens (classic)
+Далее либо сгенерировать новый токен, либо использовать существующий.
  
-3) Проверка релизов
-```bash
+3) Проверить релизы
 kubectl get pods -n test
-```
-```bash
 kubectl get pods -n prod
-```
 
-```bash
 helm list -n test
-```
-```bash
 helm list -n prod
-```

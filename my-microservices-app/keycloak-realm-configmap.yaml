@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-realm
+  labels:
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: sso
+    app.kubernetes.io/part-of: bankapp
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/instance: {{ .Release.Name }}
+data:
+  keycloak-realm.json: |-
+    {
+      "realm": "bankapp",
+      "enabled": true,
+      "clients": [
+        {
+          "clientId": "bankapp-backend",
+          "secret": "bankapp-secret",
+          "enabled": true,
+          "protocol": "openid-connect",
+          "publicClient": false,
+          "redirectUris": ["*"],
+          "standardFlowEnabled": true
+        }
+      ],
+      "users": [
+        {
+          "username": "testuser",
+          "enabled": true,
+          "credentials": [
+            {
+              "type": "password",
+              "value": "testpassword"
+            }
+          ],
+          "realmRoles": ["USER"]
+        }
+      ],
+      "roles": {
+        "realm": [
+          { "name": "USER" },
+          { "name": "ADMIN" }
+        ]
+      }
+    }

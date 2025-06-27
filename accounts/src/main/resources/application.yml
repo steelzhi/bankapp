@@ -50,25 +50,20 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          # Ниже - адрес сервера авторизации для получения токена
-          #issuer-uri: ${issuer-uri}
-          issuer-uri: http://localhost:8080/realms/master # Для запуска локально
-          #issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker
+          issuer-uri: http://keycloak.myapp.local/realms/bankapp
       client:
         provider:
           keycloak:
-            # Ниже - адрес сервера авторизации для получения токена
-            #issuer-uri: ${issuer-uri}
-            issuer-uri: http://localhost:8080/realms/master # Для запуска локально
-            #issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker
+            issuer-uri: http://keycloak.myapp.local/realms/bankapp
+            user-name-attribute: preferred_username
         registration:
-          accounts: # Описание клиента OAuth2
+          keycloak:
             provider: keycloak
-            authorizationGrantType: client_credentials
-            client-id: accounts
-            client-secret: cqvRnkAwGQMMsl27GqHCy4Ke3YwBKSOE
-            scope: profile
-            clientAuthenticationMethod: client_secret_post # Способ передачи секрета
+            client-id: bankapp-backend
+            client-secret: bankapp-secret
+            authorization-grant-type: client_credentials
+            scope: openid,profile,email
+            client-authentication-method: client_secret_post
 
   sql:
     init:
