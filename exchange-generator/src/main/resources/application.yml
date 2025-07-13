@@ -4,35 +4,15 @@ server:
 spring:
   application:
     name: exchange-generator
-  #config:
-   # import: 'optional:consul:'
-
-  #cloud:
-    #consul:
-     # host: localhost           # Адрес Consul-агента (по умолчанию localhost)
-     # port: 8500
-     # config:
-      #  enabled: true
-     #   format: YAML
-     #   prefix: config
-      #  defaultContext: application
-      #discovery:
-       # # ip-address: localhost
-       # #        instance-id: ${spring.application.name}:${random.value}
-       # instance-id: ${spring.application.name}
-       # preferIpAddress: true
-      #  #preferIpAddress: false   # Использовать IP адрес вместо имени хоста
-       # serviceName: ${spring.application.name} # Имя сервиса
-      #  health-check-url: http://localhost:${server.port}/actuator/health
-       # health-check-path: /actuator/health
-       # heartbeat:
-        #  enabled: true       # Отключаем Heartbeat (необязательно)
 
   security:
     oauth2:
       resourceserver:
         jwt:
           # Ниже - адрес сервера авторизации для получения токена
-          #issuer-uri: ${issuer-uri}
-          issuer-uri: http://localhost:8080/realms/master # Для запуска локально
+          #issuer-uri: http://localhost:8080/realms/master # Для запуска локально
           #issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker
+          issuer-uri: ${keycloak-location}
+
+keycloak-location: http://keycloak:8080/realms/master
+#keycloak-location: http://localhost:8080/realms/master

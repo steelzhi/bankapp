@@ -1,7 +1,6 @@
 package ru.ya.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -66,12 +65,10 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    @LoadBalanced
     RestClient restClient() {
         return RestClient.create();
     }
 
-    @LoadBalanced
     @Bean
     RestClient.Builder restClientBuilder() {
         return RestClient.builder();

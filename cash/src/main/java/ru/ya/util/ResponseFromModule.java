@@ -1,10 +1,7 @@
 package ru.ya.util;
 
-import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
-import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
@@ -34,9 +31,6 @@ public class ResponseFromModule {
 
     @Autowired
     private RestClient.Builder restClientBuilder;
-
-    @Autowired
-    private CircuitBreakerFactory circuitBreakerFactory;
 
     public String getStringResponseFromModuleAccounts(String url, Cash cash) {
         return getStringResponseFromModule(moduleAccountsHost, url, cash);
@@ -70,7 +64,6 @@ public class ResponseFromModule {
         return responseEntity.getBody();
     }
 
-    @Retry(name = "responseFromModule", fallbackMethod = "getFallback")
     private String getStringResponseFromModule(String moduleNameForRequest, String url, Object object) {
         RestClient.RequestBodySpec rCRBS = getRestClientRequestBodySpecWithAccessToken(moduleNameForRequest, url);
 
@@ -80,11 +73,6 @@ public class ResponseFromModule {
             rCRBS.body(cash);
         }
 
-/*        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitBreaker");
-        String ans = circuitBreaker.run(() -> rCRBS
-                .retrieve()
-                .toEntity(String.class)
-                .getBody(), throwable -> getFallback(throwable));*/
         String ans = rCRBS
                 .retrieve()
                 .toEntity(String.class)

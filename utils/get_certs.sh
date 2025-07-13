@@ -1,0 +1,1 @@
+/utils/rsync.sh data twc-build:/home/minikube/.minikube /home/minikube/ --exclude=cache;

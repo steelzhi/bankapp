@@ -23,5 +23,8 @@ dependencies:
 - name: transfer-service
   repository: file://./charts/transfer-service
   version: 0.1.0
-digest: sha256:030ddafd640209d0a8a620da0c57422fc934af5ca1c6fe1f3518c237bd6eb6fb
-generated: "2025-06-27T16:15:34.7475171+04:00"
+- name: keycloak
+  repository: https://charts.bitnami.com/bitnami
+  version: 24.7.4
+digest: sha256:6b444da55197d19e3ba4ce8962dff801395fc9a1584a1dbc862a44ba18999ccd
+generated: "2025-06-22T19:18:52.3152796+04:00"

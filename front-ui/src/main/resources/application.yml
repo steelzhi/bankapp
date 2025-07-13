@@ -4,25 +4,6 @@ server:
 spring:
   application:
     name: front-ui
-  #config:
-  #  import: 'optional:consul:'
-
-  #cloud:
-  #  consul:
-  #    host: localhost           # Адрес Consul-агента (по умолчанию localhost)
-  #    port: 8500
-  #    config:
-   #     enabled: true
-   #     format: YAML
-   #     prefix: config
-   #     defaultContext: application
-   #   discovery:
-   #     instance-id: ${spring.application.name}
-    #    preferIpAddress: false   # Использовать IP адрес вместо имени хоста
-   #     health-check-path: /actuator/health
-   #     healthCheckInterval: 15s
-    #    heartbeat:
-    #      enabled: true
 
   security:
     oauth2:
@@ -30,9 +11,9 @@ spring:
         provider:
           keycloak:
             # Ниже - адрес сервера авторизации для получения токена
-            #issuer-uri: ${issuer-uri}
-            issuer-uri: http://localhost:8080/realms/master # Для запуска локально
+            #issuer-uri: http://localhost:8080/realms/master # Для запуска локально
             #issuer-uri: http://keycloak:8080/realms/master # Для запуска в Docker
+            issuer-uri: ${keycloak-location}
         registration:
           front-ui: # Описание клиента OAuth2
             provider: keycloak
@@ -41,20 +22,6 @@ spring:
             client-secret: BZSkEMkx2BETc6WB6XXV5nHG2BfAcY48
             scope: profile
             clientAuthenticationMethod: client_secret_post # Способ передачи секрета
-
-#resilience4j:
-  #circuitbreaker:
-   # instances:
-     # accounts:
-       # slidingWindowSize: 10
-        #minimumNumberOfCalls: 5
-        #failureRateThreshold: 50
-        #waitDurationInOpenState: 30s
-  #retry:
-    #instances:
-      #responseFromModule:
-        #maxRetryAttempts: 4
-        #waitDuration: 4s
 
 #Настройки ниже - для запуска без Consul
 #module-accounts: http://localhost:8070/
@@ -70,7 +37,14 @@ spring:
 #module-transfer: http://transfer/
 
 #Настройки ниже - для K8s
-module-accounts: http://accounts.myapp.local/
-module-cash: http://cash.myapp.local/
-module-exchange-generator: http://exchange-generator.myapp.local/
-module-transfer: http://transfer.myapp.local/
+#module-accounts: http://accounts.myapp.local/
+#module-cash: http://cash.myapp.local/
+#module-exchange-generator: http://exchange-generator.myapp.local/
+#module-transfer: http://transfer.myapp.local/
+
+keycloak-location: http://keycloak:8080/realms/master
+module-accounts: http://accounts:8070/
+module-cash: http://cash:8092/
+module-exchange-generator: http://exchange-generator:8094/
+module-transfer: http://transfer:8096/
+

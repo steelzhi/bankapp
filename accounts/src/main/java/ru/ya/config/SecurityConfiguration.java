@@ -1,7 +1,6 @@
 package ru.ya.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,8 +26,7 @@ import java.util.Map;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
-    //@Value("${keycloak-location}")
-    @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
+    @Value("${keycloak-location}")
     private String keycloakLocation;
 
     @Bean
@@ -88,7 +86,6 @@ public class SecurityConfiguration {
         return manager;
     }
 
-    @LoadBalanced
     @Bean
     RestClient.Builder restClientBuilder() {
         return RestClient.builder();

@@ -1,0 +1,147 @@
+
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jenkins-casc-config
+  namespace: jenkins
+data:
+  1-system-message.yaml: |
+    deprecated: warn
+    jenkins:
+      systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jenkins-groovy-scripts
+  namespace: jenkins
+data:
+  1-empty.groovy: |
+    // No-op Groovy script required by Jenkins Operator
+    
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: jenkins-casc-secret
+  namespace: jenkins
+type: Opaque
+stringData:
+  key: "value"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: jenkins-groovy-secret
+  namespace: jenkins
+type: Opaque
+stringData:
+  key: "value"
+
+---
+apiVersion: jenkins.io/v1alpha2
+kind: Jenkins
+metadata:
+  name: instance1
+  namespace: jenkins
+spec:
+  service:
+#   type: LoadBalancer
+    type: NodePort
+    port: 8081
+    nodePort: 30081
+
+  jenkinsAPISettings:
+    authorizationStrategy: serviceAccount
+
+  configurationAsCode:
+    configurations:
+      - name: jenkins-casc-config
+    secret:
+      name: jenkins-casc-secret
+      
+  groovyScripts:
+    configurations:
+      - name: jenkins-groovy-scripts
+    secret:
+      name: jenkins-groovy-secret
+
+  master:
+    disableCSRFProtection: false
+
+    basePlugins:
+      - name: kubernetes
+        version: latest      
+      - name: kubernetes-credentials-provider
+        version: latest      
+      - name: workflow-job
+        version: latest      
+      - name: workflow-aggregator
+        version: latest      
+      - name: git
+        version: latest      
+      - name: job-dsl
+        version: latest      
+      - name: configuration-as-code
+        version: latest      
+
+    plugins:
+      - name: workflow-multibranch
+        version: latest 
+      - name: git-client 
+        version: latest
+      - name: github
+        version: latest 
+      - name: github-branch-source
+        version: latest 
+      - name: scm-api
+        version: latest 
+      - name: credentials
+        version: latest 
+      - name: docker-workflow
+        version: latest 
+      - name: blueocean
+        version: latest 
+      - name: credentials-binding
+        version: latest 
+      - name: plain-credentials
+        version: latest 
+      - name: pipeline-as-yaml
+        version: latest
+      
+    containers:
+    - name: jenkins-master
+      image: jenkins/jenkins:lts
+      imagePullPolicy: Always
+      livenessProbe:
+        failureThreshold: 12
+        httpGet:
+          path: /login
+          port: http
+          scheme: HTTP
+        initialDelaySeconds: 80
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 5
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /login
+          port: http
+          scheme: HTTP
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 100Mi
+
+#  seedJobs:
+
+    

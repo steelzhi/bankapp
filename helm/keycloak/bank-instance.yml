@@ -1,0 +1,56 @@
+
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keycloak-bootstrap-admin
+#  name: bank-initial-admin # need to patch created by operator instead of creating own 
+  namespace: keycloak
+type: Opaque
+#stringData:
+#  username: admin
+#  password: admin
+data:
+  username: YWRtaW4=
+  password: YWRtaW4=
+
+---
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: Keycloak
+metadata:
+  name: bank
+  namespace: keycloak
+spec:
+  instances: 1
+  bootstrapAdmin:
+    user:
+      secret: keycloak-bootstrap-admin
+#      secret: bank-initial-admin
+  db:
+    vendor: dev-mem # h2
+  http:
+    httpEnabled: true
+  additionalOptions:
+    - name: hostname-strict
+      value: "false"
+    - name: hostname-strict-https
+      value: "false"
+  ingress:
+    enabled: true
+    className: nginx
+
+  resources:
+    requests:
+      cpu: "120m"
+      memory: "256Mi" 
+
+#  hostname:
+#    hostname: test.keycloak.org
+
+#  proxy:
+#    headers: xforwarded
+
+#  http:
+#    tlsSecret: example-tls-secret
+
