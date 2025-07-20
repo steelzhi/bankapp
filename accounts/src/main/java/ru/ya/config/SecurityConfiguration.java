@@ -38,7 +38,7 @@ public class SecurityConfiguration {
     SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
         return security
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/register-user", "/actuator/health").permitAll()
+                        .requestMatchers("/register-user", "/actuator/health", "/actuator/health/liveness", "/actuator/health/readiness").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(customizer -> {

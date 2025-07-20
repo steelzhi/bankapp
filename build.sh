@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 set -x;
 sh gradle clean;
 ./gradle-bin clean;

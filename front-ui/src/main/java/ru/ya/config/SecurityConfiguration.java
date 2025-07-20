@@ -39,7 +39,7 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 // Настройка авторизации запросов
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/get-register-form", "/register-user", "/actuator/health").permitAll() // Доступ к главной странице - всем,
+                        .requestMatchers("/", "/get-register-form", "/register-user", "/actuator/health", "/actuator/health/liveness", "/actuator/health/readiness").permitAll() // Доступ к главной странице - всем,
                         .anyRequest().authenticated()  // остальное — только для аутентифицированных
                 )
                 .formLogin(Customizer.withDefaults())

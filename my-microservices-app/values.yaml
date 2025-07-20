@@ -6,13 +6,20 @@ global:
 # NOTE: For local development (Minikube/Kind/Docker Desktop), build the image locally
 # (e.g., `docker build -t accounts-service:latest in accounts-service dir)
 # and ensure your K8s cluster can access local images (e.g., `minikube docker-env` or `kind load docker-image ...`).
+
+#accounts-service:
+#  weight: 0
+#  image:
+#    repository: accounts-serviceA # Removed registry prefix
+
 accounts-service:
+  weight: 0
   replicaCount: 1
   image:
     # --- REVERTED TO LOCAL REPO ---
     repository: accounts-service # Removed registry prefix
     tag: "latest"
-    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    pullPolicy: Never # Use IfNotPresent for local images
     # -----------------------------
   service:
     type: ClusterIP
@@ -23,26 +30,42 @@ accounts-service:
     hosts:
       - host: accounts.myapp.local # Use global domain or specific
         paths:
-          - path: /
+          - path: /1
             pathType: ImplementationSpecific
   # Database connection details passed to accounts-service configmap
   config:
     # --- CORRECTED DB URL --- Using '<ReleaseName>-<Alias>' service name convention
-    database_url: "jdbc:postgresql://{{ .Release.Name }}-accounts-db:5432/accountsdb"
+    #database_url: "jdbc:postgresql://{{ .Release.Name }}-accounts-db:5432/accountsdb"
     # Secret reference for password is more secure
-    database_username: "s"
+    #database_username: "s"
     # database_password_secret: "{{ .Release.Name }}-accounts-db-postgresql" # Reference to secret created by DB chart
     # database_password_secret_key: "postgresql-password" # Key within the secret
+    SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-postgresql:5432/bankapp
+    SPRING_DATASOURCE_USERNAME: s
+    SPRING_DATASOURCE_PASSWORD: sa
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/master
+    SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/master
+    SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_ACCOUNTS_CLIENT_ID: accounts
+    SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_ACCOUNTS_CLIENT_SECRET: cqvRnkAwGQMMsl27GqHCy4Ke3YwBKSOE
+    
+    MANAGEMENT_HEALTH_LIVENESSSTATE_ENABLED: true
+    MANAGEMENT_HEALTH_READINESSSTATE_ENABLED: true
+
+#  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://bank-service.keycloak.svc.cluster.local:8080/realms/master
+#  SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI: http://bank-service.keycloak.svc.cluster.local:8080/realms/master
+
+
 
 # Configuration for the blocker-service subchart
 # NOTE: Build image locally: `docker build -t blocker-service:latest in blocker-service dir
 blocker-service:
+  weight: 1
   replicaCount: 1
   image:
     # --- REVERTED TO LOCAL REPO ---
     repository: blocker-service # Removed registry prefix
     tag: "latest"
-    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    pullPolicy: Never # Use IfNotPresent for local images
     # -----------------------------
   service:
     type: ClusterIP
@@ -53,18 +76,23 @@ blocker-service:
     hosts:
       - host: blocker.myapp.local
         paths:
-          - path: /
+          - path: /2
             pathType: ImplementationSpecific
+  config:
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/master
+    SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/master
+ 
 
 # Configuration for the cash-service subchart
 # NOTE: Build image locally: `docker build -t cash-service:latest in cash-service dir
 cash-service:
+  weight: 1
   replicaCount: 1
   image:
     # --- REVERTED TO LOCAL REPO ---
     repository: cash-service # Removed registry prefix
     tag: "latest"
-    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    pullPolicy: Never # Use IfNotPresent for local images
     # -----------------------------
   service:
     type: ClusterIP
@@ -75,18 +103,25 @@ cash-service:
     hosts:
       - host: cash.myapp.local
         paths:
-          - path: /
+          - path: /3
             pathType: ImplementationSpecific
+  config:
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/master
+    SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/master
+    SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_CASH_CLIENT_ID: cash
+    SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_CASH_CLIENT_SECRET: 6UMxwxzxhq3YRamkTEGx4MdEMxPL938n
+
 
 # Configuration for the exchange-service subchart
 # NOTE: Build image locally: `docker build -t exchange-service:latest in exchange-service dir
 exchange-service:
+  weight: 1
   replicaCount: 1
   image:
     # --- REVERTED TO LOCAL REPO ---
     repository: exchange-service # Removed registry prefix
     tag: "latest"
-    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    pullPolicy: Never # Use IfNotPresent for local images
     # -----------------------------
   service:
     type: ClusterIP
@@ -97,18 +132,26 @@ exchange-service:
     hosts:
       - host: exchange.myapp.local
         paths:
-          - path: /
+          - path: /4
             pathType: ImplementationSpecific
+  config:
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/master
+    SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/master
+    SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_EXCHANGE_CLIENT_ID: exchange
+    SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_EXCHANGE_CLIENT_SECRET: 2VgTnsgA6i8dGoZPrJi8pk5ePDQK2oAp
+    SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/master
+
 
 # Configuration for the exchange-generator-service subchart
 # NOTE: Build image locally: `docker build -t exchange-generator-service:latest in exchange-generator-service dir
 exchange-generator-service:
+  weight: 1
   replicaCount: 1
   image:
     # --- REVERTED TO LOCAL REPO ---
     repository: exchange-generator-service # Removed registry prefix
     tag: "latest"
-    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    pullPolicy: Never # Use IfNotPresent for local images
     # -----------------------------
   service:
     type: ClusterIP
@@ -119,12 +162,15 @@ exchange-generator-service:
     hosts:
       - host: exchange-generator.myapp.local
         paths:
-          - path: /
+          - path: /5
             pathType: ImplementationSpecific
+  config:
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/master
 
 # Configuration for the front-ui-service subchart
 # NOTE: Build image locally: `docker build -t front-ui-service:latest in front-ui-service dir
 front-ui-service:
+  weight: 1
   replicaCount: 1
   image:
     # --- REVERTED TO LOCAL REPO ---
@@ -134,25 +180,35 @@ front-ui-service:
     # -----------------------------
   service:
     type: ClusterIP
-    port: 8081 # Different port for front-ui service
+#    port: 8081 # Different port for front-ui service
+#    type: NodePort
+#    nodePort: 32081
+#    type: Ingress
   ingress:
     enabled: true
     className: "nginx"
     hosts:
-      - host: front-ui.myapp.local
+#      - host: front-ui.myapp.local
+#      - host: twc-build
+      - host: bank
         paths:
           - path: /
             pathType: ImplementationSpecific
+  config:
+    SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/master
+    SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FRONT_UI_CLIENT_ID: front-ui
+    SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FRONT_UI_CLIENT_SECRET: BZSkEMkx2BETc6WB6XXV5nHG2BfAcY48
 
 # Configuration for the notifications-service subchart
 # NOTE: Build image locally: `docker build -t notifications-service:latest in notifications-service dir
 notifications-service:
+  weight: 1
   replicaCount: 1
   image:
     # --- REVERTED TO LOCAL REPO ---
     repository: notifications-service # Removed registry prefix
     tag: "latest"
-    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    pullPolicy: Never # Use IfNotPresent for local images
     # -----------------------------
   service:
     type: ClusterIP
@@ -163,12 +219,17 @@ notifications-service:
     hosts:
       - host: notifications.myapp.local
         paths:
-          - path: /
+          - path: /7
             pathType: ImplementationSpecific
+  config:
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/master
+    SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/master
+            
 
 # Configuration for the transfer-service subchart
 # NOTE: Build image locally: `docker build -t transfer-service:latest in transfer-service dir
 transfer-service:
+  weight: 1
   replicaCount: 1
   image:
     # --- REVERTED TO LOCAL REPO ---
@@ -185,32 +246,37 @@ transfer-service:
     hosts:
       - host: transfer.myapp.local
         paths:
-          - path: /
+          - path: /8
             pathType: ImplementationSpecific
+  config:
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/master
+    SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/master
+    SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_TRANSFER_CLIENT_ID: transfer
+    SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_TRANSFER_CLIENT_SECRET: J0sumPuRH63sy9pgcLpPFfXnbhcmp2Xz
 
 # Configuration for the accounts-db (PostgreSQL dependency)
 # Values here are prefixed according to the Bitnami PostgreSQL chart's structure
 # Check the Bitnami chart's values.yaml for all available options
-accounts-db:
-  enabled: true
+#accounts-db:
+#  enabled: true
   # Override values from the official postgresql chart
-  auth:
-    database: accountsdb
-    username: s
+#  auth:
+#    database: accountsdb
+#    username: s
     # Use existingSecret or provide password (less secure for production)
     # existingSecret: "{{ .Release.Name }}-accounts-db-postgresql" # Name of the secret to use/create
-    password: "sa" # Example: Not recommended for production
-  primary:
-    persistence:
-      enabled: true
-      size: 1Gi # Small size for example
+#    password: "sa" # Example: Not recommended for production
+#  primary:
+#    persistence:
+#      enabled: true
+#      size: 1Gi # Small size for example
 
-keycloak:
-  ingress:
-    enabled: true
-    className: "keycloak"
-    hosts:
-      - host: keycloak.myapp.local
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
+#keycloak:
+#  ingress:
+#    enabled: true
+#    className: "keycloak"
+#    hosts:
+#      - host: keycloak.myapp.local
+#        paths:
+#          - path: /
+#            pathType: ImplementationSpecific

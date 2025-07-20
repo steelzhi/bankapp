@@ -1,6 +1,6 @@
 apiVersion: v2
 name: my-microservices-app
-description: Umbrella chart for 10 microservices
+description: Umbrella chart for 8 microservices
 type: application
 version: 0.1.0
 appVersion: "1.0.0"
@@ -9,52 +9,56 @@ dependencies:
   # Subchart for Accounts Service
   - name: accounts-service
     version: "0.1.0"
-    repository: "file://./charts/accounts-service" # Local path reference
+    repository: "file://charts_used/accounts-service"
+#    -0.1.0.tgz"
+    condition: accounts-service.enabled
 
   # Subchart for Blocker Service
   - name: blocker-service
     version: "0.1.0"
-    repository: "file://./charts/blocker-service" # Local path reference
+    repository: "file://charts_used/blocker-service"
 
   # Subchart for Cash Service
   - name: cash-service
     version: "0.1.0"
-    repository: "file://./charts/cash-service" # Local path reference
+    repository: "file://charts_used/cash-service" # Local path reference
 
   # Subchart for Exchange Service
   - name: exchange-service
     version: "0.1.0"
-    repository: "file://./charts/exchange-service"  # Local path reference
+    repository: "file://charts_used/exchange-service"  # Local path reference
 
   # Subchart for Exchange generator Service
   - name: exchange-generator-service
     version: "0.1.0"
-    repository: "file://./charts/exchange-generator-service"  # Local path reference
+    repository: "file://charts_used/exchange-generator-service"  # Local path reference
 
   # Subchart for Front UI Service
   - name: front-ui-service
     version: "0.1.0"
-    repository: "file://./charts/front-ui-service"  # Local path reference
+    repository: "file://charts_used/front-ui-service"  # Local path reference
 
   # Subchart for Notifications Service
   - name: notifications-service
     version: "0.1.0"
-    repository: "file://./charts/notifications-service"  # Local path reference
+    repository: "file://charts_used/notifications-service"  # Local path reference
 
   # Subchart for Transfer Service
   - name: transfer-service
     version: "0.1.0"
-    repository: "file://./charts/transfer-service"  # Local path reference
+    repository: "file://charts_used/transfer-service"  # Local path reference
+
+
 
  # Dependency for Accounts DB (PostgreSQL)
-  - name: postgresql
-    version: "14.2.3" # Using a specific known stable version from Bitnami history
-    repository: "https://charts.bitnami.com/bitnami"
-    alias: accounts-db # Alias to distinguish this instance
-    condition: accounts-db.enabled # Allow disabling if needed
+#  - name: postgresql
+#    version: "14.2.3" # Using a specific known stable version from Bitnami history
+#    repository: "https://charts.bitnami.com/bitnami"
+#    alias: accounts-db # Alias to distinguish this instance
+#    condition: accounts-db.enabled # Allow disabling if needed
 
   # Dependency for Keycloak
-  - name: keycloak
-    version: "24.7.4"
-    repository: "https://charts.bitnami.com/bitnami"
+#  - name: keycloak
+#    version: "24.7.4"
+#    repository: "https://charts.bitnami.com/bitnami"
     # repository: "https://codecentric.github.io/helm-charts"

@@ -1,4 +1,5 @@
 FROM jenkins/jenkins:lts-jdk21
+#FROM jenkins/inbound-agent:lts-jdk21
 
 USER root
 
@@ -11,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     gnupg \
     lsb-release \
+    openssh-client \
     && rm -rf /var/lib/apt/lists/*
 
 # Установка Helm
@@ -29,11 +31,13 @@ RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /
     apt-get update && apt-get install -y docker-ce-cli
 
 # Установка плагинов Jenkins
-COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
-RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt
+#COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
+#RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt
 
 # Инициализация groovy-скриптов
-COPY init.groovy.d/ /usr/share/jenkins/ref/init.groovy.d/
+#COPY init.groovy.d/ /usr/share/jenkins/ref/init.groovy.d/
+
+RUN apt-get update && apt-get install -y bash
 
 USER jenkins
 ENV PATH="/usr/local/bin:$PATH"

@@ -1,30 +1,27 @@
 dependencies:
 - name: accounts-service
-  repository: file://./charts/accounts-service
+  repository: file://charts_used/accounts-service
   version: 0.1.0
 - name: blocker-service
-  repository: file://./charts/blocker-service
+  repository: file://charts_used/blocker-service
   version: 0.1.0
 - name: cash-service
-  repository: file://./charts/cash-service
+  repository: file://charts_used/cash-service
   version: 0.1.0
 - name: exchange-service
-  repository: file://./charts/exchange-service
+  repository: file://charts_used/exchange-service
   version: 0.1.0
 - name: exchange-generator-service
-  repository: file://./charts/exchange-generator-service
+  repository: file://charts_used/exchange-generator-service
   version: 0.1.0
 - name: front-ui-service
-  repository: file://./charts/front-ui-service
+  repository: file://charts_used/front-ui-service
   version: 0.1.0
 - name: notifications-service
-  repository: file://./charts/notifications-service
+  repository: file://charts_used/notifications-service
   version: 0.1.0
 - name: transfer-service
-  repository: file://./charts/transfer-service
+  repository: file://charts_used/transfer-service
   version: 0.1.0
-- name: keycloak
-  repository: https://charts.bitnami.com/bitnami
-  version: 24.7.4
-digest: sha256:6b444da55197d19e3ba4ce8962dff801395fc9a1584a1dbc862a44ba18999ccd
-generated: "2025-06-22T19:18:52.3152796+04:00"
+digest: sha256:d99ee02da60f4bd225c5e6d5d2c81aec1c4ce654527aea8f22cf6c66ef584afe
+generated: "2025-07-18T22:55:32.27070856+05:00"
